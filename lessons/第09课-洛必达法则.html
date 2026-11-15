@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>微积分进阶 · 第 09 课：洛必达法则与极限进阶</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --quote-bg: #f6f8fa;
+  --code-bg: #eff2f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --border: #30363d;
+    --accent: #4493f8;
+    --quote-bg: #161b22;
+    --code-bg: #1f242c;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; font-weight: 650; }
+h1 { font-size: 2rem; margin: 0 0 .8em; padding-bottom: .35em; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 2.2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.2rem; margin: 1.8em 0 .55em; }
+p { margin: .85em 0; }
+a { color: var(--accent); }
+blockquote {
+  margin: 1em 0;
+  padding: .6em 1em;
+  border-left: 4px solid var(--accent);
+  background: var(--quote-bg);
+  color: var(--muted);
+  border-radius: 4px;
+}
+blockquote p { margin: .25em 0; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: .96em;
+  overflow: hidden;
+}
+th, td { border: 1px solid var(--border); padding: .45em .7em; text-align: left; vertical-align: top; }
+th { background: var(--quote-bg); font-weight: 600; }
+details {
+  margin: 1.2em 0;
+  padding: .8em 1em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--quote-bg);
+}
+summary { cursor: pointer; font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+ul, ol { padding-left: 1.7em; }
+li { margin: .3em 0; }
+.math-block {
+  margin: 1.15em 0;
+  padding: .7em .9em;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--quote-bg);
+  border-radius: 6px;
+}
+math { font-size: 1.14em; line-height: 1.2; }
+math[display="inline"] { font-size: 1.05em; vertical-align: baseline; }
+.math-block math { font-size: 1.24em; }
+.math-fallback, .math-fallback-block {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .08em .3em;
+  border-radius: 3px;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .12em .35em;
+  border-radius: 3px;
+  font-size: .92em;
+}
+pre code { display: block; padding: .8em 1em; overflow-x: auto; }
+footer { margin-top: 4em; color: var(--muted); font-size: .85em; text-align: center; }
+@media print {
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  .math-block { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>微积分进阶 · 第 09 课：洛必达法则与极限进阶</h1>
+<blockquote>
+<p><strong>本课目标</strong>：掌握 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x0002F;</mo><mn>0</mn></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x0221E;</mo><mo>&#x0002F;</mo><mo>&#x0221E;</mo></mrow></math> 型极限的洛必达解法，会把 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x000B7;</mo><mo>&#x0221E;</mo></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x0221E;</mo><mo>&#x02212;</mo><mo>&#x0221E;</mo></mrow></math>、幂指型转化成标准型。</p>
+<p><strong>使用方法</strong>：先读法则和例题，再做练习。每一步都先判断“是不是未定式”，不要上来就求导。</p>
+</blockquote>
+<hr>
+<h2>目录</h2>
+<ol>
+<li>洛必达法则是什么</li>
+<li>使用条件</li>
+<li>基础例题</li>
+<li>多次使用</li>
+<li>其他未定式的转化</li>
+<li>两个经典极限</li>
+<li>什么时候不能用</li>
+<li>易错点</li>
+<li>练习</li>
+<li>答案与简解</li>
+<li>下节预告</li>
+</ol>
+<hr>
+<h2>1. 洛必达法则是什么</h2>
+<p>如果极限是下面两种形式：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mn>0</mn></mrow><mrow><mn>0</mn></mrow></mfrac><mspace width="1em" /><mtext>或</mtext><mspace width="1em" /><mfrac><mrow><mo>&#x0221E;</mo></mrow><mrow><mo>&#x0221E;</mo></mrow></mfrac></mrow></math></div>
+<p>那么可以<strong>分子分母分别求导</strong>，再算极限：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>lim</mo><mfrac><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow><mrow><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></mfrac><mo>&#x0003D;</mo><mo>lim</mo><mfrac><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow><mrow><msup><mi>g</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></mfrac></mrow></math></div>
+<p>注意：是<strong>分别求导</strong>，不是用商的求导法则。</p>
+<h3>例</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></munder><mfrac><mrow><msup><mi>e</mi><mi>x</mi></msup><mo>&#x02212;</mo><mn>1</mn></mrow><mrow><mi>x</mi></mrow></mfrac></mrow></math></div>
+<p>代入是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x0002F;</mo><mn>0</mn></mrow></math>，用洛必达：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0003D;</mo><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></munder><mfrac><mrow><msup><mi>e</mi><mi>x</mi></msup></mrow><mrow><mn>1</mn></mrow></mfrac><mo>&#x0003D;</mo><mn>1</mn></mrow></math></div>
+<hr>
+<h2>2. 使用条件</h2>
+<p>用之前检查三件事：</p>
+<ol>
+<li>必须是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mn>0</mn></mrow><mrow><mn>0</mn></mrow></mfrac></mrow></math> 或 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mo>&#x0221E;</mo></mrow><mrow><mo>&#x0221E;</mo></mrow></mfrac></mrow></math></li>
+<li>分子分母在附近可导，且分母导数不为 0</li>
+<li>求导后的极限存在（或为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x000B1;</mi><mo>&#x0221E;</mo></mrow></math>）</li>
+</ol>
+<p>如果第 3 条不满足，<strong>不能下结论</strong>，只能换别的方法。</p>
+<blockquote>
+<p>洛必达是“能用就用”的工具，不是万能公式。</p>
+</blockquote>
+<hr>
+<h2>3. 基础例题</h2>
+<h3>例 1</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></munder><mfrac><mrow><mn>1</mn><mo>&#x02212;</mo><mi>cos</mi><mi>x</mi></mrow><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow></mfrac></mrow></math></div>
+<p>代入 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x0002F;</mo><mn>0</mn></mrow></math>，求导：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0003D;</mo><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></munder><mfrac><mrow><mi>sin</mi><mi>x</mi></mrow><mrow><mn>2</mn><mi>x</mi></mrow></mfrac></mrow></math></div>
+<p>还是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x0002F;</mo><mn>0</mn></mrow></math>，再用一次：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0003D;</mo><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></munder><mfrac><mrow><mi>cos</mi><mi>x</mi></mrow><mrow><mn>2</mn></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></math></div>
+<h3>例 2</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></munder><mfrac><mrow><mi>ln</mi><mi>x</mi></mrow><mrow><mi>x</mi></mrow></mfrac></mrow></math></div>
+<p>代入 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x0221E;</mo><mo>&#x0002F;</mo><mo>&#x0221E;</mo></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0003D;</mo><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></munder><mfrac><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mi>x</mi></mrow></mfrac></mrow><mrow><mn>1</mn></mrow></mfrac><mo>&#x0003D;</mo><mn>0</mn></mrow></math></div>
+<h3>例 3</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></munder><mfrac><mrow><msup><mi>e</mi><mi>x</mi></msup></mrow><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow></mfrac></mrow></math></div>
+<p>代入 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x0221E;</mo><mo>&#x0002F;</mo><mo>&#x0221E;</mo></mrow></math>，连续用两次：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0003D;</mo><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></munder><mfrac><mrow><msup><mi>e</mi><mi>x</mi></msup></mrow><mrow><mn>2</mn><mi>x</mi></mrow></mfrac><mo>&#x0003D;</mo><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></munder><mfrac><mrow><msup><mi>e</mi><mi>x</mi></msup></mrow><mrow><mn>2</mn></mrow></mfrac><mo>&#x0003D;</mo><mo>&#x0002B;</mo><mo>&#x0221E;</mo></mrow></math></div>
+<h3>例 4</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></munder><mfrac><mrow><msup><mi>e</mi><mi>x</mi></msup><mo>&#x02212;</mo><mn>1</mn><mo>&#x02212;</mo><mi>x</mi></mrow><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow></mfrac></mrow></math></div>
+<p>代入 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x0002F;</mo><mn>0</mn></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0003D;</mo><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></munder><mfrac><mrow><msup><mi>e</mi><mi>x</mi></msup><mo>&#x02212;</mo><mn>1</mn></mrow><mrow><mn>2</mn><mi>x</mi></mrow></mfrac></mrow></math></div>
+<p>还是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x0002F;</mo><mn>0</mn></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0003D;</mo><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></munder><mfrac><mrow><msup><mi>e</mi><mi>x</mi></msup></mrow><mrow><mn>2</mn></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></math></div>
+<hr>
+<h2>4. 多次使用</h2>
+<p>有些题要连续用两三次，每次都要重新检查是不是未定式。</p>
+<h3>例</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></munder><mfrac><mrow><mi>x</mi><mo>&#x02212;</mo><mi>sin</mi><mi>x</mi></mrow><mrow><msup><mi>x</mi><mn>3</mn></msup></mrow></mfrac></mrow></math></div>
+<p>第一次：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0003D;</mo><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></munder><mfrac><mrow><mn>1</mn><mo>&#x02212;</mo><mi>cos</mi><mi>x</mi></mrow><mrow><mn>3</mn><msup><mi>x</mi><mn>2</mn></msup></mrow></mfrac></mrow></math></div>
+<p>第二次：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0003D;</mo><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></munder><mfrac><mrow><mi>sin</mi><mi>x</mi></mrow><mrow><mn>6</mn><mi>x</mi></mrow></mfrac></mrow></math></div>
+<p>第三次：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0003D;</mo><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></munder><mfrac><mrow><mi>cos</mi><mi>x</mi></mrow><mrow><mn>6</mn></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>6</mn></mrow></mfrac></mrow></math></div>
+<p><strong>原则</strong>：只要还是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x0002F;</mo><mn>0</mn></mrow></math> 或 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x0221E;</mo><mo>&#x0002F;</mo><mo>&#x0221E;</mo></mrow></math>，就可以继续；一旦变成确定的数，立刻停。</p>
+<hr>
+<h2>5. 其他未定式的转化</h2>
+<p>洛必达只直接处理 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x0002F;</mo><mn>0</mn></mrow></math> 和 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x0221E;</mo><mo>&#x0002F;</mo><mo>&#x0221E;</mo></mrow></math>。其他形式要先转化。</p>
+<table>
+<thead>
+<tr>
+<th>形式</th>
+<th>处理方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x000B7;</mo><mo>&#x0221E;</mo></mrow></math></td>
+<td>把一个因子放到分母，变成 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x0002F;</mo><mn>0</mn></mrow></math> 或 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x0221E;</mo><mo>&#x0002F;</mo><mo>&#x0221E;</mo></mrow></math></td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x0221E;</mo><mo>&#x02212;</mo><mo>&#x0221E;</mo></mrow></math></td>
+<td>通分、有理化、提公因式</td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mn>1</mn><mo>&#x0221E;</mo></msup><mo>&#x0002C;</mo><mtext>&#x000A0;</mtext><msup><mn>0</mn><mn>0</mn></msup><mo>&#x0002C;</mo><mtext>&#x000A0;</mtext><msup><mo>&#x0221E;</mo><mn>0</mn></msup></mrow></math></td>
+<td>取对数，变成 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x000B7;</mo><mo>&#x0221E;</mo></mrow></math></td>
+</tr>
+</tbody>
+</table>
+<h3>例 1：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x000B7;</mo><mo>&#x0221E;</mo></mrow></math></h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><msup><mn>0</mn><mo>&#x0002B;</mo></msup></mrow></munder><mi>x</mi><mi>ln</mi><mi>x</mi></mrow></math></div>
+<p>这是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x000B7;</mo><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mo>&#x0221E;</mo><mo stretchy="false">&#x00029;</mo></mrow></math>。把 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math> 放到分母：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0003D;</mo><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><msup><mn>0</mn><mo>&#x0002B;</mo></msup></mrow></munder><mfrac><mrow><mi>ln</mi><mi>x</mi></mrow><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mi>x</mi></mrow></mfrac></mrow></mfrac></mrow></math></div>
+<p>变成 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x0221E;</mo><mo>&#x0002F;</mo><mo>&#x0221E;</mo></mrow></math>，洛必达：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0003D;</mo><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><msup><mn>0</mn><mo>&#x0002B;</mo></msup></mrow></munder><mfrac><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mi>x</mi></mrow></mfrac></mrow><mrow><mo>&#x02212;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow></mfrac></mrow></mfrac><mo>&#x0003D;</mo><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><msup><mn>0</mn><mo>&#x0002B;</mo></msup></mrow></munder><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math></div>
+<h3>例 2：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mn>1</mn><mo>&#x0221E;</mo></msup></mrow></math></h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></munder><msup><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mn>1</mn><mo>&#x0002B;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>x</mi></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mi>x</mi></msup></mrow></math></div>
+<p>先取对数。令：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x0003D;</mo><msup><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mn>1</mn><mo>&#x0002B;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>x</mi></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mi>x</mi></msup></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>ln</mi><mi>y</mi><mo>&#x0003D;</mo><mi>x</mi><mi>ln</mi><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mn>1</mn><mo>&#x0002B;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>x</mi></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow></mrow></math></div>
+<p>令 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>u</mi><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>x</mi></mrow></mfrac></mrow></math>，则 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>u</mi><mo>&#x02192;</mo><mn>0</mn></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>ln</mi><mi>y</mi><mo>&#x0003D;</mo><mfrac><mrow><mi>ln</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002B;</mo><mi>u</mi><mo stretchy="false">&#x00029;</mo></mrow><mrow><mi>u</mi></mrow></mfrac></mrow></math></div>
+<p>洛必达：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0003D;</mo><mfrac><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mn>1</mn><mo>&#x0002B;</mo><mi>u</mi></mrow></mfrac></mrow><mrow><mn>1</mn></mrow></mfrac><mo>&#x02192;</mo><mn>1</mn></mrow></math></div>
+<p>所以：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>ln</mi><mi>y</mi><mo>&#x02192;</mo><mn>1</mn><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>y</mi><mo>&#x02192;</mo><mi>e</mi></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><menclose notation="box"><mrow><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></munder><msup><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mn>1</mn><mo>&#x0002B;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>x</mi></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mi>x</mi></msup><mo>&#x0003D;</mo><mi>e</mi></mrow></menclose></mrow></math></div>
+<h3>例 3：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mn>0</mn><mn>0</mn></msup></mrow></math></h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><msup><mn>0</mn><mo>&#x0002B;</mo></msup></mrow></munder><msup><mi>x</mi><mi>x</mi></msup></mrow></math></div>
+<p>取对数：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>ln</mi><mi>y</mi><mo>&#x0003D;</mo><mi>x</mi><mi>ln</mi><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></math></div>
+<p>所以：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x02192;</mo><msup><mi>e</mi><mn>0</mn></msup><mo>&#x0003D;</mo><mn>1</mn></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><menclose notation="box"><mrow><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><msup><mn>0</mn><mo>&#x0002B;</mo></msup></mrow></munder><msup><mi>x</mi><mi>x</mi></msup><mo>&#x0003D;</mo><mn>1</mn></mrow></menclose></mrow></math></div>
+<h3>例 4：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x0221E;</mo><mo>&#x02212;</mo><mo>&#x0221E;</mo></mrow></math></h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></munder><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><msqrt><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mi>x</mi></mrow></msqrt><mo>&#x02212;</mo><mi>x</mi><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow></mrow></math></div>
+<p>先有理化：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0003D;</mo><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></munder><mfrac><mrow><mi>x</mi></mrow><mrow><msqrt><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mi>x</mi></mrow></msqrt><mo>&#x0002B;</mo><mi>x</mi></mrow></mfrac></mrow></math></div>
+<p>分子分母同除 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0003D;</mo><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></munder><mfrac><mrow><mn>1</mn></mrow><mrow><msqrt><mrow><mn>1</mn><mo>&#x0002B;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>x</mi></mrow></mfrac></mrow></msqrt><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></math></div>
+<hr>
+<h2>6. 两个经典极限</h2>
+<p>这两个结论建议直接记住：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></munder><msup><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mn>1</mn><mo>&#x0002B;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>x</mi></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mi>x</mi></msup><mo>&#x0003D;</mo><mi>e</mi></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></munder><mfrac><mrow><mi>sin</mi><mi>x</mi></mrow><mrow><mi>x</mi></mrow></mfrac><mo>&#x0003D;</mo><mn>1</mn></mrow></math></div>
+<p>推广：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></munder><msup><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mn>1</mn><mo>&#x0002B;</mo><mfrac><mrow><mi>a</mi></mrow><mrow><mi>x</mi></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mi>x</mi></msup><mo>&#x0003D;</mo><msup><mi>e</mi><mi>a</mi></msup></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></munder><mfrac><mrow><mi>sin</mi><mi>a</mi><mi>x</mi></mrow><mrow><mi>x</mi></mrow></mfrac><mo>&#x0003D;</mo><mi>a</mi></mrow></math></div>
+<hr>
+<h2>7. 什么时候不能用</h2>
+<h3>情况一：不是未定式</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></munder><mfrac><mrow><mi>x</mi><mo>&#x0002B;</mo><mn>1</mn></mrow><mrow><mi>x</mi></mrow></mfrac></mrow></math></div>
+<p>分母趋于 0，分子趋于 1，结果是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x0221E;</mo></mrow></math>，不是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x0002F;</mo><mn>0</mn></mrow></math>，不能用洛必达。</p>
+<h3>情况二：求导后的极限不存在</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></munder><mfrac><mrow><mi>x</mi><mo>&#x0002B;</mo><mi>sin</mi><mi>x</mi></mrow><mrow><mi>x</mi></mrow></mfrac></mrow></math></div>
+<p>原式其实等于：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0003D;</mo><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></munder><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mn>1</mn><mo>&#x0002B;</mo><mfrac><mrow><mi>sin</mi><mi>x</mi></mrow><mrow><mi>x</mi></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0003D;</mo><mn>1</mn></mrow></math></div>
+<p>但如果用洛必达：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mn>1</mn><mo>&#x0002B;</mo><mi>cos</mi><mi>x</mi></mrow><mrow><mn>1</mn></mrow></mfrac></mrow></math></div>
+<p>这个极限不存在（<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>cos</mi><mi>x</mi></mrow></math> 一直在振荡）。</p>
+<p><strong>结论</strong>：求导后的极限不存在，不代表原极限不存在。洛必达失效时，换方法。</p>
+<hr>
+<h2>8. 易错点</h2>
+<ol>
+<li>不判断形式，上来就求导</li>
+<li>把“分子分母分别求导”做成“商的求导法则”</li>
+<li>求导后极限不存在，就错误地认为原极限不存在</li>
+<li>多次使用时忘记重新检查形式</li>
+<li>能先用等价无穷小化简的，先用再洛必达，计算量更小</li>
+<li>幂指型忘记取对数</li>
+</ol>
+<hr>
+<h2>9. 练习（10 题）</h2>
+<p>做完再对答案。</p>
+<ol>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></msub><mfrac><mrow><msup><mi>e</mi><mrow><mn>2</mn><mi>x</mi></mrow></msup><mo>&#x02212;</mo><mn>1</mn></mrow><mrow><mi>x</mi></mrow></mfrac></mrow></math></li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></msub><mfrac><mrow><mi>sin</mi><mn>3</mn><mi>x</mi></mrow><mrow><mi>x</mi></mrow></mfrac></mrow></math></li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></msub><mfrac><mrow><mn>1</mn><mo>&#x02212;</mo><mi>cos</mi><mn>2</mn><mi>x</mi></mrow><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow></mfrac></mrow></math></li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></msub><mfrac><mrow><mi>ln</mi><mi>x</mi></mrow><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow></mfrac></mrow></math></li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></msub><mfrac><mrow><mi>x</mi><mo>&#x02212;</mo><mi>sin</mi><mi>x</mi></mrow><mrow><msup><mi>x</mi><mn>3</mn></msup></mrow></mfrac></mrow></math></li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><msup><mn>0</mn><mo>&#x0002B;</mo></msup></mrow></msub><mi>x</mi><mi>ln</mi><mi>x</mi></mrow></math></li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></msub><msup><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mn>1</mn><mo>&#x0002B;</mo><mfrac><mrow><mn>2</mn></mrow><mrow><mi>x</mi></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mi>x</mi></msup></mrow></math></li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><msup><mn>0</mn><mo>&#x0002B;</mo></msup></mrow></msub><msup><mi>x</mi><mi>x</mi></msup></mrow></math></li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></msub><mfrac><mrow><mi>x</mi><mo>&#x0002B;</mo><mi>sin</mi><mi>x</mi></mrow><mrow><mi>x</mi></mrow></mfrac></mrow></math>，并说明为什么不能直接用洛必达</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></msub><mfrac><mrow><mi>tan</mi><mi>x</mi><mo>&#x02212;</mo><mi>x</mi></mrow><mrow><msup><mi>x</mi><mn>3</mn></msup></mrow></mfrac></mrow></math></li>
+</ol>
+<hr>
+<h2>10. 答案与简解</h2>
+<details>
+<summary>点击展开（做完再看）</summary>
+<p><strong>1.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn></mrow></math></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></munder><mfrac><mrow><mn>2</mn><msup><mi>e</mi><mrow><mn>2</mn><mi>x</mi></mrow></msup></mrow><mrow><mn>1</mn></mrow></mfrac><mo>&#x0003D;</mo><mn>2</mn></mrow></math></div>
+<p><strong>2.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>3</mn></mrow></math></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></munder><mfrac><mrow><mn>3</mn><mi>cos</mi><mn>3</mn><mi>x</mi></mrow><mrow><mn>1</mn></mrow></mfrac><mo>&#x0003D;</mo><mn>3</mn></mrow></math></div>
+<p><strong>3.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn></mrow></math></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>1</mn><mo>&#x02212;</mo><mi>cos</mi><mn>2</mn><mi>x</mi><mi>&#x0007E;</mi><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mn>2</mn><mi>x</mi><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup></mrow><mrow><mn>2</mn></mrow></mfrac><mo>&#x0003D;</mo><mn>2</mn><msup><mi>x</mi><mn>2</mn></msup></mrow></math></div>
+<p>所以极限为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn></mrow></math>。</p>
+<p><strong>4.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn></mrow></math></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></munder><mfrac><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mi>x</mi></mrow></mfrac></mrow><mrow><mn>2</mn><mi>x</mi></mrow></mfrac><mo>&#x0003D;</mo><mn>0</mn></mrow></math></div>
+<p><strong>5.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mn>6</mn></mrow></mfrac></mrow></math></p>
+<p>三次洛必达，见本节例 4。</p>
+<p><strong>6.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn></mrow></math></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>x</mi><mi>ln</mi><mi>x</mi><mo>&#x0003D;</mo><mfrac><mrow><mi>ln</mi><mi>x</mi></mrow><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mi>x</mi></mrow></mfrac></mrow></mfrac><mo>&#x02192;</mo><mfrac><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mi>x</mi></mrow></mfrac></mrow><mrow><mo>&#x02212;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow></mfrac></mrow></mfrac><mo>&#x0003D;</mo><mo>&#x02212;</mo><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></math></div>
+<p><strong>7.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>e</mi><mn>2</mn></msup></mrow></math></p>
+<p>取对数：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>ln</mi><mi>y</mi><mo>&#x0003D;</mo><mi>x</mi><mi>ln</mi><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mn>1</mn><mo>&#x0002B;</mo><mfrac><mrow><mn>2</mn></mrow><mrow><mi>x</mi></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x02192;</mo><mn>2</mn></mrow></math></div>
+<p>所以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x02192;</mo><msup><mi>e</mi><mn>2</mn></msup></mrow></math>。</p>
+<p><strong>8.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn></mrow></math></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>ln</mi><mi>y</mi><mo>&#x0003D;</mo><mi>x</mi><mi>ln</mi><mi>x</mi><mo>&#x02192;</mo><mn>0</mn><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>y</mi><mo>&#x02192;</mo><msup><mi>e</mi><mn>0</mn></msup><mo>&#x0003D;</mo><mn>1</mn></mrow></math></div>
+<p><strong>9.</strong> 极限为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn></mrow></math>。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mi>x</mi><mo>&#x0002B;</mo><mi>sin</mi><mi>x</mi></mrow><mrow><mi>x</mi></mrow></mfrac><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002B;</mo><mfrac><mrow><mi>sin</mi><mi>x</mi></mrow><mrow><mi>x</mi></mrow></mfrac><mo>&#x02192;</mo><mn>1</mn></mrow></math></div>
+<p>不能用洛必达，因为求导后变成 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn><mo>&#x0002B;</mo><mi>cos</mi><mi>x</mi></mrow></math>，极限不存在。</p>
+<p><strong>10.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mn>3</mn></mrow></mfrac></mrow></math></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mi>tan</mi><mi>x</mi><mo>&#x02212;</mo><mi>x</mi></mrow><mrow><msup><mi>x</mi><mn>3</mn></msup></mrow></mfrac><mo>&#x02192;</mo><mfrac><mrow><msup><mi>sec</mi><mn>2</mn></msup><mi>x</mi><mo>&#x02212;</mo><mn>1</mn></mrow><mrow><mn>3</mn><msup><mi>x</mi><mn>2</mn></msup></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><msup><mi>tan</mi><mn>2</mn></msup><mi>x</mi></mrow><mrow><mn>3</mn><msup><mi>x</mi><mn>2</mn></msup></mrow></mfrac><mo>&#x02192;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>3</mn></mrow></mfrac></mrow></math></div>
+</details>
+<hr>
+<h2>11. 下节预告</h2>
+<p><strong>第 10 课：泰勒展开与级数初步</strong></p>
+<ul>
+<li>用多项式近似函数</li>
+<li>常见泰勒展开</li>
+<li>泰勒展开求极限</li>
+</ul>
+<hr>
+<h2>自查清单</h2>
+<ul>
+<li>[ ] 能判断是不是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x0002F;</mo><mn>0</mn></mrow></math> 或 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x0221E;</mo><mo>&#x0002F;</mo><mo>&#x0221E;</mo></mrow></math></li>
+<li>[ ] 会连续使用洛必达</li>
+<li>[ ] 会把 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x000B7;</mo><mo>&#x0221E;</mo></mrow></math> 转化成 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x0002F;</mo><mn>0</mn></mrow></math></li>
+<li>[ ] 会对幂指型取对数</li>
+<li>[ ] 知道洛必达失效时该怎么办</li>
+</ul>
+<footer>微积分讲义 · 数学公式使用 MathML 渲染，建议使用 Chrome / Edge / Firefox 打开</footer>
+</main>
+</body>
+</html>

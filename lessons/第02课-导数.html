@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>微积分速成 · 第 02 课：导数与求导法则</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --quote-bg: #f6f8fa;
+  --code-bg: #eff2f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --border: #30363d;
+    --accent: #4493f8;
+    --quote-bg: #161b22;
+    --code-bg: #1f242c;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; font-weight: 650; }
+h1 { font-size: 2rem; margin: 0 0 .8em; padding-bottom: .35em; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 2.2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.2rem; margin: 1.8em 0 .55em; }
+p { margin: .85em 0; }
+a { color: var(--accent); }
+blockquote {
+  margin: 1em 0;
+  padding: .6em 1em;
+  border-left: 4px solid var(--accent);
+  background: var(--quote-bg);
+  color: var(--muted);
+  border-radius: 4px;
+}
+blockquote p { margin: .25em 0; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: .96em;
+  overflow: hidden;
+}
+th, td { border: 1px solid var(--border); padding: .45em .7em; text-align: left; vertical-align: top; }
+th { background: var(--quote-bg); font-weight: 600; }
+details {
+  margin: 1.2em 0;
+  padding: .8em 1em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--quote-bg);
+}
+summary { cursor: pointer; font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+ul, ol { padding-left: 1.7em; }
+li { margin: .3em 0; }
+.math-block {
+  margin: 1.15em 0;
+  padding: .7em .9em;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--quote-bg);
+  border-radius: 6px;
+}
+math { font-size: 1.14em; line-height: 1.2; }
+math[display="inline"] { font-size: 1.05em; vertical-align: baseline; }
+.math-block math { font-size: 1.24em; }
+.math-fallback, .math-fallback-block {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .08em .3em;
+  border-radius: 3px;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .12em .35em;
+  border-radius: 3px;
+  font-size: .92em;
+}
+pre code { display: block; padding: .8em 1em; overflow-x: auto; }
+footer { margin-top: 4em; color: var(--muted); font-size: .85em; text-align: center; }
+@media print {
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  .math-block { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>微积分速成 · 第 02 课：导数与求导法则</h1>
+<blockquote>
+<p><strong>本课目标</strong>：理解导数是什么，背熟公式表，熟练使用四则运算和链式法则求导。</p>
+<p><strong>使用方法</strong>：先读讲解 → 做练习 → 对答案。链式法则是本课重点，必须练到条件反射。</p>
+</blockquote>
+<hr>
+<h2>目录</h2>
+<ol>
+<li>导数是什么</li>
+<li>导数的定义（看懂即可）</li>
+<li>常用求导公式表</li>
+<li>四则运算法则</li>
+<li>链式法则（重点）</li>
+<li>易错点</li>
+<li>练习</li>
+<li>答案与简解</li>
+<li>下节预告</li>
+<li>附录：e 和 ln 是什么</li>
+</ol>
+<hr>
+<h2>1. 导数是什么</h2>
+<p>两个直观含义，先记住：</p>
+<ul>
+<li><strong>物理</strong>：瞬时速度</li>
+<li><strong>几何</strong>：切线斜率</li>
+</ul>
+<p>上一课的极限是这课的地基：导数就是一个极限。</p>
+<h3>例：s(t) = t²，求 t = 1 时的瞬时速度</h3>
+<p>先算平均速度。从 t = 1 到 t = 1 + Δt：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x00394;</mi><mi>s</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002B;</mo><mi>&#x00394;</mi><mi>t</mi><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup><mo>&#x02212;</mo><msup><mn>1</mn><mn>2</mn></msup><mo>&#x0003D;</mo><mn>2</mn><mi>&#x00394;</mi><mi>t</mi><mo>&#x0002B;</mo><mo stretchy="false">&#x00028;</mo><mi>&#x00394;</mi><mi>t</mi><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mi>&#x00394;</mi><mi>s</mi></mrow><mrow><mi>&#x00394;</mi><mi>t</mi></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>2</mn><mi>&#x00394;</mi><mi>t</mi><mo>&#x0002B;</mo><mo stretchy="false">&#x00028;</mo><mi>&#x00394;</mi><mi>t</mi><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup></mrow><mrow><mi>&#x00394;</mi><mi>t</mi></mrow></mfrac><mo>&#x0003D;</mo><mn>2</mn><mo>&#x0002B;</mo><mi>&#x00394;</mi><mi>t</mi></mrow></math></div>
+<p>让 Δt → 0：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mi>&#x00394;</mi><mi>s</mi></mrow><mrow><mi>&#x00394;</mi><mi>t</mi></mrow></mfrac><mo>&#x02192;</mo><mn>2</mn></mrow></math></div>
+<p>所以 t = 1 时瞬时速度是 <strong>2</strong>。</p>
+<h3>几何意义</h3>
+<p>f(x) = x² 在 x = 1 处的切线斜率就是 2。</p>
+<p>切线方程：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x02212;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x02212;</mo><mn>1</mn><mo>&#x0003D;</mo><mn>2</mn><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>y</mi><mo>&#x0003D;</mo><mn>2</mn><mi>x</mi><mo>&#x02212;</mo><mn>1</mn></mrow></math></div>
+<h3>记号</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0002C;</mo><mspace width="2em" /><mfrac><mrow><mi>d</mi><mi>y</mi></mrow><mrow><mi>d</mi><mi>x</mi></mrow></mfrac></mrow></math></div>
+<p>三种写法都表示导数。</p>
+<hr>
+<h2>2. 导数的定义（看懂即可）</h2>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><munder><mo>lim</mo><mrow><mi>&#x00394;</mi><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></munder><mfrac><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002B;</mo><mi>&#x00394;</mi><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow><mrow><mi>&#x00394;</mi><mi>x</mi></mrow></mfrac></mrow></math></div>
+<p>现在<strong>不用</strong>这个式子算题，用后面的公式表算。</p>
+<p>但要知道一件事：导数是极限，所以极限不存在时，导数也不存在。</p>
+<hr>
+<h2>3. 常用求导公式表（必须背）</h2>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>导数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>C</mi></mrow></math>（常数）</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn></mrow></math></td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>x</mi><mi>n</mi></msup></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><msup><mi>x</mi><mrow><mi>n</mi><mo>&#x02212;</mo><mn>1</mn></mrow></msup></mrow></math></td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msqrt><mrow><mi>x</mi></mrow></msqrt></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn><msqrt><mrow><mi>x</mi></mrow></msqrt></mrow></mfrac></mrow></math></td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>sin</mi><mi>x</mi></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>cos</mi><mi>x</mi></mrow></math></td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>cos</mi><mi>x</mi></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02212;</mo><mi>sin</mi><mi>x</mi></mrow></math></td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>e</mi><mi>x</mi></msup></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>e</mi><mi>x</mi></msup></mrow></math></td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>ln</mi><mi>x</mi></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mi>x</mi></mrow></mfrac></mrow></math></td>
+</tr>
+</tbody>
+</table>
+<p>说明：n 可以是负数、分数。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>x</mi></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><msup><mi>x</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup><msup><mo stretchy="false">&#x00029;</mo><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mo>&#x02212;</mo><msup><mi>x</mi><mrow><mo>&#x02212;</mo><mn>2</mn></mrow></msup><mo>&#x0003D;</mo><mo>&#x02212;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow></mfrac></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo stretchy="false">&#x00028;</mo><msqrt><mrow><mi>x</mi></mrow></msqrt><msup><mo stretchy="false">&#x00029;</mo><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><msup><mi>x</mi><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></msup><msup><mo stretchy="false">&#x00029;</mo><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac><msup><mi>x</mi><mrow><mo>&#x02212;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></msup><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn><msqrt><mrow><mi>x</mi></mrow></msqrt></mrow></mfrac></mrow></math></div>
+<p>例子：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo stretchy="false">&#x00028;</mo><msup><mi>x</mi><mn>5</mn></msup><msup><mo stretchy="false">&#x00029;</mo><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mn>5</mn><msup><mi>x</mi><mn>4</mn></msup><mo>&#x0002C;</mo><mspace width="2em" /><mo stretchy="false">&#x00028;</mo><msup><mi>x</mi><mrow><mn>100</mn></mrow></msup><msup><mo stretchy="false">&#x00029;</mo><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mn>100</mn><msup><mi>x</mi><mrow><mn>99</mn></mrow></msup><mo>&#x0002C;</mo><mspace width="2em" /><mo stretchy="false">&#x00028;</mo><mn>5</mn><msup><mo stretchy="false">&#x00029;</mo><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mn>0</mn></mrow></math></div>
+<hr>
+<h2>4. 四则运算法则</h2>
+<p><strong>常数倍：</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo stretchy="false">[</mo><mi>C</mi><mi>f</mi><msup><mo stretchy="false">]</mo><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mi>C</mi><msup><mi>f</mi><mi>&#x02032;</mi></msup></mrow></math></div>
+<p><strong>和差：</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo stretchy="false">&#x00028;</mo><mi>f</mi><mi>&#x000B1;</mi><mi>g</mi><msup><mo stretchy="false">&#x00029;</mo><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><msup><mi>f</mi><mi>&#x02032;</mi></msup><mi>&#x000B1;</mi><msup><mi>g</mi><mi>&#x02032;</mi></msup></mrow></math></div>
+<p><strong>乘积（前导后不导 + 前不导后导）：</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo stretchy="false">&#x00028;</mo><mi>f</mi><mi>g</mi><msup><mo stretchy="false">&#x00029;</mo><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><msup><mi>f</mi><mi>&#x02032;</mi></msup><mi>g</mi><mo>&#x0002B;</mo><mi>f</mi><msup><mi>g</mi><mi>&#x02032;</mi></msup></mrow></math></div>
+<p><strong>商（上导下不导 − 上不导下导，分母平方）：</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mrow><mi>f</mi></mrow><mrow><mi>g</mi></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mfrac><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mi>g</mi><mo>&#x02212;</mo><mi>f</mi><msup><mi>g</mi><mi>&#x02032;</mi></msup></mrow><mrow><msup><mi>g</mi><mn>2</mn></msup></mrow></mfrac></mrow></math></div>
+<h3>例 1</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>x</mi><mn>3</mn></msup><mo>&#x0002B;</mo><mn>2</mn><mi>x</mi><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>3</mn><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>2</mn></mrow></math></div>
+<h3>例 2（乘积）</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup><mi>sin</mi><mi>x</mi></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><msup><mi>x</mi><mn>2</mn></msup><msup><mo stretchy="false">&#x00029;</mo><mi>&#x02032;</mi></msup><mi>sin</mi><mi>x</mi><mo>&#x0002B;</mo><msup><mi>x</mi><mn>2</mn></msup><mo stretchy="false">&#x00028;</mo><mi>sin</mi><mi>x</mi><msup><mo stretchy="false">&#x00029;</mo><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mn>2</mn><mi>x</mi><mi>sin</mi><mi>x</mi><mo>&#x0002B;</mo><msup><mi>x</mi><mn>2</mn></msup><mi>cos</mi><mi>x</mi></mrow></math></div>
+<h3>例 3（商）</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><mi>x</mi><mo>&#x0002B;</mo><mn>1</mn></mrow><mrow><mi>x</mi><mo>&#x02212;</mo><mn>1</mn></mrow></mfrac></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002B;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002B;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>&#x02032;</mi></msup></mrow><mrow><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002B;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow><mrow><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mo>&#x02212;</mo><mn>2</mn></mrow><mrow><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup></mrow></mfrac></mrow></math></div>
+<hr>
+<h2>5. 链式法则（本课重点）</h2>
+<p><strong>公式：</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo stretchy="false">[</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x00029;</mo><msup><mo stretchy="false">]</mo><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x00029;</mo><mo>&#x000B7;</mo><msup><mi>g</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>一句话：<strong>外层导数 × 内层导数</strong>。</p>
+<p>步骤：</p>
+<ol>
+<li>先对外层求导，内层原样保留</li>
+<li>再乘上内层的导数</li>
+</ol>
+<h3>例 1</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>2</mn><mi>x</mi><mo>&#x0002B;</mo><mn>3</mn><msup><mo stretchy="false">&#x00029;</mo><mn>4</mn></msup></mrow></math></div>
+<p>外层是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>u</mi><mn>4</mn></msup></mrow></math>，导数为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>4</mn><msup><mi>u</mi><mn>3</mn></msup></mrow></math>；内层 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mi>x</mi><mo>&#x0002B;</mo><mn>3</mn></mrow></math> 的导数为 2：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mn>4</mn><mo stretchy="false">&#x00028;</mo><mn>2</mn><mi>x</mi><mo>&#x0002B;</mo><mn>3</mn><msup><mo stretchy="false">&#x00029;</mo><mn>3</mn></msup><mo>&#x000B7;</mo><mn>2</mn><mo>&#x0003D;</mo><mn>8</mn><mo stretchy="false">&#x00028;</mo><mn>2</mn><mi>x</mi><mo>&#x0002B;</mo><mn>3</mn><msup><mo stretchy="false">&#x00029;</mo><mn>3</mn></msup></mrow></math></div>
+<h3>例 2</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>sin</mi><mo stretchy="false">&#x00028;</mo><mn>5</mn><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mi>cos</mi><mo stretchy="false">&#x00028;</mo><mn>5</mn><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x000B7;</mo><mn>5</mn><mo>&#x0003D;</mo><mn>5</mn><mi>cos</mi><mn>5</mn><mi>x</mi></mrow></math></div>
+<h3>例 3</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x0003D;</mo><msup><mi>e</mi><mrow><mn>3</mn><mi>x</mi></mrow></msup></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><msup><mi>e</mi><mrow><mn>3</mn><mi>x</mi></mrow></msup><mo>&#x000B7;</mo><mn>3</mn><mo>&#x0003D;</mo><mn>3</mn><msup><mi>e</mi><mrow><mn>3</mn><mi>x</mi></mrow></msup></mrow></math></div>
+<h3>例 4</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>ln</mi><mo stretchy="false">&#x00028;</mo><mn>2</mn><mi>x</mi><mo>&#x0002B;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn><mi>x</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac><mo>&#x000B7;</mo><mn>2</mn><mo>&#x0003D;</mo><mfrac><mrow><mn>2</mn></mrow><mrow><mn>2</mn><mi>x</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac></mrow></math></div>
+<h3>例 5</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x0003D;</mo><msqrt><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>1</mn></mrow></msqrt><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></msup></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac><mo stretchy="false">&#x00028;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mrow><mo>&#x02212;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></msup><mo>&#x000B7;</mo><mn>2</mn><mi>x</mi><mo>&#x0003D;</mo><mfrac><mrow><mi>x</mi></mrow><mrow><msqrt><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>1</mn></mrow></msqrt></mrow></mfrac></mrow></math></div>
+<h3>例 6</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x0003D;</mo><msup><mi>sin</mi><mn>2</mn></msup><mi>x</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mi>sin</mi><mi>x</mi><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mn>2</mn><mi>sin</mi><mi>x</mi><mo>&#x000B7;</mo><mi>cos</mi><mi>x</mi></mrow></math></div>
+<p><strong>口诀：一层一层剥，每剥一层乘上那层的导数。</strong></p>
+<hr>
+<h2>6. 易错点</h2>
+<ol>
+<li><strong>忘记乘内层导数</strong>（最常见）</li>
+<li>把 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mi>f</mi><mi>g</mi><msup><mo stretchy="false">&#x00029;</mo><mi>&#x02032;</mi></msup></mrow></math> 当成 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><msup><mi>g</mi><mi>&#x02032;</mi></msup></mrow></math></li>
+<li>商的导数分子顺序记反</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>x</mi><mi>n</mi></msup></mrow></math> 求导忘记降次</li>
+<li>根号、分式先改写成分数指数，再求导</li>
+</ol>
+<hr>
+<h2>7. 练习（10 题）</h2>
+<p>做完再对答案。</p>
+<ol>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>x</mi><mn>3</mn></msup><mo>&#x0002B;</mo><mn>2</mn><mi>x</mi></mrow></math></li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>3</mn><msup><mi>x</mi><mn>2</mn></msup><mo>&#x02212;</mo><mn>5</mn><mi>x</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></math></li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup><mi>sin</mi><mi>x</mi></mrow></math></li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><mi>x</mi><mo>&#x0002B;</mo><mn>1</mn></mrow><mrow><mi>x</mi><mo>&#x02212;</mo><mn>1</mn></mrow></mfrac></mrow></math></li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>2</mn><mi>x</mi><mo>&#x0002B;</mo><mn>3</mn><msup><mo stretchy="false">&#x00029;</mo><mn>4</mn></msup></mrow></math></li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>sin</mi><mo stretchy="false">&#x00028;</mo><mn>5</mn><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math></li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>e</mi><mrow><mn>3</mn><mi>x</mi></mrow></msup></mrow></math></li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>ln</mi><mo stretchy="false">&#x00028;</mo><mn>2</mn><mi>x</mi><mo>&#x0002B;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math></li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msqrt><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>1</mn></mrow></msqrt></mrow></math></li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>sin</mi><mn>2</mn></msup><mi>x</mi></mrow></math></li>
+</ol>
+<hr>
+<h2>8. 答案与简解</h2>
+<details>
+<summary>点击展开（做完再看）</summary>
+<p><strong>1.</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>3</mn><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>2</mn></mrow></math></div>
+<p><strong>2.</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>6</mn><mi>x</mi><mo>&#x02212;</mo><mn>5</mn></mrow></math></div>
+<p><strong>3.</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>2</mn><mi>x</mi><mi>sin</mi><mi>x</mi><mo>&#x0002B;</mo><msup><mi>x</mi><mn>2</mn></msup><mi>cos</mi><mi>x</mi></mrow></math></div>
+<p><strong>4.</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><mo>&#x02212;</mo><mn>2</mn></mrow><mrow><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup></mrow></mfrac></mrow></math></div>
+<p><strong>5.</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>8</mn><mo stretchy="false">&#x00028;</mo><mn>2</mn><mi>x</mi><mo>&#x0002B;</mo><mn>3</mn><msup><mo stretchy="false">&#x00029;</mo><mn>3</mn></msup></mrow></math></div>
+<p><strong>6.</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>5</mn><mi>cos</mi><mn>5</mn><mi>x</mi></mrow></math></div>
+<p><strong>7.</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>3</mn><msup><mi>e</mi><mrow><mn>3</mn><mi>x</mi></mrow></msup></mrow></math></div>
+<p><strong>8.</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><mn>2</mn></mrow><mrow><mn>2</mn><mi>x</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac></mrow></math></div>
+<p><strong>9.</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><mi>x</mi></mrow><mrow><msqrt><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>1</mn></mrow></msqrt></mrow></mfrac></mrow></math></div>
+<p><strong>10.</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>2</mn><mi>sin</mi><mi>x</mi><mi>cos</mi><mi>x</mi></mrow></math></div>
+</details>
+<hr>
+<h2>9. 下节预告</h2>
+<p><strong>第 03 课：导数的应用</strong></p>
+<ul>
+<li>切线方程</li>
+<li>单调性与导数符号</li>
+<li>极值与最值</li>
+<li>凹凸性与二阶导数</li>
+</ul>
+<hr>
+<h2>自查清单</h2>
+<ul>
+<li>[ ] 能说出导数的两个直观含义</li>
+<li>[ ] 能默写求导公式表</li>
+<li>[ ] 能独立做对 10 道练习</li>
+<li>[ ] 链式法则能条件反射地乘内层导数</li>
+</ul>
+<hr>
+<h2>附录：e 和 ln 是什么</h2>
+<p>如果还没学过：</p>
+<ul>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>e</mi></mrow></math> 是一个常数，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>e</mi><mo>&#x02248;</mo><mn>2.718</mn></mrow></math></li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>e</mi><mi>x</mi></msup></mrow></math> 的导数还是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>e</mi><mi>x</mi></msup></mrow></math>，这是它最重要的性质</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>ln</mi><mi>x</mi></mrow></math> 是以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>e</mi></mrow></math> 为底的对数，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mi>ln</mi><mi>x</mi><msup><mo stretchy="false">&#x00029;</mo><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>x</mi></mrow></mfrac></mrow></math></li>
+</ul>
+<p>现在只需把 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>e</mi><mi>x</mi></msup></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>ln</mi><mi>x</mi></mrow></math> 当成两个函数，背住导数公式即可，后面积分会反复用到。</p>
+<footer>微积分讲义 · 数学公式使用 MathML 渲染，建议使用 Chrome / Edge / Firefox 打开</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>微积分速成 · 第 01 课：极限</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --quote-bg: #f6f8fa;
+  --code-bg: #eff2f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --border: #30363d;
+    --accent: #4493f8;
+    --quote-bg: #161b22;
+    --code-bg: #1f242c;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; font-weight: 650; }
+h1 { font-size: 2rem; margin: 0 0 .8em; padding-bottom: .35em; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 2.2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.2rem; margin: 1.8em 0 .55em; }
+p { margin: .85em 0; }
+a { color: var(--accent); }
+blockquote {
+  margin: 1em 0;
+  padding: .6em 1em;
+  border-left: 4px solid var(--accent);
+  background: var(--quote-bg);
+  color: var(--muted);
+  border-radius: 4px;
+}
+blockquote p { margin: .25em 0; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: .96em;
+  overflow: hidden;
+}
+th, td { border: 1px solid var(--border); padding: .45em .7em; text-align: left; vertical-align: top; }
+th { background: var(--quote-bg); font-weight: 600; }
+details {
+  margin: 1.2em 0;
+  padding: .8em 1em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--quote-bg);
+}
+summary { cursor: pointer; font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+ul, ol { padding-left: 1.7em; }
+li { margin: .3em 0; }
+.math-block {
+  margin: 1.15em 0;
+  padding: .7em .9em;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--quote-bg);
+  border-radius: 6px;
+}
+math { font-size: 1.14em; line-height: 1.2; }
+math[display="inline"] { font-size: 1.05em; vertical-align: baseline; }
+.math-block math { font-size: 1.24em; }
+.math-fallback, .math-fallback-block {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .08em .3em;
+  border-radius: 3px;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .12em .35em;
+  border-radius: 3px;
+  font-size: .92em;
+}
+pre code { display: block; padding: .8em 1em; overflow-x: auto; }
+footer { margin-top: 4em; color: var(--muted); font-size: .85em; text-align: center; }
+@media print {
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  .math-block { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>微积分速成 · 第 01 课：极限</h1>
+<blockquote>
+<p><strong>本课目标</strong>：学完能独立计算高中／大一入门级极限题。</p>
+<p><strong>使用方法</strong>：先读讲解 → 做练习 → 对答案。错题标红，72 小时内重做一遍。</p>
+</blockquote>
+<hr>
+<h2>目录</h2>
+<ol>
+<li>极限的直觉</li>
+<li>两个基本事实</li>
+<li>四步计算法</li>
+<li>等价无穷小</li>
+<li>易错点</li>
+<li>练习</li>
+<li>答案与简解</li>
+<li>下节预告</li>
+</ol>
+<hr>
+<h2>1. 极限的直觉</h2>
+<p>以前学函数，问的是：<strong>x = 1 时，f(x) 等于多少？</strong></p>
+<p>极限问的是：<strong>x 靠近 1 时，f(x) 靠近多少？</strong></p>
+<p>看一个例子：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>&#x02212;</mo><mn>1</mn></mrow><mrow><mi>x</mi><mo>&#x02212;</mo><mn>1</mn></mrow></mfrac></mrow></math></div>
+<p>x = 1 时没有定义（分母为 0）。但可以看它附近的取值：</p>
+<table>
+<thead>
+<tr>
+<th>x</th>
+<th>1.1</th>
+<th>1.01</th>
+<th>1.001</th>
+<th>0.999</th>
+<th>0.99</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>f(x)</td>
+<td>2.1</td>
+<td>2.01</td>
+<td>2.001</td>
+<td>1.999</td>
+<td>1.99</td>
+</tr>
+</tbody>
+</table>
+<p>x 越靠近 1，f(x) 越靠近 2。记作：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>1</mn></mrow></munder><mfrac><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>&#x02212;</mo><mn>1</mn></mrow><mrow><mi>x</mi><mo>&#x02212;</mo><mn>1</mn></mrow></mfrac><mo>&#x0003D;</mo><mn>2</mn></mrow></math></div>
+<p><strong>核心一句话</strong>：极限与那一点函数值无关，只看那一点附近。</p>
+<blockquote>
+<p>这就是极限比"直接代入"强的地方：代入算不出来的，极限可能算得出来。</p>
+</blockquote>
+<hr>
+<h2>2. 两个基本事实</h2>
+<p><strong>事实一：</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mi>a</mi></mrow></munder><mi>x</mi><mo>&#x0003D;</mo><mi>a</mi><mo>&#x0002C;</mo><mspace width="2em" /><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mi>a</mi></mrow></munder><mi>C</mi><mo>&#x0003D;</mo><mi>C</mi><mspace width="1em" /><mo stretchy="false">&#x00028;</mo><mi>C</mi><mtext>&#x000A0;为常数</mtext><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p><strong>事实二：极限可以加减乘除</strong>（分母极限不为 0 时）：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>lim</mo><mo stretchy="false">&#x00028;</mo><mi>f</mi><mi>&#x000B1;</mi><mi>g</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo>lim</mo><mi>f</mi><mi>&#x000B1;</mi><mo>lim</mo><mi>g</mi></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>lim</mo><mo stretchy="false">&#x00028;</mo><mi>f</mi><mo>&#x000B7;</mo><mi>g</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo>lim</mo><mi>f</mi><mo>&#x000B7;</mo><mo>lim</mo><mi>g</mi></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>lim</mo><mfrac><mrow><mi>f</mi></mrow><mrow><mi>g</mi></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mo>lim</mo><mi>f</mi></mrow><mrow><mo>lim</mo><mi>g</mi></mrow></mfrac><mspace width="1em" /><mo stretchy="false">&#x00028;</mo><mo>lim</mo><mi>g</mi><mo>&#x02260;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<hr>
+<h2>3. 四步计算法</h2>
+<p>做题时按顺序检查，命中哪一步就用哪一步。</p>
+<h3>第一步：直接代入</h3>
+<p>能算出数，就是答案。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>2</mn></mrow></munder><mo stretchy="false">&#x00028;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mn>2</mn><mn>2</mn></msup><mo>&#x0002B;</mo><mn>1</mn><mo>&#x0003D;</mo><mn>5</mn></mrow></math></div>
+<h3>第二步：代入得 0/0 → 约掉零因子</h3>
+<p><strong>因式分解：</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>1</mn></mrow></munder><mfrac><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>&#x02212;</mo><mn>1</mn></mrow><mrow><mi>x</mi><mo>&#x02212;</mo><mn>1</mn></mrow></mfrac><mo>&#x0003D;</mo><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>1</mn></mrow></munder><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002B;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow><mrow><mi>x</mi><mo>&#x02212;</mo><mn>1</mn></mrow></mfrac><mo>&#x0003D;</mo><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>1</mn></mrow></munder><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002B;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>2</mn></mrow></math></div>
+<p><strong>有理化</strong>（带根号时，分子分母同乘共轭）：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></munder><mfrac><mrow><msqrt><mrow><mn>1</mn><mo>&#x0002B;</mo><mi>x</mi></mrow></msqrt><mo>&#x02212;</mo><mn>1</mn></mrow><mrow><mi>x</mi></mrow></mfrac></mrow></math></div>
+<p>分子分母同乘 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msqrt><mrow><mn>1</mn><mo>&#x0002B;</mo><mi>x</mi></mrow></msqrt><mo>&#x0002B;</mo><mn>1</mn></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0003D;</mo><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></munder><mfrac><mrow><mo stretchy="false">&#x00028;</mo><msqrt><mrow><mn>1</mn><mo>&#x0002B;</mo><mi>x</mi></mrow></msqrt><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x00028;</mo><msqrt><mrow><mn>1</mn><mo>&#x0002B;</mo><mi>x</mi></mrow></msqrt><mo>&#x0002B;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow><mrow><mi>x</mi><mo stretchy="false">&#x00028;</mo><msqrt><mrow><mn>1</mn><mo>&#x0002B;</mo><mi>x</mi></mrow></msqrt><mo>&#x0002B;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></mfrac><mo>&#x0003D;</mo><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></munder><mfrac><mrow><mi>x</mi></mrow><mrow><mi>x</mi><mo stretchy="false">&#x00028;</mo><msqrt><mrow><mn>1</mn><mo>&#x0002B;</mo><mi>x</mi></mrow></msqrt><mo>&#x0002B;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></mfrac><mo>&#x0003D;</mo><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></munder><mfrac><mrow><mn>1</mn></mrow><mrow><msqrt><mrow><mn>1</mn><mo>&#x0002B;</mo><mi>x</mi></mrow></msqrt><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></math></div>
+<h3>第三步：x → ∞ 时，分子分母同除最高次幂</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></munder><mfrac><mrow><mn>3</mn><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mi>x</mi></mrow><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>&#x02212;</mo><mn>1</mn></mrow></mfrac><mo>&#x0003D;</mo><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></munder><mfrac><mrow><mn>3</mn><mo>&#x0002B;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>x</mi></mrow></mfrac></mrow><mrow><mn>1</mn><mo>&#x02212;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow></mfrac></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>3</mn><mo>&#x0002B;</mo><mn>0</mn></mrow><mrow><mn>1</mn><mo>&#x02212;</mo><mn>0</mn></mrow></mfrac><mo>&#x0003D;</mo><mn>3</mn></mrow></math></div>
+<p><strong>口诀：</strong></p>
+<table>
+<thead>
+<tr>
+<th>情况</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>分母次数更高</td>
+<td>极限为 0</td>
+</tr>
+<tr>
+<td>分子次数更高</td>
+<td>极限为 ∞</td>
+</tr>
+<tr>
+<td>次数相同</td>
+<td>最高次项系数之比</td>
+</tr>
+</tbody>
+</table>
+<h3>第四步：x → 0 的三角／指数型，用等价无穷小</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></munder><mfrac><mrow><mi>sin</mi><mn>5</mn><mi>x</mi></mrow><mrow><mi>sin</mi><mn>2</mn><mi>x</mi></mrow></mfrac><mo>&#x0003D;</mo><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></munder><mfrac><mrow><mn>5</mn><mi>x</mi></mrow><mrow><mn>2</mn><mi>x</mi></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>5</mn></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></munder><mfrac><mrow><mn>1</mn><mo>&#x02212;</mo><mi>cos</mi><mi>x</mi></mrow><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow></mfrac><mo>&#x0003D;</mo><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></munder><mfrac><mrow><mfrac><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow><mrow><mn>2</mn></mrow></mfrac></mrow><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></math></div>
+<hr>
+<h2>4. 等价无穷小（仅当 x → 0）</h2>
+<table>
+<thead>
+<tr>
+<th>原式</th>
+<th>等价于</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>sin</mi><mi>x</mi></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math></td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>tan</mi><mi>x</mi></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math></td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn><mo>&#x02212;</mo><mi>cos</mi><mi>x</mi></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></math></td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>ln</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002B;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math></td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>e</mi><mi>x</mi></msup><mo>&#x02212;</mo><mn>1</mn></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math></td>
+</tr>
+</tbody>
+</table>
+<p><strong>使用规则：</strong></p>
+<ul>
+<li>只能在<strong>乘除</strong>中替换</li>
+<li><strong>加减中不要随便替换</strong>，容易出错</li>
+<li>只适用于 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></math>，别的趋向不能直接用</li>
+</ul>
+<hr>
+<h2>5. 易错点</h2>
+<ol>
+<li><strong>0/0 不是答案</strong>，是"继续算"的信号。</li>
+<li><strong>x → ∞ 才同除最高次</strong>；x → 某一点时不用这招。</li>
+<li><strong>等价无穷小只适用于 x → 0</strong>，且只在乘除里用。</li>
+<li><strong>有理化时别漏乘分母</strong>，分子分母必须同时乘。</li>
+</ol>
+<hr>
+<h2>6. 练习</h2>
+<p>做完再对答案，不要边做边看。</p>
+<ol>
+<li>
+<p><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>3</mn></mrow></msub><mfrac><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>&#x02212;</mo><mn>9</mn></mrow><mrow><mi>x</mi><mo>&#x02212;</mo><mn>3</mn></mrow></mfrac></mrow></math></p>
+</li>
+<li>
+<p><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></msub><mfrac><mrow><msqrt><mrow><mn>4</mn><mo>&#x0002B;</mo><mi>x</mi></mrow></msqrt><mo>&#x02212;</mo><mn>2</mn></mrow><mrow><mi>x</mi></mrow></mfrac></mrow></math></p>
+</li>
+<li>
+<p><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></msub><mfrac><mrow><mi>tan</mi><mn>3</mn><mi>x</mi></mrow><mrow><mi>x</mi></mrow></mfrac></mrow></math></p>
+</li>
+<li>
+<p><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></msub><mfrac><mrow><mn>5</mn><msup><mi>x</mi><mn>4</mn></msup><mo>&#x0002B;</mo><mn>2</mn><mi>x</mi></mrow><mrow><mn>2</mn><msup><mi>x</mi><mn>4</mn></msup><mo>&#x02212;</mo><msup><mi>x</mi><mn>3</mn></msup></mrow></mfrac></mrow></math></p>
+</li>
+<li>
+<p><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></msub><mfrac><mrow><mn>1</mn><mo>&#x02212;</mo><mi>cos</mi><mn>3</mn><mi>x</mi></mrow><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow></mfrac></mrow></math></p>
+</li>
+</ol>
+<hr>
+<h2>7. 答案与简解</h2>
+<details>
+<summary>点击展开（做完再看）</summary>
+<p><strong>1.</strong> 6</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>&#x02212;</mo><mn>9</mn></mrow><mrow><mi>x</mi><mo>&#x02212;</mo><mn>3</mn></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x02212;</mo><mn>3</mn><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002B;</mo><mn>3</mn><mo stretchy="false">&#x00029;</mo></mrow><mrow><mi>x</mi><mo>&#x02212;</mo><mn>3</mn></mrow></mfrac><mo>&#x0003D;</mo><mi>x</mi><mo>&#x0002B;</mo><mn>3</mn><mo>&#x02192;</mo><mn>6</mn></mrow></math></div>
+<p><strong>2.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mn>4</mn></mrow></mfrac></mrow></math></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><msqrt><mrow><mn>4</mn><mo>&#x0002B;</mo><mi>x</mi></mrow></msqrt><mo>&#x02212;</mo><mn>2</mn></mrow><mrow><mi>x</mi></mrow></mfrac><mo>&#x000B7;</mo><mfrac><mrow><msqrt><mrow><mn>4</mn><mo>&#x0002B;</mo><mi>x</mi></mrow></msqrt><mo>&#x0002B;</mo><mn>2</mn></mrow><mrow><msqrt><mrow><mn>4</mn><mo>&#x0002B;</mo><mi>x</mi></mrow></msqrt><mo>&#x0002B;</mo><mn>2</mn></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mi>x</mi></mrow><mrow><mi>x</mi><mo stretchy="false">&#x00028;</mo><msqrt><mrow><mn>4</mn><mo>&#x0002B;</mo><mi>x</mi></mrow></msqrt><mo>&#x0002B;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msqrt><mrow><mn>4</mn><mo>&#x0002B;</mo><mi>x</mi></mrow></msqrt><mo>&#x0002B;</mo><mn>2</mn></mrow></mfrac><mo>&#x02192;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>4</mn></mrow></mfrac></mrow></math></div>
+<p><strong>3.</strong> 3</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mi>tan</mi><mn>3</mn><mi>x</mi></mrow><mrow><mi>x</mi></mrow></mfrac><mi>&#x0007E;</mi><mfrac><mrow><mn>3</mn><mi>x</mi></mrow><mrow><mi>x</mi></mrow></mfrac><mo>&#x0003D;</mo><mn>3</mn></mrow></math></div>
+<p><strong>4.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mn>5</mn></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></math></p>
+<p>分子分母同除 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>x</mi><mn>4</mn></msup></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mn>5</mn><mo>&#x0002B;</mo><mfrac><mrow><mn>2</mn></mrow><mrow><msup><mi>x</mi><mn>3</mn></msup></mrow></mfrac></mrow><mrow><mn>2</mn><mo>&#x02212;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>x</mi></mrow></mfrac></mrow></mfrac><mo>&#x02192;</mo><mfrac><mrow><mn>5</mn></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></math></div>
+<p><strong>5.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mn>9</mn></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></math></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>1</mn><mo>&#x02212;</mo><mi>cos</mi><mn>3</mn><mi>x</mi><mi>&#x0007E;</mi><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mn>3</mn><mi>x</mi><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup></mrow><mrow><mn>2</mn></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>9</mn><msup><mi>x</mi><mn>2</mn></msup></mrow><mrow><mn>2</mn></mrow></mfrac><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mfrac><mrow><mn>1</mn><mo>&#x02212;</mo><mi>cos</mi><mn>3</mn><mi>x</mi></mrow><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow></mfrac><mo>&#x02192;</mo><mfrac><mrow><mn>9</mn></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></math></div>
+</details>
+<hr>
+<h2>8. 下节预告</h2>
+<p><strong>第 02 课：导数</strong></p>
+<ul>
+<li>导数 = 瞬时变化率 = 切线斜率</li>
+<li>求导公式表</li>
+<li>链式法则（最重要）</li>
+<li>用导数判断单调性与极值</li>
+</ul>
+<hr>
+<h2>自查清单</h2>
+<ul>
+<li>[ ] 能说出"极限"和"函数值"的区别</li>
+<li>[ ] 能独立做出上面 5 道练习</li>
+<li>[ ] 能默写 5 个等价无穷小</li>
+<li>[ ] 知道 0/0 只是信号，不是答案</li>
+</ul>
+<blockquote>
+<p>有不会的题把题号发我。另外确认一下：<strong>sin、cos、指数 e 你学过吗？</strong> 没学过我先补 10 分钟基础再继续。</p>
+</blockquote>
+<footer>微积分讲义 · 数学公式使用 MathML 渲染，建议使用 Chrome / Edge / Firefox 打开</footer>
+</main>
+</body>
+</html>

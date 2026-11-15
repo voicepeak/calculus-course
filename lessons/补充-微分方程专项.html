@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>微积分补课 · 微分方程：从 y′ = 2y 到应用题</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --quote-bg: #f6f8fa;
+  --code-bg: #eff2f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --border: #30363d;
+    --accent: #4493f8;
+    --quote-bg: #161b22;
+    --code-bg: #1f242c;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; font-weight: 650; }
+h1 { font-size: 2rem; margin: 0 0 .8em; padding-bottom: .35em; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 2.2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.2rem; margin: 1.8em 0 .55em; }
+p { margin: .85em 0; }
+a { color: var(--accent); }
+blockquote {
+  margin: 1em 0;
+  padding: .6em 1em;
+  border-left: 4px solid var(--accent);
+  background: var(--quote-bg);
+  color: var(--muted);
+  border-radius: 4px;
+}
+blockquote p { margin: .25em 0; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: .96em;
+  overflow: hidden;
+}
+th, td { border: 1px solid var(--border); padding: .45em .7em; text-align: left; vertical-align: top; }
+th { background: var(--quote-bg); font-weight: 600; }
+details {
+  margin: 1.2em 0;
+  padding: .8em 1em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--quote-bg);
+}
+summary { cursor: pointer; font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+ul, ol { padding-left: 1.7em; }
+li { margin: .3em 0; }
+.math-block {
+  margin: 1.15em 0;
+  padding: .7em .9em;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--quote-bg);
+  border-radius: 6px;
+}
+math { font-size: 1.14em; line-height: 1.2; }
+math[display="inline"] { font-size: 1.05em; vertical-align: baseline; }
+.math-block math { font-size: 1.24em; }
+.math-fallback, .math-fallback-block {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .08em .3em;
+  border-radius: 3px;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .12em .35em;
+  border-radius: 3px;
+  font-size: .92em;
+}
+pre code { display: block; padding: .8em 1em; overflow-x: auto; }
+footer { margin-top: 4em; color: var(--muted); font-size: .85em; text-align: center; }
+@media print {
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  .math-block { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>微积分补课 · 微分方程：从 y′ = 2y 到应用题</h1>
+<blockquote>
+<p><strong>针对问题</strong>：知道公式，但拿到题不知道从哪下手；选择题不会排除。</p>
+<p><strong>本课目标</strong>：看到 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mi>k</mi><mi>y</mi></mrow></math> 能立刻解出 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>C</mi><msup><mi>e</mi><mrow><mi>k</mi><mi>x</mi></mrow></msup></mrow></math>，并能判断选项、处理初始条件和简单应用题。</p>
+</blockquote>
+<hr>
+<h2>目录</h2>
+<ol>
+<li>先解决这道选择题</li>
+<li>y′ = 2y 到底在说什么</li>
+<li>标准解法（四步）</li>
+<li>选择题的快速判断法：代回验算</li>
+<li>怎么判断能不能用分离变量</li>
+<li>带初始条件</li>
+<li>应用题怎么列式</li>
+<li>易错点</li>
+<li>练习</li>
+<li>答案</li>
+<li>一页速查</li>
+</ol>
+<hr>
+<h2>1. 先解决这道选择题</h2>
+<p>题目：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mn>2</mn><mi>y</mi><mspace width="1em" /><mtext>的通解是（&#x000A0;）</mtext></mrow></math></div>
+<p>A. <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mn>2</mn><mi>x</mi><mo>&#x0002B;</mo><mi>C</mi></mrow></math></p>
+<p>B. <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>C</mi><msup><mi>e</mi><mrow><mn>2</mn><mi>x</mi></mrow></msup></mrow></math></p>
+<p>C. <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mn>2</mn><msup><mi>e</mi><mi>x</mi></msup></mrow></math></p>
+<p>D. <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>C</mi><msup><mi>e</mi><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow></msup></mrow></math></p>
+<p><strong>答案：B</strong></p>
+<p>最快的判断方法：<strong>把每个选项求导，代回原方程，看左右两边是否相等。</strong></p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>求导</th>
+<th>代回右边 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mi>y</mi></mrow></math></th>
+<th>是否相等</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A. <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mn>2</mn><mi>x</mi><mo>&#x0002B;</mo><mi>C</mi></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mn>2</mn></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mi>y</mi><mo>&#x0003D;</mo><mn>4</mn><mi>x</mi><mo>&#x0002B;</mo><mn>2</mn><mi>C</mi></mrow></math></td>
+<td>否</td>
+</tr>
+<tr>
+<td>B. <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>C</mi><msup><mi>e</mi><mrow><mn>2</mn><mi>x</mi></mrow></msup></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mn>2</mn><mi>C</mi><msup><mi>e</mi><mrow><mn>2</mn><mi>x</mi></mrow></msup></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mi>y</mi><mo>&#x0003D;</mo><mn>2</mn><mi>C</mi><msup><mi>e</mi><mrow><mn>2</mn><mi>x</mi></mrow></msup></mrow></math></td>
+<td><strong>是</strong></td>
+</tr>
+<tr>
+<td>C. <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mn>2</mn><msup><mi>e</mi><mi>x</mi></msup></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mn>2</mn><msup><mi>e</mi><mi>x</mi></msup></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mi>y</mi><mo>&#x0003D;</mo><mn>4</mn><msup><mi>e</mi><mi>x</mi></msup></mrow></math></td>
+<td>否</td>
+</tr>
+<tr>
+<td>D. <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>C</mi><msup><mi>e</mi><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow></msup></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mn>2</mn><mi>x</mi><mi>C</mi><msup><mi>e</mi><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow></msup><mo>&#x0003D;</mo><mn>2</mn><mi>x</mi><mi>y</mi></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mi>y</mi><mo>&#x0003D;</mo><mn>2</mn><mi>C</mi><msup><mi>e</mi><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow></msup></mrow></math></td>
+<td>否（除非 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math>）</td>
+</tr>
+</tbody>
+</table>
+<p>只有 B 对所有 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math> 都成立。</p>
+<p><strong>选择题技巧</strong>：解不出来就验算，四个选项逐个代，通常 30 秒出答案。</p>
+<hr>
+<h2>2. y′ = 2y 到底在说什么</h2>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mfrac><mrow><mi>d</mi><mi>y</mi></mrow><mrow><mi>d</mi><mi>x</mi></mrow></mfrac><mo>&#x0003D;</mo><mn>2</mn><mi>y</mi></mrow></math></div>
+<p>意思是：<strong>y 的变化率等于 2 乘以 y 当前的值。</strong></p>
+<ul>
+<li>y 越大，增长越快</li>
+<li>y 是正数时增长，y 是负数时下降</li>
+<li>斜率不是固定的，所以图形是曲线，不是直线</li>
+</ul>
+<p>对比一下：</p>
+<table>
+<thead>
+<tr>
+<th>方程</th>
+<th>含义</th>
+<th>解</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mn>2</mn></mrow></math></td>
+<td>斜率恒为 2</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mn>2</mn><mi>x</mi><mo>&#x0002B;</mo><mi>C</mi></mrow></math>（直线）</td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mn>2</mn><mi>y</mi></mrow></math></td>
+<td>变化率与当前值成正比</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>C</mi><msup><mi>e</mi><mrow><mn>2</mn><mi>x</mi></mrow></msup></mrow></math>（指数曲线）</td>
+</tr>
+</tbody>
+</table>
+<p>A 选项就是把它当成了 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mn>2</mn></mrow></math>，所以错。</p>
+<hr>
+<h2>3. 标准解法（四步）</h2>
+<p>解：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mn>2</mn><mi>y</mi></mrow></math></div>
+<h3>第一步：把 y 和 x 分开</h3>
+<p>把 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup></mrow></math> 写成 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mi>d</mi><mi>y</mi></mrow><mrow><mi>d</mi><mi>x</mi></mrow></mfrac></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mi>d</mi><mi>y</mi></mrow><mrow><mi>d</mi><mi>x</mi></mrow></mfrac><mo>&#x0003D;</mo><mn>2</mn><mi>y</mi></mrow></math></div>
+<p>两边同乘 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>d</mi><mi>x</mi></mrow></math>，再除以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi></mrow></math>（先假设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x02260;</mo><mn>0</mn></mrow></math>）：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mi>d</mi><mi>y</mi></mrow><mrow><mi>y</mi></mrow></mfrac><mo>&#x0003D;</mo><mn>2</mn><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></math></div>
+<h3>第二步：两边积分</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0222B;</mo><mfrac><mrow><mi>d</mi><mi>y</mi></mrow><mrow><mi>y</mi></mrow></mfrac><mo>&#x0003D;</mo><mo>&#x0222B;</mo><mn>2</mn><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></math></div>
+<p>左边是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>ln</mi><mo stretchy="false">&#x0007C;</mo><mi>y</mi><mo stretchy="false">&#x0007C;</mo></mrow></math>，右边是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mi>x</mi><mo>&#x0002B;</mo><mi>C</mi></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>ln</mi><mo stretchy="false">&#x0007C;</mo><mi>y</mi><mo stretchy="false">&#x0007C;</mo><mo>&#x0003D;</mo><mn>2</mn><mi>x</mi><mo>&#x0002B;</mo><mi>C</mi></mrow></math></div>
+<h3>第三步：解出 y</h3>
+<p>两边取指数：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo stretchy="false">&#x0007C;</mo><mi>y</mi><mo stretchy="false">&#x0007C;</mo><mo>&#x0003D;</mo><msup><mi>e</mi><mrow><mn>2</mn><mi>x</mi><mo>&#x0002B;</mo><mi>C</mi></mrow></msup><mo>&#x0003D;</mo><msup><mi>e</mi><mi>C</mi></msup><mo>&#x000B7;</mo><msup><mi>e</mi><mrow><mn>2</mn><mi>x</mi></mrow></msup></mrow></math></div>
+<p>去掉绝对值，用一个新的常数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>C</mi></mrow></math> 吸收正负号：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>C</mi><msup><mi>e</mi><mrow><mn>2</mn><mi>x</mi></mrow></msup></mrow></math></div>
+<h3>第四步：验算</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>C</mi><msup><mi>e</mi><mrow><mn>2</mn><mi>x</mi></mrow></msup><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mn>2</mn><mi>C</mi><msup><mi>e</mi><mrow><mn>2</mn><mi>x</mi></mrow></msup><mo>&#x0003D;</mo><mn>2</mn><mi>y</mi></mrow></math></div>
+<p>成立。</p>
+<p>所以通解是：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><menclose notation="box"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>C</mi><msup><mi>e</mi><mrow><mn>2</mn><mi>x</mi></mrow></msup></mrow></menclose></mrow></math></div>
+<blockquote>
+<p><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>C</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math> 时 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，也是原方程的解。</p>
+</blockquote>
+<hr>
+<h2>4. 选择题的快速判断法：代回验算</h2>
+<p>遇到“下列哪个是通解”这种题，不用从头解，直接验算。</p>
+<h3>步骤</h3>
+<ol>
+<li>对选项求导</li>
+<li>把 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi></mrow></math> 和 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup></mrow></math> 代回原方程</li>
+<li>看是不是恒等式</li>
+<li>如果两个选项都像，再检查是否包含所有解</li>
+</ol>
+<h3>再练一个</h3>
+<p>题目：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mn>5</mn><mi>y</mi></mrow></math> 的通解是？</p>
+<ul>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>C</mi><msup><mi>e</mi><mrow><mn>5</mn><mi>x</mi></mrow></msup></mrow></math>：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mn>5</mn><mi>C</mi><msup><mi>e</mi><mrow><mn>5</mn><mi>x</mi></mrow></msup><mo>&#x0003D;</mo><mn>5</mn><mi>y</mi></mrow></math>，正确</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mn>5</mn><msup><mi>e</mi><mi>x</mi></msup></mrow></math>：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mn>5</mn><msup><mi>e</mi><mi>x</mi></msup></mrow></math>，而 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>5</mn><mi>y</mi><mo>&#x0003D;</mo><mn>25</mn><msup><mi>e</mi><mi>x</mi></msup></mrow></math>，错</li>
+</ul>
+<p>所以答案是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>C</mi><msup><mi>e</mi><mrow><mn>5</mn><mi>x</mi></mrow></msup></mrow></math>。</p>
+<p><strong>规律</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mi>k</mi><mi>y</mi><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>y</mi><mo>&#x0003D;</mo><mi>C</mi><msup><mi>e</mi><mrow><mi>k</mi><mi>x</mi></mrow></msup></mrow></math></div>
+<p>这个结论建议直接背下来。</p>
+<hr>
+<h2>5. 怎么判断能不能用分离变量</h2>
+<p>能写成这个形式，就可以分离：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mi>d</mi><mi>y</mi></mrow><mrow><mi>d</mi><mi>x</mi></mrow></mfrac><mo>&#x0003D;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x000B7;</mo><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>也就是右边能拆成“只含 x 的部分 × 只含 y 的部分”。</p>
+<table>
+<thead>
+<tr>
+<th>方程</th>
+<th>能否分离</th>
+<th>拆分</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mn>2</mn><mi>y</mi></mrow></math></td>
+<td>能</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>2</mn><mo>&#x0002C;</mo><mtext>&#x000A0;</mtext><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>y</mi></mrow></math></td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mn>2</mn><mi>x</mi><mi>y</mi></mrow></math></td>
+<td>能</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>2</mn><mi>x</mi><mo>&#x0002C;</mo><mtext>&#x000A0;</mtext><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>y</mi></mrow></math></td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mfrac><mrow><mi>y</mi></mrow><mrow><mi>x</mi></mrow></mfrac></mrow></math></td>
+<td>能</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>x</mi></mrow></mfrac><mo>&#x0002C;</mo><mtext>&#x000A0;</mtext><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>y</mi></mrow></math></td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><msup><mi>e</mi><mrow><mi>x</mi><mo>&#x0002B;</mo><mi>y</mi></mrow></msup></mrow></math></td>
+<td>能</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>e</mi><mi>x</mi></msup><mo>&#x0002C;</mo><mtext>&#x000A0;</mtext><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>e</mi><mi>y</mi></msup></mrow></math></td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mi>x</mi><mo>&#x0002B;</mo><mi>y</mi></mrow></math></td>
+<td>不能</td>
+<td>拆不成乘积</td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mi>sin</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mi>y</mi><mo stretchy="false">&#x00029;</mo></mrow></math></td>
+<td>不能</td>
+<td>拆不成乘积</td>
+</tr>
+</tbody>
+</table>
+<p>本课只要求掌握<strong>能分离</strong>的类型。</p>
+<hr>
+<h2>6. 带初始条件</h2>
+<p>题目：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mn>2</mn><mi>y</mi></mrow></math>，且 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>3</mn></mrow></math>，求特解。</p>
+<h3>第一步：求通解</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>C</mi><msup><mi>e</mi><mrow><mn>2</mn><mi>x</mi></mrow></msup></mrow></math></div>
+<h3>第二步：代入初始条件</h3>
+<p><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math> 时 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mn>3</mn></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>3</mn><mo>&#x0003D;</mo><mi>C</mi><msup><mi>e</mi><mrow><mn>0</mn></mrow></msup><mo>&#x0003D;</mo><mi>C</mi></mrow></math></div>
+<h3>第三步：写特解</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><menclose notation="box"><mrow><mi>y</mi><mo>&#x0003D;</mo><mn>3</mn><msup><mi>e</mi><mrow><mn>2</mn><mi>x</mi></mrow></msup></mrow></menclose></mrow></math></div>
+<p><strong>顺序不能反</strong>：先通解，再定 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>C</mi></mrow></math>，最后写特解。</p>
+<hr>
+<h2>7. 应用题怎么列式</h2>
+<p>微分方程应用题，先把中文翻译成数学。</p>
+<h3>翻译表</h3>
+<table>
+<thead>
+<tr>
+<th>中文</th>
+<th>数学</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>变化率</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup></mrow></math></td>
+</tr>
+<tr>
+<td>与 y 成正比</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>k</mi><mi>y</mi></mrow></math></td>
+</tr>
+<tr>
+<td>与 y 成反比</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mi>k</mi></mrow><mrow><mi>y</mi></mrow></mfrac></mrow></math></td>
+</tr>
+<tr>
+<td>初始数量为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>y</mi><mn>0</mn></msub></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msub><mi>y</mi><mn>0</mn></msub></mrow></math></td>
+</tr>
+<tr>
+<td>求 t 时刻的数量</td>
+<td>解出 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo></mrow></math></td>
+</tr>
+</tbody>
+</table>
+<h3>例 1：细菌增长</h3>
+<p>某细菌数量 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi></mrow></math> 的变化率与当前数量成正比，比例系数为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0.5</mn></mrow></math>，初始有 100 个。求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>t</mi></mrow></math> 时刻的数量。</p>
+<p>列式：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mn>0.5</mn><mi>y</mi><mo>&#x0002C;</mo><mspace width="2em" /><mi>y</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>100</mn></mrow></math></div>
+<p>通解：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>C</mi><msup><mi>e</mi><mrow><mn>0.5</mn><mi>t</mi></mrow></msup></mrow></math></div>
+<p>代入初始条件：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>100</mn><mo>&#x0003D;</mo><mi>C</mi><msup><mi>e</mi><mn>0</mn></msup><mo>&#x0003D;</mo><mi>C</mi></mrow></math></div>
+<p>所以：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><menclose notation="box"><mrow><mi>y</mi><mo>&#x0003D;</mo><mn>100</mn><msup><mi>e</mi><mrow><mn>0.5</mn><mi>t</mi></mrow></msup></mrow></menclose></mrow></math></div>
+<h3>例 2：放射性衰变</h3>
+<p>某物质的变化率与当前质量成正比，但不断减少，比例系数为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02212;</mo><mn>0.2</mn></mrow></math>，初始质量为 50 克。</p>
+<p>列式：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>0.2</mn><mi>y</mi><mo>&#x0002C;</mo><mspace width="2em" /><mi>y</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>50</mn></mrow></math></div>
+<p>解：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><menclose notation="box"><mrow><mi>y</mi><mo>&#x0003D;</mo><mn>50</mn><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mn>0.2</mn><mi>t</mi></mrow></msup></mrow></menclose></mrow></math></div>
+<p><strong>规律</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mi>k</mi><mi>y</mi><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>y</mi><mo>&#x0003D;</mo><mi>C</mi><msup><mi>e</mi><mrow><mi>k</mi><mi>t</mi></mrow></msup></mrow></math></div>
+<ul>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>k</mi><mo>&#x0003E;</mo><mn>0</mn></mrow></math>：指数增长</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>k</mi><mo>&#x0003C;</mo><mn>0</mn></mrow></math>：指数衰减</li>
+</ul>
+<hr>
+<h2>8. 易错点</h2>
+<ol>
+<li><strong>忘记两边都积分</strong>：只积一边是错的</li>
+<li><strong>忘记加 C</strong>：通解必须带任意常数</li>
+<li><strong>ln 去绝对值时不会处理符号</strong>：用 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>C</mi></mrow></math> 吸收正负号</li>
+<li><strong>除以 y 时忽略 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math></strong>：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math> 也是解，通解中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>C</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math> 可以包含</li>
+<li><strong>先代初始条件再求通解</strong>：顺序反了会乱</li>
+<li><strong>解完不验算</strong>：代回原方程，30 秒就能查错</li>
+</ol>
+<hr>
+<h2>9. 练习（8 题）</h2>
+<ol>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mn>3</mn><mi>y</mi></mrow></math> 的通解</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>2</mn><mi>y</mi></mrow></math> 的通解</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mn>2</mn><mi>y</mi><mo>&#x0002C;</mo><mspace width="1em" /><mi>y</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>5</mn></mrow></math></li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mn>5</mn><mi>y</mi></mrow></math> 的通解（选择题形式：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>C</mi><msup><mi>e</mi><mrow><mn>5</mn><mi>x</mi></mrow></msup></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>5</mn><msup><mi>e</mi><mi>x</mi></msup></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>5</mn><mi>x</mi><mo>&#x0002B;</mo><mi>C</mi></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>C</mi><msup><mi>e</mi><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow></msup></mrow></math>，选哪个）</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mi>x</mi><mi>y</mi></mrow></math> 的通解</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mfrac><mrow><mi>y</mi></mrow><mrow><mi>x</mi></mrow></mfrac></mrow></math> 的通解</li>
+<li>某量 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi></mrow></math> 的变化率与当前值成正比，比例系数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0.1</mn></mrow></math>，初始为 200，求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo></mrow></math></li>
+<li>验证 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>C</mi><msup><mi>e</mi><mrow><mn>3</mn><mi>x</mi></mrow></msup></mrow></math> 是不是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mn>3</mn><mi>y</mi></mrow></math> 的通解</li>
+</ol>
+<hr>
+<h2>10. 答案</h2>
+<details>
+<summary>点击展开（做完再看）</summary>
+<p><strong>1.</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>C</mi><msup><mi>e</mi><mrow><mn>3</mn><mi>x</mi></mrow></msup></mrow></math></div>
+<p><strong>2.</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>C</mi><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mn>2</mn><mi>x</mi></mrow></msup></mrow></math></div>
+<p><strong>3.</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x0003D;</mo><mn>5</mn><msup><mi>e</mi><mrow><mn>2</mn><mi>x</mi></mrow></msup></mrow></math></div>
+<p><strong>4.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>C</mi><msup><mi>e</mi><mrow><mn>5</mn><mi>x</mi></mrow></msup></mrow></math></p>
+<p><strong>5.</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mi>d</mi><mi>y</mi></mrow><mrow><mi>y</mi></mrow></mfrac><mo>&#x0003D;</mo><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>ln</mi><mo stretchy="false">&#x0007C;</mo><mi>y</mi><mo stretchy="false">&#x0007C;</mo><mo>&#x0003D;</mo><mfrac><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow><mrow><mn>2</mn></mrow></mfrac><mo>&#x0002B;</mo><mi>C</mi><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>y</mi><mo>&#x0003D;</mo><mi>C</mi><msup><mi>e</mi><mrow><mfrac><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></msup></mrow></math></div>
+<p><strong>6.</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mi>d</mi><mi>y</mi></mrow><mrow><mi>y</mi></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mi>d</mi><mi>x</mi></mrow><mrow><mi>x</mi></mrow></mfrac><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>ln</mi><mo stretchy="false">&#x0007C;</mo><mi>y</mi><mo stretchy="false">&#x0007C;</mo><mo>&#x0003D;</mo><mi>ln</mi><mo stretchy="false">&#x0007C;</mo><mi>x</mi><mo stretchy="false">&#x0007C;</mo><mo>&#x0002B;</mo><mi>C</mi><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>y</mi><mo>&#x0003D;</mo><mi>C</mi><mi>x</mi></mrow></math></div>
+<p><strong>7.</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x0003D;</mo><mn>200</mn><msup><mi>e</mi><mrow><mn>0.1</mn><mi>t</mi></mrow></msup></mrow></math></div>
+<p><strong>8.</strong> 是。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mn>3</mn><mi>C</mi><msup><mi>e</mi><mrow><mn>3</mn><mi>x</mi></mrow></msup><mo>&#x0003D;</mo><mn>3</mn><mi>y</mi></mrow></math></div>
+<p>且含任意常数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>C</mi></mrow></math>，所以是通解。</p>
+</details>
+<hr>
+<h2>11. 一页速查</h2>
+<h3>核心公式</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mi>k</mi><mi>y</mi><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>y</mi><mo>&#x0003D;</mo><mi>C</mi><msup><mi>e</mi><mrow><mi>k</mi><mi>x</mi></mrow></msup></mrow></math></div>
+<h3>解题四步</h3>
+<ol>
+<li>分离：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mi>d</mi><mi>y</mi></mrow><mrow><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo></mrow></mfrac><mo>&#x0003D;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></math></li>
+<li>积分：两边各自积</li>
+<li>解出 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi></mrow></math></li>
+<li>验算：代回原方程</li>
+</ol>
+<h3>选择题</h3>
+<p>不会解就<strong>逐项求导代回</strong>，看哪个是恒等式。</p>
+<h3>应用题</h3>
+<ul>
+<li>“变化率与当前量成正比” → <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mi>k</mi><mi>y</mi></mrow></math></li>
+<li>初始条件 → <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msub><mi>y</mi><mn>0</mn></msub></mrow></math></li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>k</mi><mo>&#x0003E;</mo><mn>0</mn></mrow></math> 增长，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>k</mi><mo>&#x0003C;</mo><mn>0</mn></mrow></math> 衰减</li>
+</ul>
+<footer>微积分讲义 · 数学公式使用 MathML 渲染，建议使用 Chrome / Edge / Firefox 打开</footer>
+</main>
+</body>
+</html>

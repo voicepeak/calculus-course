@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>微积分自学课程</title>
+<style>
+:root {
+  --bg: #ffffff; --fg: #1f2328; --muted: #59636e; --border: #d1d9e0;
+  --accent: #0969da; --card: #f6f8fa;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117; --fg: #e6edf3; --muted: #9198a1; --border: #30363d;
+    --accent: #4493f8; --card: #161b22;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.7;
+}
+main { max-width: 900px; margin: 0 auto; padding: 56px 24px 80px; }
+h1 { font-size: 2.1rem; margin: 0 0 .25em; }
+h2 { font-size: 1.25rem; margin: 2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+p { margin: .8em 0; }
+.muted { color: var(--muted); }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 1em 0; }
+a.card {
+  display: block; padding: 14px 16px; border: 1px solid var(--border);
+  border-radius: 8px; background: var(--card); color: var(--fg); text-decoration: none;
+}
+a.card:hover { border-color: var(--accent); }
+a.card .num { color: var(--accent); font-weight: 650; margin-right: .45em; }
+a.card .desc { display: block; color: var(--muted); font-size: .88em; margin-top: .15em; }
+a { color: var(--accent); }
+.top { margin: 1.4em 0 2em; }
+.btn {
+  display: inline-block; padding: 10px 18px; border-radius: 7px;
+  background: var(--accent); color: #fff; text-decoration: none; font-weight: 600;
+}
+.note { margin-top: 2.5em; padding: 14px 16px; border-left: 4px solid var(--accent); background: var(--card); border-radius: 6px; color: var(--muted); }
+footer { margin-top: 4em; padding-top: 1em; border-top: 1px solid var(--border); color: var(--muted); font-size: .85em; }
+</style>
+</head>
+<body>
+<main>
+  <h1>微积分自学课程</h1>
+  <p class="muted">普通高中基础 → 单变量微积分速成 → 进阶。公式为排版版，手机、平板、电脑都能看。</p>
+
+  <div class="top">
+    <a class="btn" href="lessons/第01课-极限.html">从第 01 课开始</a>
+    <a class="btn" href="https://github.com/voicepeak/calculus-course/blob/main/progress.md" style="background:transparent;color:var(--accent);border:1px solid var(--border);margin-left:8px;">查看学习进度</a>
+  </div>
+
+  <h2>基础篇</h2>
+  <div class="grid">
+    <a class="card" href="lessons/第01课-极限.html"><span class="num">01</span>极限<span class="desc">极限的直觉、四步计算法、等价无穷小</span></a>
+    <a class="card" href="lessons/第02课-导数.html"><span class="num">02</span>导数与求导法则<span class="desc">公式表、四则运算、链式法则</span></a>
+    <a class="card" href="lessons/第03课-导数的应用.html"><span class="num">03</span>导数的应用<span class="desc">切线、单调性、极值、凹凸性</span></a>
+    <a class="card" href="lessons/第04课-不定积分.html"><span class="num">04</span>不定积分<span class="desc">积分表、直接积分、凑微分</span></a>
+    <a class="card" href="lessons/第05课-定积分.html"><span class="num">05</span>定积分<span class="desc">牛顿-莱布尼茨公式、面积</span></a>
+    <a class="card" href="lessons/第06课-分部积分法.html"><span class="num">06</span>分部积分法<span class="desc">反对幂指三、循环积分</span></a>
+    <a class="card" href="lessons/第07课-微分方程初步.html"><span class="num">07</span>微分方程初步<span class="desc">可分离变量、初始条件</span></a>
+    <a class="card" href="lessons/第08课-综合模拟卷.html"><span class="num">08</span>综合模拟卷<span class="desc">90 分钟闭卷自测</span></a>
+  </div>
+
+  <h2>进阶篇</h2>
+  <div class="grid">
+    <a class="card" href="lessons/第09课-洛必达法则.html"><span class="num">09</span>洛必达法则<span class="desc">未定式、幂指型、失效判断</span></a>
+    <a class="card" href="lessons/第10课-泰勒展开.html"><span class="num">10</span>泰勒展开与级数初步<span class="desc">五个展开、泰勒求极限</span></a>
+    <a class="card" href="lessons/第11课-反常积分.html"><span class="num">11</span>反常积分<span class="desc">无穷区间、无界函数、p-积分</span></a>
+  </div>
+
+  <h2>补充资料</h2>
+  <div class="grid">
+    <a class="card" href="lessons/补充-微分方程专项.html"><span class="num">+</span>微分方程专项<span class="desc">从 y′ = 2y 到应用题</span></a>
+  </div>
+
+  <div class="note">
+    <strong>接下来：</strong>第 12 课 三角换元与部分分式，第 13 课 综合模拟卷 2。选学：多元函数初步、二重积分。
+  </div>
+
+  <footer>微积分自学课程 · 资料持续更新</footer>
+</main>
+</body>
+</html>

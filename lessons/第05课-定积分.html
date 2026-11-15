@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>微积分速成 · 第 05 课：定积分与牛顿-莱布尼茨公式</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --quote-bg: #f6f8fa;
+  --code-bg: #eff2f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --border: #30363d;
+    --accent: #4493f8;
+    --quote-bg: #161b22;
+    --code-bg: #1f242c;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; font-weight: 650; }
+h1 { font-size: 2rem; margin: 0 0 .8em; padding-bottom: .35em; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 2.2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.2rem; margin: 1.8em 0 .55em; }
+p { margin: .85em 0; }
+a { color: var(--accent); }
+blockquote {
+  margin: 1em 0;
+  padding: .6em 1em;
+  border-left: 4px solid var(--accent);
+  background: var(--quote-bg);
+  color: var(--muted);
+  border-radius: 4px;
+}
+blockquote p { margin: .25em 0; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: .96em;
+  overflow: hidden;
+}
+th, td { border: 1px solid var(--border); padding: .45em .7em; text-align: left; vertical-align: top; }
+th { background: var(--quote-bg); font-weight: 600; }
+details {
+  margin: 1.2em 0;
+  padding: .8em 1em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--quote-bg);
+}
+summary { cursor: pointer; font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+ul, ol { padding-left: 1.7em; }
+li { margin: .3em 0; }
+.math-block {
+  margin: 1.15em 0;
+  padding: .7em .9em;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--quote-bg);
+  border-radius: 6px;
+}
+math { font-size: 1.14em; line-height: 1.2; }
+math[display="inline"] { font-size: 1.05em; vertical-align: baseline; }
+.math-block math { font-size: 1.24em; }
+.math-fallback, .math-fallback-block {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .08em .3em;
+  border-radius: 3px;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .12em .35em;
+  border-radius: 3px;
+  font-size: .92em;
+}
+pre code { display: block; padding: .8em 1em; overflow-x: auto; }
+footer { margin-top: 4em; color: var(--muted); font-size: .85em; text-align: center; }
+@media print {
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  .math-block { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>微积分速成 · 第 05 课：定积分与牛顿-莱布尼茨公式</h1>
+<blockquote>
+<p><strong>本课目标</strong>：理解定积分是"带符号的面积"，会用牛顿-莱布尼茨公式计算，会用定积分求面积。</p>
+<p><strong>使用方法</strong>：先读讲解 → 做练习 → 对答案。本课计算量大，必须动笔。</p>
+</blockquote>
+<hr>
+<h2>目录</h2>
+<ol>
+<li>定积分是什么</li>
+<li>几何意义</li>
+<li>定积分的性质</li>
+<li>牛顿-莱布尼茨公式（核心）</li>
+<li>计算步骤与例题</li>
+<li>用定积分求面积</li>
+<li>换元时上下限也要换</li>
+<li>易错点</li>
+<li>练习</li>
+<li>答案与简解</li>
+<li>下节预告</li>
+</ol>
+<hr>
+<h2>1. 定积分是什么</h2>
+<p>记号：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mi>a</mi><mi>b</mi></msubsup><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></math></div>
+<table>
+<thead>
+<tr>
+<th>部分</th>
+<th>名称</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>a</mi></mrow></math></td>
+<td>下限</td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>b</mi></mrow></math></td>
+<td>上限</td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math></td>
+<td>被积函数</td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>d</mi><mi>x</mi></mrow></math></td>
+<td>积分变量</td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键区别：</strong></p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>不定积分 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x0222B;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></math></td>
+<td>函数族，带 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x0002B;</mo><mi>C</mi></mrow></math></td>
+</tr>
+<tr>
+<td>定积分 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mo>&#x0222B;</mo><mi>a</mi><mi>b</mi></msubsup><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></math></td>
+<td>一个<strong>数</strong></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>2. 几何意义</h2>
+<p>定积分表示曲线 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 与 x 轴之间、从 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>a</mi></mrow></math> 到 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>b</mi></mrow></math> 的<strong>带符号面积</strong>：</p>
+<ul>
+<li>曲线在 x 轴上方：面积记为正</li>
+<li>曲线在 x 轴下方：面积记为负</li>
+</ul>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac><mspace width="1em" /><mo stretchy="false">&#x00028;</mo><mtext>三角形面积</mtext><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mrow><mo>&#x02212;</mo><mn>1</mn></mrow><mn>1</mn></msubsup><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><mn>0</mn><mspace width="1em" /><mo stretchy="false">&#x00028;</mo><mtext>正负面积抵消</mtext><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><msup><mi>x</mi><mn>2</mn></msup><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>3</mn></mrow></mfrac></mrow></math></div>
+<hr>
+<h2>3. 定积分的性质</h2>
+<p><strong>上下限相同：</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mi>a</mi><mi>a</mi></msubsup><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math></div>
+<p><strong>交换上下限，变号：</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mi>a</mi><mi>b</mi></msubsup><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><msubsup><mo>&#x0222B;</mo><mi>b</mi><mi>a</mi></msubsup><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></math></div>
+<p><strong>常数可以提出来：</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mi>a</mi><mi>b</mi></msubsup><mi>k</mi><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><mi>k</mi><msubsup><mo>&#x0222B;</mo><mi>a</mi><mi>b</mi></msubsup><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></math></div>
+<p><strong>可以拆开：</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mi>a</mi><mi>b</mi></msubsup><mo stretchy="false">[</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mi>&#x000B1;</mi><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="false">]</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mi>a</mi><mi>b</mi></msubsup><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mi>&#x000B1;</mi><msubsup><mo>&#x0222B;</mo><mi>a</mi><mi>b</mi></msubsup><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></math></div>
+<p><strong>区间可加：</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mi>a</mi><mi>b</mi></msubsup><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mi>a</mi><mi>c</mi></msubsup><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><msubsup><mo>&#x0222B;</mo><mi>c</mi><mi>b</mi></msubsup><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></math></div>
+<p><strong>对称区间上的奇偶性：</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mrow><mo>&#x02212;</mo><mi>a</mi></mrow><mi>a</mi></msubsup><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><mn>0</mn><mspace width="1em" /><mo stretchy="false">&#x00028;</mo><mi>f</mi><mtext>&#x000A0;为奇函数</mtext><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mrow><mo>&#x02212;</mo><mi>a</mi></mrow><mi>a</mi></msubsup><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><mn>2</mn><msubsup><mo>&#x0222B;</mo><mn>0</mn><mi>a</mi></msubsup><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mspace width="1em" /><mo stretchy="false">&#x00028;</mo><mi>f</mi><mtext>&#x000A0;为偶函数</mtext><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>例：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mrow><mo>&#x02212;</mo><mn>1</mn></mrow><mn>1</mn></msubsup><msup><mi>x</mi><mn>3</mn></msup><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><mn>0</mn><mo>&#x0002C;</mo><mspace width="2em" /><msubsup><mo>&#x0222B;</mo><mrow><mo>&#x02212;</mo><mn>1</mn></mrow><mn>1</mn></msubsup><msup><mi>x</mi><mn>2</mn></msup><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><mn>2</mn><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><msup><mi>x</mi><mn>2</mn></msup><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><mfrac><mrow><mn>2</mn></mrow><mrow><mn>3</mn></mrow></mfrac></mrow></math></div>
+<hr>
+<h2>4. 牛顿-莱布尼茨公式（核心）</h2>
+<p>若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>F</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math>，则：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mi>a</mi><mi>b</mi></msubsup><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><mi>F</mi><mo stretchy="false">&#x00028;</mo><mi>b</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mi>F</mi><mo stretchy="false">&#x00028;</mo><mi>a</mi><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>记作：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><mi>F</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="true" fence="true" form="postfix">]</mo></mrow><mi>a</mi><mi>b</mi></msubsup><mo>&#x0003D;</mo><mi>F</mi><mo stretchy="false">&#x00028;</mo><mi>b</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mi>F</mi><mo stretchy="false">&#x00028;</mo><mi>a</mi><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>一句话：<strong>先求原函数，再上限代入减下限代入。</strong></p>
+<h3>例</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><msup><mi>x</mi><mn>2</mn></msup><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><msubsup><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><mfrac><mrow><msup><mi>x</mi><mn>3</mn></msup></mrow><mrow><mn>3</mn></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">]</mo></mrow><mn>0</mn><mn>1</mn></msubsup><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>3</mn></mrow></mfrac><mo>&#x02212;</mo><mn>0</mn><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>3</mn></mrow></mfrac></mrow></math></div>
+<hr>
+<h2>5. 计算步骤与例题</h2>
+<h3>三步</h3>
+<ol>
+<li>求原函数（就是做不定积分，但<strong>不写 +C</strong>）</li>
+<li>上限代入</li>
+<li>减去下限代入</li>
+</ol>
+<h3>例 1</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><mo stretchy="false">&#x00028;</mo><mn>3</mn><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>2</mn><mi>x</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><msubsup><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><msup><mi>x</mi><mn>3</mn></msup><mo>&#x0002B;</mo><msup><mi>x</mi><mn>2</mn></msup><mo stretchy="true" fence="true" form="postfix">]</mo></mrow><mn>0</mn><mn>1</mn></msubsup><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002B;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mn>0</mn><mo>&#x0003D;</mo><mn>2</mn></mrow></math></div>
+<h3>例 2</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mn>1</mn><mn>2</mn></msubsup><mfrac><mrow><mn>1</mn></mrow><mrow><mi>x</mi></mrow></mfrac><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><msubsup><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><mi>ln</mi><mo stretchy="false">&#x0007C;</mo><mi>x</mi><mo stretchy="false">&#x0007C;</mo><mo stretchy="true" fence="true" form="postfix">]</mo></mrow><mn>1</mn><mn>2</mn></msubsup><mo>&#x0003D;</mo><mi>ln</mi><mn>2</mn><mo>&#x02212;</mo><mi>ln</mi><mn>1</mn><mo>&#x0003D;</mo><mi>ln</mi><mn>2</mn></mrow></math></div>
+<h3>例 3</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mn>0</mn><mrow><mfrac><mrow><mi>&#x003C0;</mi></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></msubsup><mi>cos</mi><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><msubsup><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><mi>sin</mi><mi>x</mi><mo stretchy="true" fence="true" form="postfix">]</mo></mrow><mn>0</mn><mrow><mfrac><mrow><mi>&#x003C0;</mi></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></msubsup><mo>&#x0003D;</mo><mn>1</mn><mo>&#x02212;</mo><mn>0</mn><mo>&#x0003D;</mo><mn>1</mn></mrow></math></div>
+<h3>例 4</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><msup><mi>e</mi><mrow><mn>2</mn><mi>x</mi></mrow></msup><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><msubsup><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><mfrac><mrow><msup><mi>e</mi><mrow><mn>2</mn><mi>x</mi></mrow></msup></mrow><mrow><mn>2</mn></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">]</mo></mrow><mn>0</mn><mn>1</mn></msubsup><mo>&#x0003D;</mo><mfrac><mrow><msup><mi>e</mi><mn>2</mn></msup><mo>&#x02212;</mo><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></math></div>
+<h3>例 5</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><mo stretchy="false">&#x00028;</mo><mn>2</mn><mi>x</mi><mo>&#x0002B;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mn>3</mn></msup><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><msubsup><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mn>2</mn><mi>x</mi><mo>&#x0002B;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mn>4</mn></msup></mrow><mrow><mn>8</mn></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">]</mo></mrow><mn>0</mn><mn>1</mn></msubsup><mo>&#x0003D;</mo><mfrac><mrow><mn>81</mn></mrow><mrow><mn>8</mn></mrow></mfrac><mo>&#x02212;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>8</mn></mrow></mfrac><mo>&#x0003D;</mo><mn>10</mn></mrow></math></div>
+<h3>例 6（奇偶性）</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mrow><mo>&#x02212;</mo><mn>1</mn></mrow><mn>1</mn></msubsup><msup><mi>x</mi><mn>3</mn></msup><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mrow><mo>&#x02212;</mo><mn>1</mn></mrow><mn>1</mn></msubsup><msup><mi>x</mi><mn>2</mn></msup><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><mn>2</mn><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><msup><mi>x</mi><mn>2</mn></msup><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><mfrac><mrow><mn>2</mn></mrow><mrow><mn>3</mn></mrow></mfrac></mrow></math></div>
+<hr>
+<h2>6. 用定积分求面积</h2>
+<h3>曲线与 x 轴围成的面积</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>S</mi><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mi>a</mi><mi>b</mi></msubsup><mo stretchy="false">&#x0007C;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x0007C;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></math></div>
+<ul>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02265;</mo><mn>0</mn></mrow></math>：直接算 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mo>&#x0222B;</mo><mi>a</mi><mi>b</mi></msubsup><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></math></li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02264;</mo><mn>0</mn></mrow></math>：算 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02212;</mo><msubsup><mo>&#x0222B;</mo><mi>a</mi><mi>b</mi></msubsup><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></math></li>
+</ul>
+<h3>例 1</h3>
+<p>求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup></mrow></math> 与 x 轴在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">]</mo></mrow></math> 上围成的面积。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>S</mi><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><msup><mi>x</mi><mn>2</mn></msup><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>3</mn></mrow></mfrac></mrow></math></div>
+<h3>例 2</h3>
+<p>求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x02212;</mo><mn>1</mn></mrow></math> 与 x 轴在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><mo>&#x02212;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">]</mo></mrow></math> 上围成的面积。</p>
+<p>曲线在 x 轴下方：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>S</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><msubsup><mo>&#x0222B;</mo><mrow><mo>&#x02212;</mo><mn>1</mn></mrow><mn>1</mn></msubsup><mo stretchy="false">&#x00028;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><msubsup><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><mfrac><mrow><msup><mi>x</mi><mn>3</mn></msup></mrow><mrow><mn>3</mn></mrow></mfrac><mo>&#x02212;</mo><mi>x</mi><mo stretchy="true" fence="true" form="postfix">]</mo></mrow><mrow><mo>&#x02212;</mo><mn>1</mn></mrow><mn>1</mn></msubsup><mo>&#x0003D;</mo><mfrac><mrow><mn>4</mn></mrow><mrow><mn>3</mn></mrow></mfrac></mrow></math></div>
+<p>也可以利用对称性：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>S</mi><mo>&#x0003D;</mo><mn>2</mn><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><msup><mi>x</mi><mn>2</mn></msup><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><mn>2</mn><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>3</mn></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0003D;</mo><mfrac><mrow><mn>4</mn></mrow><mrow><mn>3</mn></mrow></mfrac></mrow></math></div>
+<h3>两条曲线之间的面积</h3>
+<p>若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02265;</mo><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>S</mi><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mi>a</mi><mi>b</mi></msubsup><mo stretchy="false">[</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="false">]</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></math></div>
+<h3>例 3</h3>
+<p>求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>x</mi></mrow></math> 与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup></mrow></math> 在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">]</mo></mrow></math> 之间围成的面积。</p>
+<p>在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">]</mo></mrow></math> 上 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x02265;</mo><msup><mi>x</mi><mn>2</mn></msup></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>S</mi><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x02212;</mo><msup><mi>x</mi><mn>2</mn></msup><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><msubsup><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><mfrac><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow><mrow><mn>2</mn></mrow></mfrac><mo>&#x02212;</mo><mfrac><mrow><msup><mi>x</mi><mn>3</mn></msup></mrow><mrow><mn>3</mn></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">]</mo></mrow><mn>0</mn><mn>1</mn></msubsup><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac><mo>&#x02212;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>3</mn></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>6</mn></mrow></mfrac></mrow></math></div>
+<hr>
+<h2>7. 换元时上下限也要换</h2>
+<p>定积分换元，<strong>必须同时换上下限</strong>，而且算完不用再换回 x。</p>
+<h3>例</h3>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><mo stretchy="false">&#x00028;</mo><mn>2</mn><mi>x</mi><mo>&#x0002B;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mn>3</mn></msup><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></math></div>
+<p>令 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>u</mi><mo>&#x0003D;</mo><mn>2</mn><mi>x</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></math>：</p>
+<ul>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math> 时，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>u</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math></li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math> 时，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>u</mi><mo>&#x0003D;</mo><mn>3</mn></mrow></math></li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>d</mi><mi>u</mi><mo>&#x0003D;</mo><mn>2</mn><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></math>，即 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><mfrac><mrow><mi>d</mi><mi>u</mi></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></math></li>
+</ul>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac><msubsup><mo>&#x0222B;</mo><mn>1</mn><mn>3</mn></msubsup><msup><mi>u</mi><mn>3</mn></msup><mspace width="0.167em" /><mi>d</mi><mi>u</mi><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac><msubsup><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><mfrac><mrow><msup><mi>u</mi><mn>4</mn></msup></mrow><mrow><mn>4</mn></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">]</mo></mrow><mn>1</mn><mn>3</mn></msubsup><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac><mo>&#x000B7;</mo><mfrac><mrow><mn>81</mn><mo>&#x02212;</mo><mn>1</mn></mrow><mrow><mn>4</mn></mrow></mfrac><mo>&#x0003D;</mo><mn>10</mn></mrow></math></div>
+<hr>
+<h2>8. 易错点</h2>
+<ol>
+<li>定积分结果是<strong>数</strong>，不是函数，不要加 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x0002B;</mo><mi>C</mi></mrow></math></li>
+<li>代入顺序是<strong>上限减下限</strong>，别反</li>
+<li>面积不能直接等于积分，x 轴下方的部分要变号</li>
+<li>定积分换元后，上下限必须跟着换</li>
+<li>奇函数在对称区间上积分为 0，偶函数要乘 2，别混</li>
+</ol>
+<hr>
+<h2>9. 练习（10 题）</h2>
+<p>做完再对答案。</p>
+<ol>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>2</mn></msubsup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002B;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></math></li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mo>&#x0222B;</mo><mn>1</mn><mn>3</mn></msubsup><mo stretchy="false">&#x00028;</mo><mn>2</mn><mi>x</mi><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></math></li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><msup><mi>x</mi><mn>3</mn></msup><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></math></li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mo>&#x0222B;</mo><mn>1</mn><mi>e</mi></msubsup><mfrac><mrow><mn>1</mn></mrow><mrow><mi>x</mi></mrow></mfrac><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></math></li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mo>&#x0222B;</mo><mn>0</mn><mrow><mi>&#x003C0;</mi></mrow></msubsup><mi>sin</mi><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></math></li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><msup><mi>e</mi><mrow><mn>2</mn><mi>x</mi></mrow></msup><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></math></li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mo>&#x0222B;</mo><mrow><mo>&#x02212;</mo><mn>2</mn></mrow><mn>2</mn></msubsup><msup><mi>x</mi><mn>3</mn></msup><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></math></li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>2</mn></msubsup><mo stretchy="false">&#x0007C;</mo><mi>x</mi><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x0007C;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></math></li>
+<li>求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup></mrow></math> 与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>x</mi></mrow></math> 围成的面积</li>
+<li>求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x02212;</mo><mn>1</mn></mrow></math> 与 x 轴在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><mo>&#x02212;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">]</mo></mrow></math> 上围成的面积</li>
+</ol>
+<hr>
+<h2>10. 答案与简解</h2>
+<details>
+<summary>点击展开（做完再看）</summary>
+<p><strong>1.</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><mfrac><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow><mrow><mn>2</mn></mrow></mfrac><mo>&#x0002B;</mo><mi>x</mi><mo stretchy="true" fence="true" form="postfix">]</mo></mrow><mn>0</mn><mn>2</mn></msubsup><mo>&#x0003D;</mo><mn>2</mn><mo>&#x0002B;</mo><mn>2</mn><mo>&#x0003D;</mo><mn>4</mn></mrow></math></div>
+<p><strong>2.</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x02212;</mo><mi>x</mi><mo stretchy="true" fence="true" form="postfix">]</mo></mrow><mn>1</mn><mn>3</mn></msubsup><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>9</mn><mo>&#x02212;</mo><mn>3</mn><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>6</mn></mrow></math></div>
+<p><strong>3.</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><mfrac><mrow><msup><mi>x</mi><mn>4</mn></msup></mrow><mrow><mn>4</mn></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">]</mo></mrow><mn>0</mn><mn>1</mn></msubsup><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>4</mn></mrow></mfrac></mrow></math></div>
+<p><strong>4.</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><mi>ln</mi><mi>x</mi><mo stretchy="true" fence="true" form="postfix">]</mo></mrow><mn>1</mn><mi>e</mi></msubsup><mo>&#x0003D;</mo><mn>1</mn><mo>&#x02212;</mo><mn>0</mn><mo>&#x0003D;</mo><mn>1</mn></mrow></math></div>
+<p><strong>5.</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><mo>&#x02212;</mo><mi>cos</mi><mi>x</mi><mo stretchy="true" fence="true" form="postfix">]</mo></mrow><mn>0</mn><mrow><mi>&#x003C0;</mi></mrow></msubsup><mo>&#x0003D;</mo><mn>1</mn><mo>&#x02212;</mo><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>2</mn></mrow></math></div>
+<p><strong>6.</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><mfrac><mrow><msup><mi>e</mi><mrow><mn>2</mn><mi>x</mi></mrow></msup></mrow><mrow><mn>2</mn></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">]</mo></mrow><mn>0</mn><mn>1</mn></msubsup><mo>&#x0003D;</mo><mfrac><mrow><msup><mi>e</mi><mn>2</mn></msup><mo>&#x02212;</mo><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></math></div>
+<p><strong>7.</strong> 奇函数在对称区间上积分为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn></mrow></math></p>
+<p><strong>8.</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><msubsup><mo>&#x0222B;</mo><mn>1</mn><mn>2</mn></msubsup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac><mo>&#x0002B;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac><mo>&#x0003D;</mo><mn>1</mn></mrow></math></div>
+<p><strong>9.</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x02212;</mo><msup><mi>x</mi><mn>2</mn></msup><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac><mo>&#x02212;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>3</mn></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>6</mn></mrow></mfrac></mrow></math></div>
+<p><strong>10.</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x02212;</mo><msubsup><mo>&#x0222B;</mo><mrow><mo>&#x02212;</mo><mn>1</mn></mrow><mn>1</mn></msubsup><mo stretchy="false">&#x00028;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><mfrac><mrow><mn>4</mn></mrow><mrow><mn>3</mn></mrow></mfrac></mrow></math></div>
+</details>
+<hr>
+<h2>11. 下节预告</h2>
+<p><strong>第 06 课：分部积分法</strong></p>
+<ul>
+<li>分部积分公式</li>
+<li>什么时候用分部积分</li>
+<li>定积分的分部积分</li>
+</ul>
+<hr>
+<h2>自查清单</h2>
+<ul>
+<li>[ ] 能说出定积分和不定积分的区别</li>
+<li>[ ] 会用牛顿-莱布尼茨公式</li>
+<li>[ ] 会用奇偶性简化对称区间</li>
+<li>[ ] 会求曲线与 x 轴、两曲线之间的面积</li>
+<li>[ ] 知道定积分换元要换上下限</li>
+</ul>
+<footer>微积分讲义 · 数学公式使用 MathML 渲染，建议使用 Chrome / Edge / Firefox 打开</footer>
+</main>
+</body>
+</html>
