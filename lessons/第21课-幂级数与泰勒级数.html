@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>微积分进阶 · 第 21 课：幂级数与泰勒级数</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --quote-bg: #f6f8fa;
+  --code-bg: #eff2f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --border: #30363d;
+    --accent: #4493f8;
+    --quote-bg: #161b22;
+    --code-bg: #1f242c;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; font-weight: 650; }
+h1 { font-size: 2rem; margin: 0 0 .8em; padding-bottom: .35em; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 2.2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.2rem; margin: 1.8em 0 .55em; }
+p { margin: .85em 0; }
+a { color: var(--accent); }
+blockquote {
+  margin: 1em 0;
+  padding: .6em 1em;
+  border-left: 4px solid var(--accent);
+  background: var(--quote-bg);
+  color: var(--muted);
+  border-radius: 4px;
+}
+blockquote p { margin: .25em 0; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: .96em;
+  overflow: hidden;
+}
+th, td { border: 1px solid var(--border); padding: .45em .7em; text-align: left; vertical-align: top; }
+th { background: var(--quote-bg); font-weight: 600; }
+details {
+  margin: 1.2em 0;
+  padding: .8em 1em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--quote-bg);
+}
+summary { cursor: pointer; font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+ul, ol { padding-left: 1.7em; }
+li { margin: .3em 0; }
+.math-block {
+  margin: 1.15em 0;
+  padding: .7em .9em;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--quote-bg);
+  border-radius: 6px;
+}
+math { font-size: 1.14em; line-height: 1.2; }
+math[display="inline"] { font-size: 1.05em; vertical-align: baseline; }
+.math-block math { font-size: 1.24em; }
+.math-fallback, .math-fallback-block {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .08em .3em;
+  border-radius: 3px;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .12em .35em;
+  border-radius: 3px;
+  font-size: .92em;
+}
+pre code { display: block; padding: .8em 1em; overflow-x: auto; }
+footer { margin-top: 4em; color: var(--muted); font-size: .85em; text-align: center; }
+@media print {
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  .math-block { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>微积分进阶 · 第 21 课：幂级数与泰勒级数</h1>
+<blockquote>
+<p><strong>本课目标</strong>：会求幂级数的收敛半径与收敛区间，掌握常用泰勒展开，并会用级数做近似计算和求极限。</p>
+<p><strong>使用方法</strong>：先求收敛半径，再单独检查两个端点。泰勒展开要记牢五个基本公式。</p>
+</blockquote>
+<hr>
+<h2>目录</h2>
+<ol>
+<li>幂级数</li>
+<li>收敛半径与收敛区间</li>
+<li>求收敛半径</li>
+<li>端点要单独检查</li>
+<li>逐项求导与逐项积分</li>
+<li>泰勒级数</li>
+<li>五个必背展开</li>
+<li>泰勒公式与余项</li>
+<li>级数的应用</li>
+<li>易错点</li>
+<li>练习</li>
+<li>答案与简解</li>
+<li>下节预告</li>
+</ol>
+<hr>
+<h2>1. 幂级数</h2>
+<p>形如</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>0</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><msub><mi>a</mi><mi>n</mi></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x02212;</mo><msub><mi>x</mi><mn>0</mn></msub><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup><mo>&#x0003D;</mo><msub><mi>a</mi><mn>0</mn></msub><mo>&#x0002B;</mo><msub><mi>a</mi><mn>1</mn></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x02212;</mo><msub><mi>x</mi><mn>0</mn></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><msub><mi>a</mi><mn>2</mn></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x02212;</mo><msub><mi>x</mi><mn>0</mn></msub><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup><mo>&#x0002B;</mo><mo>&#x022EF;</mo></mrow></math></div>
+<p>的级数称为<strong>幂级数</strong>，其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>x</mi><mn>0</mn></msub></mrow></math> 称为中心，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>a</mi><mi>n</mi></msub></mrow></math> 称为系数。</p>
+<p>当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>x</mi><mn>0</mn></msub><mo>&#x0003D;</mo><mn>0</mn></mrow></math> 时，就是最常见的形式：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>0</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><msub><mi>a</mi><mi>n</mi></msub><msup><mi>x</mi><mi>n</mi></msup><mo>&#x0003D;</mo><msub><mi>a</mi><mn>0</mn></msub><mo>&#x0002B;</mo><msub><mi>a</mi><mn>1</mn></msub><mi>x</mi><mo>&#x0002B;</mo><msub><mi>a</mi><mn>2</mn></msub><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mo>&#x022EF;</mo></mrow></math></div>
+<p>例如：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>0</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><msup><mi>x</mi><mi>n</mi></msup><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002B;</mo><mi>x</mi><mo>&#x0002B;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mo>&#x022EF;</mo></mrow></math></div>
+<p>这是公比为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math> 的几何级数，当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mi>x</mi><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x0003C;</mo><mn>1</mn></mrow></math> 时收敛，和是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mn>1</mn><mo>&#x02212;</mo><mi>x</mi></mrow></mfrac></mrow></math>。</p>
+<hr>
+<h2>2. 收敛半径与收敛区间</h2>
+<p>幂级数的收敛性有一个非常重要的特点：<strong>收敛区域一定是一个以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>x</mi><mn>0</mn></msub></mrow></math> 为中心的区间</strong>。</p>
+<p><strong>定理</strong>：对幂级数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><msub><mi>a</mi><mi>n</mi></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x02212;</mo><msub><mi>x</mi><mn>0</mn></msub><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup></mrow></math>，存在唯一的 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>R</mi><mo>&#x02208;</mo><mo stretchy="false">[</mo><mn>0</mn><mo>&#x0002C;</mo><mo>&#x0002B;</mo><mo>&#x0221E;</mo><mo stretchy="false">]</mo></mrow></math>，使得：</p>
+<ul>
+<li>当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mi>x</mi><mo>&#x02212;</mo><msub><mi>x</mi><mn>0</mn></msub><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x0003C;</mo><mi>R</mi></mrow></math> 时，级数绝对收敛；</li>
+<li>当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mi>x</mi><mo>&#x02212;</mo><msub><mi>x</mi><mn>0</mn></msub><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x0003E;</mo><mi>R</mi></mrow></math> 时，级数发散；</li>
+<li>当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mi>x</mi><mo>&#x02212;</mo><msub><mi>x</mi><mn>0</mn></msub><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x0003D;</mo><mi>R</mi></mrow></math> 时，可能收敛，也可能发散，需要单独判断。</li>
+</ul>
+<p><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>R</mi></mrow></math> 称为<strong>收敛半径</strong>，区间 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><msub><mi>x</mi><mn>0</mn></msub><mo>&#x02212;</mo><mi>R</mi><mo>&#x0002C;</mo><msub><mi>x</mi><mn>0</mn></msub><mo>&#x0002B;</mo><mi>R</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 称为<strong>收敛区间</strong>（开区间）。加上端点后得到的收敛范围，称为<strong>收敛域</strong>。</p>
+<p>三种可能：</p>
+<ul>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>R</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math>：只在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><msub><mi>x</mi><mn>0</mn></msub></mrow></math> 处收敛；</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x0003C;</mo><mi>R</mi><mo>&#x0003C;</mo><mo>&#x0002B;</mo><mo>&#x0221E;</mo></mrow></math>：在一个有限区间内收敛；</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>R</mi><mo>&#x0003D;</mo><mo>&#x0002B;</mo><mo>&#x0221E;</mo></mrow></math>：对一切实数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math> 都收敛。</li>
+</ul>
+<hr>
+<h2>3. 求收敛半径</h2>
+<p><strong>比值法</strong>：如果</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>n</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></munder><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mfrac><mrow><msub><mi>a</mi><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub></mrow><mrow><msub><mi>a</mi><mi>n</mi></msub></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x0003D;</mo><mi>&#x003C1;</mi></mrow></math></div>
+<p>则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>R</mi><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>&#x003C1;</mi></mrow></mfrac></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C1;</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math> 时 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>R</mi><mo>&#x0003D;</mo><mo>&#x0002B;</mo><mo>&#x0221E;</mo></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C1;</mi><mo>&#x0003D;</mo><mo>&#x0002B;</mo><mo>&#x0221E;</mo></mrow></math> 时 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>R</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math>。</p>
+<p>等价地，如果</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>n</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></munder><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mfrac><mrow><msub><mi>a</mi><mi>n</mi></msub></mrow><mrow><msub><mi>a</mi><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x0003D;</mo><mi>R</mi></mrow></math></div>
+<p>也可以直接得到收敛半径。</p>
+<p><strong>根值法</strong>：如果</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>n</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></munder><mroot><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><msub><mi>a</mi><mi>n</mi></msub><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow></mrow><mi>n</mi></mroot><mo>&#x0003D;</mo><mi>&#x003C1;</mi></mrow></math></div>
+<p>则同样有 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>R</mi><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>&#x003C1;</mi></mrow></mfrac></mrow></math>。</p>
+<p><strong>例 1</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><msup><mi>x</mi><mi>n</mi></msup></mrow><mrow><mi>n</mi></mrow></mfrac></mrow></math></div>
+<p>系数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>a</mi><mi>n</mi></msub><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi></mrow></mfrac></mrow></math>。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mfrac><mrow><msub><mi>a</mi><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub></mrow><mrow><msub><mi>a</mi><mi>n</mi></msub></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x0003D;</mo><mfrac><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac></mrow><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi></mrow></mfrac></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mi>n</mi></mrow><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac><mo>&#x02192;</mo><mn>1</mn></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>R</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math></div>
+<p>收敛区间为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+<p><strong>例 2</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>0</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><msup><mi>x</mi><mi>n</mi></msup></mrow><mrow><mi>n</mi><mo>&#x00021;</mo></mrow></mfrac></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mfrac><mrow><msub><mi>a</mi><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub></mrow><mrow><msub><mi>a</mi><mi>n</mi></msub></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x0003D;</mo><mfrac><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x00021;</mo></mrow></mfrac></mrow><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi><mo>&#x00021;</mo></mrow></mfrac></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac><mo>&#x02192;</mo><mn>0</mn></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>R</mi><mo>&#x0003D;</mo><mo>&#x0002B;</mo><mo>&#x0221E;</mo></mrow></math></div>
+<p>对一切 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math> 收敛。</p>
+<p><strong>例 3</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>0</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mi>n</mi><mo>&#x00021;</mo><mspace width="0.167em" /><msup><mi>x</mi><mi>n</mi></msup></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mfrac><mrow><msub><mi>a</mi><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub></mrow><mrow><msub><mi>a</mi><mi>n</mi></msub></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x0003D;</mo><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn><mo>&#x02192;</mo><mo>&#x0002B;</mo><mo>&#x0221E;</mo></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>R</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math></div>
+<p>只在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math> 处收敛。</p>
+<p><strong>例 4</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup></mrow><mrow><msup><mn>2</mn><mi>n</mi></msup></mrow></mfrac></mrow></math></div>
+<p>中心 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>x</mi><mn>0</mn></msub><mo>&#x0003D;</mo><mn>1</mn></mrow></math>，系数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>a</mi><mi>n</mi></msub><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mn>2</mn><mi>n</mi></msup></mrow></mfrac></mrow></math>。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mfrac><mrow><msub><mi>a</mi><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub></mrow><mrow><msub><mi>a</mi><mi>n</mi></msub></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x0003D;</mo><mfrac><mrow><msup><mn>2</mn><mi>n</mi></msup></mrow><mrow><msup><mn>2</mn><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msup></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>R</mi><mo>&#x0003D;</mo><mn>2</mn></mrow></math></div>
+<p>收敛区间为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>1</mn><mo>&#x02212;</mo><mn>2</mn><mo>&#x0003C;</mo><mi>x</mi><mo>&#x0003C;</mo><mn>1</mn><mo>&#x0002B;</mo><mn>2</mn><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mo>&#x02212;</mo><mn>1</mn><mo>&#x0003C;</mo><mi>x</mi><mo>&#x0003C;</mo><mn>3</mn></mrow></math></div>
+<p>即 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>3</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+<hr>
+<h2>4. 端点要单独检查</h2>
+<p>收敛半径只管内点，两个端点必须代回原级数单独判断。</p>
+<p><strong>例 1</strong>：继续看</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><msup><mi>x</mi><mi>n</mi></msup></mrow><mrow><mi>n</mi></mrow></mfrac></mrow></math></div>
+<p>收敛区间是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+<ul>
+<li>当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math> 时，级数为</li>
+</ul>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi></mrow></mfrac></mrow></math></div>
+<p>调和级数，发散。</p>
+<ul>
+<li>当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>1</mn></mrow></math> 时，级数为</li>
+</ul>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup></mrow><mrow><mi>n</mi></mrow></mfrac></mrow></math></div>
+<p>交错调和级数，收敛。</p>
+<p>所以收敛域为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo stretchy="false">[</mo><mo>&#x02212;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p><strong>例 2</strong>：继续看</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup></mrow><mrow><msup><mn>2</mn><mi>n</mi></msup></mrow></mfrac></mrow></math></div>
+<p>收敛区间是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>3</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+<ul>
+<li>当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>1</mn></mrow></math> 时，</li>
+</ul>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>2</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup></mrow><mrow><msup><mn>2</mn><mi>n</mi></msup></mrow></mfrac><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup></mrow></math></div>
+<p>通项不趋于 0，发散。</p>
+<ul>
+<li>当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mn>3</mn></mrow></math> 时，</li>
+</ul>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><msup><mn>2</mn><mi>n</mi></msup></mrow><mrow><msup><mn>2</mn><mi>n</mi></msup></mrow></mfrac><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mn>1</mn></mrow></math></div>
+<p>发散。</p>
+<p>所以收敛域为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>3</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，两个端点都不包含。</p>
+<p><strong>例 3</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x02212;</mo><mn>2</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup></mrow><mrow><mi>n</mi><mspace width="0.167em" /><msup><mn>3</mn><mi>n</mi></msup></mrow></mfrac></mrow></math></div>
+<p>先求半径：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mfrac><mrow><msub><mi>a</mi><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub></mrow><mrow><msub><mi>a</mi><mi>n</mi></msub></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x0003D;</mo><mfrac><mrow><mi>n</mi><mspace width="0.167em" /><msup><mn>3</mn><mi>n</mi></msup></mrow><mrow><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><msup><mn>3</mn><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msup></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mi>n</mi></mrow><mrow><mn>3</mn><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></mfrac><mo>&#x02192;</mo><mfrac><mn>1</mn><mn>3</mn></mfrac></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>R</mi><mo>&#x0003D;</mo><mn>3</mn></mrow></math></div>
+<p>收敛区间为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>2</mn><mo>&#x02212;</mo><mn>3</mn><mo>&#x0003C;</mo><mi>x</mi><mo>&#x0003C;</mo><mn>2</mn><mo>&#x0002B;</mo><mn>3</mn><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mo>&#x02212;</mo><mn>1</mn><mo>&#x0003C;</mo><mi>x</mi><mo>&#x0003C;</mo><mn>5</mn></mrow></math></div>
+<p>端点：</p>
+<ul>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>1</mn></mrow></math>：</li>
+</ul>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>3</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup></mrow><mrow><mi>n</mi><mspace width="0.167em" /><msup><mn>3</mn><mi>n</mi></msup></mrow></mfrac><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup></mrow><mrow><mi>n</mi></mrow></mfrac></mrow></math></div>
+<p>收敛。</p>
+<ul>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mn>5</mn></mrow></math>：</li>
+</ul>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><msup><mn>3</mn><mi>n</mi></msup></mrow><mrow><mi>n</mi><mspace width="0.167em" /><msup><mn>3</mn><mi>n</mi></msup></mrow></mfrac><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi></mrow></mfrac></mrow></math></div>
+<p>发散。</p>
+<p>所以收敛域为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><mo>&#x02212;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>5</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+<hr>
+<h2>5. 逐项求导与逐项积分</h2>
+<p>在收敛区间内部，幂级数可以像多项式一样求导和积分，且收敛半径不变。</p>
+<p><strong>逐项求导</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><msubsup><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>0</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></msubsup><msub><mi>a</mi><mi>n</mi></msub><msup><mi>x</mi><mi>n</mi></msup><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mi>n</mi><mspace width="0.167em" /><msub><mi>a</mi><mi>n</mi></msub><msup><mi>x</mi><mrow><mi>n</mi><mo>&#x02212;</mo><mn>1</mn></mrow></msup></mrow></math></div>
+<p><strong>逐项积分</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mn>0</mn><mi>x</mi></msubsup><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><msubsup><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>0</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></msubsup><msub><mi>a</mi><mi>n</mi></msub><msup><mi>t</mi><mi>n</mi></msup><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mi>d</mi><mi>t</mi><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>0</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><msub><mi>a</mi><mi>n</mi></msub></mrow><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac><msup><mi>x</mi><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msup></mrow></math></div>
+<p><strong>注意</strong>：求导、积分后收敛半径不变，但端点处的敛散性可能改变。</p>
+<p><strong>例 1</strong>：由几何级数</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mn>1</mn><mo>&#x02212;</mo><mi>x</mi></mrow></mfrac><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>0</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><msup><mi>x</mi><mi>n</mi></msup><mo>&#x0002C;</mo><mspace width="2em" /><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mi>x</mi><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x0003C;</mo><mn>1</mn></mrow></math></div>
+<p>两边求导：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><mi>x</mi><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup></mrow></mfrac><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mi>n</mi><mspace width="0.167em" /><msup><mi>x</mi><mrow><mi>n</mi><mo>&#x02212;</mo><mn>1</mn></mrow></msup><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002B;</mo><mn>2</mn><mi>x</mi><mo>&#x0002B;</mo><mn>3</mn><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mo>&#x022EF;</mo></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mi>n</mi><mspace width="0.167em" /><msup><mi>x</mi><mrow><mi>n</mi><mo>&#x02212;</mo><mn>1</mn></mrow></msup><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><mi>x</mi><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup></mrow></mfrac><mo>&#x0002C;</mo><mspace width="2em" /><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mi>x</mi><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x0003C;</mo><mn>1</mn></mrow></math></div>
+<p><strong>例 2</strong>：由</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mn>1</mn><mo>&#x0002B;</mo><mi>x</mi></mrow></mfrac><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>0</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup><msup><mi>x</mi><mi>n</mi></msup><mo>&#x0002C;</mo><mspace width="2em" /><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mi>x</mi><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x0003C;</mo><mn>1</mn></mrow></math></div>
+<p>两边从 0 到 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math> 积分：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>ln</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002B;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>0</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup><mfrac><mrow><msup><mi>x</mi><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msup></mrow><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mrow><mi>n</mi><mo>&#x02212;</mo><mn>1</mn></mrow></msup><mfrac><mrow><msup><mi>x</mi><mi>n</mi></msup></mrow><mrow><mi>n</mi></mrow></mfrac></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>ln</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002B;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>x</mi><mo>&#x02212;</mo><mfrac><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow><mrow><mn>2</mn></mrow></mfrac><mo>&#x0002B;</mo><mfrac><mrow><msup><mi>x</mi><mn>3</mn></msup></mrow><mrow><mn>3</mn></mrow></mfrac><mo>&#x02212;</mo><mfrac><mrow><msup><mi>x</mi><mn>4</mn></msup></mrow><mrow><mn>4</mn></mrow></mfrac><mo>&#x0002B;</mo><mo>&#x022EF;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mo>&#x02212;</mo><mn>1</mn><mo>&#x0003C;</mo><mi>x</mi><mo>&#x02264;</mo><mn>1</mn></mrow></math></div>
+<p><strong>例 3</strong>：由</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mn>1</mn><mo>&#x0002B;</mo><msup><mi>x</mi><mn>2</mn></msup></mrow></mfrac><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>0</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup><msup><mi>x</mi><mrow><mn>2</mn><mi>n</mi></mrow></msup></mrow></math></div>
+<p>积分得</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>arctan</mi><mi>x</mi><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>0</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup><mfrac><mrow><msup><mi>x</mi><mrow><mn>2</mn><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msup></mrow><mrow><mn>2</mn><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac><mo>&#x0003D;</mo><mi>x</mi><mo>&#x02212;</mo><mfrac><mrow><msup><mi>x</mi><mn>3</mn></msup></mrow><mrow><mn>3</mn></mrow></mfrac><mo>&#x0002B;</mo><mfrac><mrow><msup><mi>x</mi><mn>5</mn></msup></mrow><mrow><mn>5</mn></mrow></mfrac><mo>&#x02212;</mo><mo>&#x022EF;</mo></mrow></math></div>
+<p>收敛域为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><mo>&#x02212;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">]</mo></mrow></math>。取 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math> 得</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mi>&#x003C0;</mi></mrow><mrow><mn>4</mn></mrow></mfrac><mo>&#x0003D;</mo><mn>1</mn><mo>&#x02212;</mo><mfrac><mn>1</mn><mn>3</mn></mfrac><mo>&#x0002B;</mo><mfrac><mn>1</mn><mn>5</mn></mfrac><mo>&#x02212;</mo><mfrac><mn>1</mn><mn>7</mn></mfrac><mo>&#x0002B;</mo><mo>&#x022EF;</mo></mrow></math></div>
+<hr>
+<h2>6. 泰勒级数</h2>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>x</mi><mn>0</mn></msub></mrow></math> 处有任意阶导数，则幂级数</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>0</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><msup><mi>f</mi><mrow><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo stretchy="false">&#x00029;</mo></mrow></msup><mo stretchy="false">&#x00028;</mo><msub><mi>x</mi><mn>0</mn></msub><mo stretchy="false">&#x00029;</mo></mrow><mrow><mi>n</mi><mo>&#x00021;</mo></mrow></mfrac><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x02212;</mo><msub><mi>x</mi><mn>0</mn></msub><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup></mrow></math></div>
+<p>称为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>x</mi><mn>0</mn></msub></mrow></math> 处的<strong>泰勒级数</strong>。</p>
+<p>当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>x</mi><mn>0</mn></msub><mo>&#x0003D;</mo><mn>0</mn></mrow></math> 时，称为<strong>麦克劳林级数</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>0</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><msup><mi>f</mi><mrow><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo stretchy="false">&#x00029;</mo></mrow></msup><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow><mrow><mi>n</mi><mo>&#x00021;</mo></mrow></mfrac><msup><mi>x</mi><mi>n</mi></msup><mo>&#x0003D;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mi>x</mi><mo>&#x0002B;</mo><mfrac><mrow><msup><mi>f</mi><mi>&#x02033;</mi></msup><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow><mrow><mn>2</mn><mo>&#x00021;</mo></mrow></mfrac><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mo>&#x022EF;</mo></mrow></math></div>
+<p><strong>重要区别</strong>：</p>
+<ul>
+<li>泰勒级数是“形式上的级数”，它不一定收敛；</li>
+<li>即使收敛，也不一定收敛到原来的 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。</li>
+</ul>
+<p>需要余项趋于 0，才能保证泰勒级数收敛到 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+<hr>
+<h2>7. 五个必背展开</h2>
+<p><strong>（1）指数函数</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>e</mi><mi>x</mi></msup><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>0</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><msup><mi>x</mi><mi>n</mi></msup></mrow><mrow><mi>n</mi><mo>&#x00021;</mo></mrow></mfrac><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002B;</mo><mi>x</mi><mo>&#x0002B;</mo><mfrac><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow><mrow><mn>2</mn><mo>&#x00021;</mo></mrow></mfrac><mo>&#x0002B;</mo><mfrac><mrow><msup><mi>x</mi><mn>3</mn></msup></mrow><mrow><mn>3</mn><mo>&#x00021;</mo></mrow></mfrac><mo>&#x0002B;</mo><mo>&#x022EF;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mi>x</mi><mo>&#x02208;</mo><mi>&#x0211D;</mi></mrow></math></div>
+<p><strong>（2）正弦函数</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>sin</mi><mi>x</mi><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>0</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup><msup><mi>x</mi><mrow><mn>2</mn><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msup></mrow><mrow><mo stretchy="false">&#x00028;</mo><mn>2</mn><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x00021;</mo></mrow></mfrac><mo>&#x0003D;</mo><mi>x</mi><mo>&#x02212;</mo><mfrac><mrow><msup><mi>x</mi><mn>3</mn></msup></mrow><mrow><mn>3</mn><mo>&#x00021;</mo></mrow></mfrac><mo>&#x0002B;</mo><mfrac><mrow><msup><mi>x</mi><mn>5</mn></msup></mrow><mrow><mn>5</mn><mo>&#x00021;</mo></mrow></mfrac><mo>&#x02212;</mo><mo>&#x022EF;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mi>x</mi><mo>&#x02208;</mo><mi>&#x0211D;</mi></mrow></math></div>
+<p><strong>（3）余弦函数</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>cos</mi><mi>x</mi><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>0</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup><msup><mi>x</mi><mrow><mn>2</mn><mi>n</mi></mrow></msup></mrow><mrow><mo stretchy="false">&#x00028;</mo><mn>2</mn><mi>n</mi><mo stretchy="false">&#x00029;</mo><mo>&#x00021;</mo></mrow></mfrac><mo>&#x0003D;</mo><mn>1</mn><mo>&#x02212;</mo><mfrac><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow><mrow><mn>2</mn><mo>&#x00021;</mo></mrow></mfrac><mo>&#x0002B;</mo><mfrac><mrow><msup><mi>x</mi><mn>4</mn></msup></mrow><mrow><mn>4</mn><mo>&#x00021;</mo></mrow></mfrac><mo>&#x02212;</mo><mo>&#x022EF;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mi>x</mi><mo>&#x02208;</mo><mi>&#x0211D;</mi></mrow></math></div>
+<p><strong>（4）对数函数</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>ln</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002B;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mrow><mi>n</mi><mo>&#x02212;</mo><mn>1</mn></mrow></msup><msup><mi>x</mi><mi>n</mi></msup></mrow><mrow><mi>n</mi></mrow></mfrac><mo>&#x0003D;</mo><mi>x</mi><mo>&#x02212;</mo><mfrac><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow><mrow><mn>2</mn></mrow></mfrac><mo>&#x0002B;</mo><mfrac><mrow><msup><mi>x</mi><mn>3</mn></msup></mrow><mrow><mn>3</mn></mrow></mfrac><mo>&#x02212;</mo><mo>&#x022EF;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mo>&#x02212;</mo><mn>1</mn><mo>&#x0003C;</mo><mi>x</mi><mo>&#x02264;</mo><mn>1</mn></mrow></math></div>
+<p><strong>（5）几何级数</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mn>1</mn><mo>&#x02212;</mo><mi>x</mi></mrow></mfrac><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>0</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><msup><mi>x</mi><mi>n</mi></msup><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002B;</mo><mi>x</mi><mo>&#x0002B;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>x</mi><mn>3</mn></msup><mo>&#x0002B;</mo><mo>&#x022EF;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mi>x</mi><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x0003C;</mo><mn>1</mn></mrow></math></div>
+<p><strong>补充</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002B;</mo><mi>x</mi><msup><mo stretchy="false">&#x00029;</mo><mi>&#x003B1;</mi></msup><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002B;</mo><mi>&#x003B1;</mi><mi>x</mi><mo>&#x0002B;</mo><mfrac><mrow><mi>&#x003B1;</mi><mo stretchy="false">&#x00028;</mo><mi>&#x003B1;</mi><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow><mrow><mn>2</mn><mo>&#x00021;</mo></mrow></mfrac><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mo>&#x022EF;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mi>x</mi><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x0003C;</mo><mn>1</mn></mrow></math></div>
+<p><strong>记忆方法</strong>：</p>
+<ul>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>e</mi><mi>x</mi></msup></mrow></math> 的阶乘在分母，符号全正；</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>sin</mi><mi>x</mi></mrow></math> 只出现奇次幂，正负交替；</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>cos</mi><mi>x</mi></mrow></math> 只出现偶次幂，正负交替；</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>ln</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002B;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 从 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math> 开始，正负交替；</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mn>1</mn><mo>&#x02212;</mo><mi>x</mi></mrow></mfrac></mrow></math> 是几何级数，全正。</li>
+</ul>
+<hr>
+<h2>8. 泰勒公式与余项</h2>
+<p><strong>泰勒公式</strong>：如果 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 在包含 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>x</mi><mn>0</mn></msub></mrow></math> 和 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math> 的区间内有 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></math> 阶导数，那么</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>k</mi><mo>&#x0003D;</mo><mn>0</mn></mrow><mrow><mi>n</mi></mrow></munderover><mfrac><mrow><msup><mi>f</mi><mrow><mo stretchy="false">&#x00028;</mo><mi>k</mi><mo stretchy="false">&#x00029;</mo></mrow></msup><mo stretchy="false">&#x00028;</mo><msub><mi>x</mi><mn>0</mn></msub><mo stretchy="false">&#x00029;</mo></mrow><mrow><mi>k</mi><mo>&#x00021;</mo></mrow></mfrac><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x02212;</mo><msub><mi>x</mi><mn>0</mn></msub><msup><mo stretchy="false">&#x00029;</mo><mi>k</mi></msup><mo>&#x0002B;</mo><msub><mi>R</mi><mi>n</mi></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>R</mi><mi>n</mi></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 称为余项。</p>
+<p><strong>拉格朗日余项</strong>：存在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BE;</mi></mrow></math> 介于 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>x</mi><mn>0</mn></msub></mrow></math> 和 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math> 之间，使得</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>R</mi><mi>n</mi></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><msup><mi>f</mi><mrow><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></msup><mo stretchy="false">&#x00028;</mo><mi>&#x003BE;</mi><mo stretchy="false">&#x00029;</mo></mrow><mrow><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x00021;</mo></mrow></mfrac><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x02212;</mo><msub><mi>x</mi><mn>0</mn></msub><msup><mo stretchy="false">&#x00029;</mo><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msup></mrow></math></div>
+<p><strong>意义</strong>：泰勒多项式是近似，余项是误差。如果能证明 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>R</mi><mi>n</mi></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02192;</mo><mn>0</mn></mrow></math>，那么泰勒级数就收敛到 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+<p><strong>例</strong>：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>e</mi><mi>x</mi></msup></mrow></math> 在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>x</mi><mn>0</mn></msub><mo>&#x0003D;</mo><mn>0</mn></mrow></math> 处。它的各阶导数都是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>e</mi><mi>x</mi></msup></mrow></math>，所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>e</mi><mi>x</mi></msup><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002B;</mo><mi>x</mi><mo>&#x0002B;</mo><mfrac><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow><mrow><mn>2</mn><mo>&#x00021;</mo></mrow></mfrac><mo>&#x0002B;</mo><mo>&#x022EF;</mo><mo>&#x0002B;</mo><mfrac><mrow><msup><mi>x</mi><mi>n</mi></msup></mrow><mrow><mi>n</mi><mo>&#x00021;</mo></mrow></mfrac><mo>&#x0002B;</mo><mfrac><mrow><msup><mi>e</mi><mi>&#x003BE;</mi></msup></mrow><mrow><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x00021;</mo></mrow></mfrac><msup><mi>x</mi><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msup></mrow></math></div>
+<p>当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math> 固定时，余项趋于 0，所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>e</mi><mi>x</mi></msup><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>0</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><msup><mi>x</mi><mi>n</mi></msup></mrow><mrow><mi>n</mi><mo>&#x00021;</mo></mrow></mfrac></mrow></math></div>
+<hr>
+<h2>9. 级数的应用</h2>
+<h3>应用一：近似计算</h3>
+<p><strong>例</strong>：用泰勒多项式近似 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>e</mi></mrow></math>。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>e</mi><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>0</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi><mo>&#x00021;</mo></mrow></mfrac><mo>&#x02248;</mo><mn>1</mn><mo>&#x0002B;</mo><mn>1</mn><mo>&#x0002B;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn><mo>&#x00021;</mo></mrow></mfrac><mo>&#x0002B;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>3</mn><mo>&#x00021;</mo></mrow></mfrac><mo>&#x0002B;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>4</mn><mo>&#x00021;</mo></mrow></mfrac><mo>&#x0002B;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>5</mn><mo>&#x00021;</mo></mrow></mfrac></mrow></math></div>
+<p>计算：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>1</mn><mo>&#x0002B;</mo><mn>1</mn><mo>&#x0002B;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>&#x0002B;</mo><mfrac><mn>1</mn><mn>6</mn></mfrac><mo>&#x0002B;</mo><mfrac><mn>1</mn><mrow><mn>24</mn></mrow></mfrac><mo>&#x0002B;</mo><mfrac><mn>1</mn><mrow><mn>120</mn></mrow></mfrac><mo>&#x0003D;</mo><mn>2.716666</mn><mi>&#x02026;</mi></mrow></math></div>
+<p>误差估计：余项</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>R</mi><mn>5</mn></msub><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><msup><mi>e</mi><mi>&#x003BE;</mi></msup></mrow><mrow><mn>6</mn><mo>&#x00021;</mo></mrow></mfrac><mo>&#x0002C;</mo><mspace width="2em" /><mn>0</mn><mo>&#x0003C;</mo><mi>&#x003BE;</mi><mo>&#x0003C;</mo><mn>1</mn></mrow></math></div>
+<p>因为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>e</mi><mi>&#x003BE;</mi></msup><mo>&#x0003C;</mo><mi>e</mi><mo>&#x0003C;</mo><mn>3</mn></mrow></math>，所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><msub><mi>R</mi><mn>5</mn></msub><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x0003C;</mo><mfrac><mrow><mn>3</mn></mrow><mrow><mn>720</mn></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>240</mn></mrow></mfrac><mo>&#x02248;</mo><mn>0.00417</mn></mrow></math></div>
+<h3>应用二：求极限</h3>
+<p><strong>例 1</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></munder><mfrac><mrow><msup><mi>e</mi><mi>x</mi></msup><mo>&#x02212;</mo><mn>1</mn><mo>&#x02212;</mo><mi>x</mi></mrow><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow></mfrac></mrow></math></div>
+<p>展开：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>e</mi><mi>x</mi></msup><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002B;</mo><mi>x</mi><mo>&#x0002B;</mo><mfrac><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow><mrow><mn>2</mn><mo>&#x00021;</mo></mrow></mfrac><mo>&#x0002B;</mo><mfrac><mrow><msup><mi>x</mi><mn>3</mn></msup></mrow><mrow><mn>3</mn><mo>&#x00021;</mo></mrow></mfrac><mo>&#x0002B;</mo><mo>&#x022EF;</mo></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><msup><mi>e</mi><mi>x</mi></msup><mo>&#x02212;</mo><mn>1</mn><mo>&#x02212;</mo><mi>x</mi></mrow><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mfrac><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow><mrow><mn>2</mn><mo>&#x00021;</mo></mrow></mfrac><mo>&#x0002B;</mo><mfrac><mrow><msup><mi>x</mi><mn>3</mn></msup></mrow><mrow><mn>3</mn><mo>&#x00021;</mo></mrow></mfrac><mo>&#x0002B;</mo><mo>&#x022EF;</mo></mrow><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>&#x0002B;</mo><mfrac><mrow><mi>x</mi></mrow><mrow><mn>6</mn></mrow></mfrac><mo>&#x0002B;</mo><mo>&#x022EF;</mo><mo>&#x02192;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow></math></div>
+<p><strong>例 2</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></munder><mfrac><mrow><mi>sin</mi><mi>x</mi><mo>&#x02212;</mo><mi>x</mi></mrow><mrow><msup><mi>x</mi><mn>3</mn></msup></mrow></mfrac></mrow></math></div>
+<p>展开：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>sin</mi><mi>x</mi><mo>&#x0003D;</mo><mi>x</mi><mo>&#x02212;</mo><mfrac><mrow><msup><mi>x</mi><mn>3</mn></msup></mrow><mrow><mn>3</mn><mo>&#x00021;</mo></mrow></mfrac><mo>&#x0002B;</mo><mfrac><mrow><msup><mi>x</mi><mn>5</mn></msup></mrow><mrow><mn>5</mn><mo>&#x00021;</mo></mrow></mfrac><mo>&#x02212;</mo><mo>&#x022EF;</mo></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mi>sin</mi><mi>x</mi><mo>&#x02212;</mo><mi>x</mi></mrow><mrow><msup><mi>x</mi><mn>3</mn></msup></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mo>&#x02212;</mo><mfrac><mrow><msup><mi>x</mi><mn>3</mn></msup></mrow><mrow><mn>6</mn></mrow></mfrac><mo>&#x0002B;</mo><mfrac><mrow><msup><mi>x</mi><mn>5</mn></msup></mrow><mrow><mn>120</mn></mrow></mfrac><mo>&#x02212;</mo><mo>&#x022EF;</mo></mrow><mrow><msup><mi>x</mi><mn>3</mn></msup></mrow></mfrac><mo>&#x0003D;</mo><mo>&#x02212;</mo><mfrac><mn>1</mn><mn>6</mn></mfrac><mo>&#x0002B;</mo><mfrac><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow><mrow><mn>120</mn></mrow></mfrac><mo>&#x02212;</mo><mo>&#x022EF;</mo><mo>&#x02192;</mo><mo>&#x02212;</mo><mfrac><mn>1</mn><mn>6</mn></mfrac></mrow></math></div>
+<h3>应用三：近似积分</h3>
+<p><strong>例</strong>：估计</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><msup><mi>e</mi><mrow><mo>&#x02212;</mo><msup><mi>x</mi><mn>2</mn></msup></mrow></msup><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></math></div>
+<p>先展开：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>e</mi><mrow><mo>&#x02212;</mo><msup><mi>x</mi><mn>2</mn></msup></mrow></msup><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>0</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup><msup><mi>x</mi><mrow><mn>2</mn><mi>n</mi></mrow></msup></mrow><mrow><mi>n</mi><mo>&#x00021;</mo></mrow></mfrac><mo>&#x0003D;</mo><mn>1</mn><mo>&#x02212;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mfrac><mrow><msup><mi>x</mi><mn>4</mn></msup></mrow><mrow><mn>2</mn><mo>&#x00021;</mo></mrow></mfrac><mo>&#x02212;</mo><mfrac><mrow><msup><mi>x</mi><mn>6</mn></msup></mrow><mrow><mn>3</mn><mo>&#x00021;</mo></mrow></mfrac><mo>&#x0002B;</mo><mo>&#x022EF;</mo></mrow></math></div>
+<p>逐项积分：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><msup><mi>e</mi><mrow><mo>&#x02212;</mo><msup><mi>x</mi><mn>2</mn></msup></mrow></msup><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>0</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup></mrow><mrow><mi>n</mi><mo>&#x00021;</mo><mo stretchy="false">&#x00028;</mo><mn>2</mn><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></mfrac><mo>&#x0003D;</mo><mn>1</mn><mo>&#x02212;</mo><mfrac><mn>1</mn><mn>3</mn></mfrac><mo>&#x0002B;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>10</mn></mrow></mfrac><mo>&#x02212;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>42</mn></mrow></mfrac><mo>&#x0002B;</mo><mo>&#x022EF;</mo></mrow></math></div>
+<p>取前 3 项：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>1</mn><mo>&#x02212;</mo><mfrac><mn>1</mn><mn>3</mn></mfrac><mo>&#x0002B;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>10</mn></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>23</mn></mrow><mrow><mn>30</mn></mrow></mfrac><mo>&#x02248;</mo><mn>0.7667</mn></mrow></math></div>
+<p>这是交错级数，误差不超过下一项的绝对值：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mn>42</mn></mrow></mfrac><mo>&#x02248;</mo><mn>0.0238</mn></mrow></math></div>
+<hr>
+<h2>10. 易错点</h2>
+<ol>
+<li><strong>收敛半径公式里的系数是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>a</mi><mi>n</mi></msub></mrow></math></strong>，不是整个通项。先把 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math> 的部分分离出来。</li>
+<li><strong>端点必须单独判断</strong>，不能直接写开区间或闭区间。</li>
+<li><strong>收敛半径不变，不代表收敛域不变</strong>。求导、积分后端点可能变化。</li>
+<li><strong>泰勒级数不一定收敛到原函数</strong>，要看余项是否趋于 0。</li>
+<li><strong>展开阶数要够</strong>。求极限时，如果分母是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>x</mi><mn>3</mn></msup></mrow></math>，分子要展开到 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>x</mi><mn>3</mn></msup></mrow></math> 项。</li>
+<li><strong><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>ln</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002B;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 的展开在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>1</mn></mrow></math> 处发散</strong>，在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math> 处收敛。</li>
+<li><strong>不要漏掉收敛区间中心</strong>。<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x02212;</mo><mn>2</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup></mrow></math> 的中心是 2，不是 0。</li>
+</ol>
+<hr>
+<h2>11. 练习</h2>
+<ol>
+<li>
+<p>求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></msubsup><mfrac><mrow><msup><mi>x</mi><mi>n</mi></msup></mrow><mrow><msup><mn>2</mn><mi>n</mi></msup></mrow></mfrac></mrow></math> 的收敛半径和收敛域。</p>
+</li>
+<li>
+<p>求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></msubsup><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002B;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow></mfrac></mrow></math> 的收敛半径和收敛域。</p>
+</li>
+<li>
+<p>求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></msubsup><mi>n</mi><mspace width="0.167em" /><msup><mi>x</mi><mi>n</mi></msup></mrow></math> 的收敛半径和收敛域。</p>
+</li>
+<li>
+<p>求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mi>x</mi></mrow></msup></mrow></math> 的麦克劳林级数及收敛半径。</p>
+</li>
+<li>
+<p>求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>sin</mi><mo stretchy="false">&#x00028;</mo><msup><mi>x</mi><mn>2</mn></msup><mo stretchy="false">&#x00029;</mo></mrow></math> 的麦克劳林级数。</p>
+</li>
+<li>
+<p>利用级数求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></msub><mfrac><mrow><mi>sin</mi><mi>x</mi><mo>&#x02212;</mo><mi>x</mi></mrow><mrow><msup><mi>x</mi><mn>3</mn></msup></mrow></mfrac></mrow></math>。</p>
+</li>
+<li>
+<p>用前 3 个非零项近似 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><msup><mi>e</mi><mrow><mo>&#x02212;</mo><msup><mi>x</mi><mn>2</mn></msup></mrow></msup><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></math>，并给出误差上界。</p>
+</li>
+<li>
+<p>求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></msubsup><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mn>2</mn><mi>x</mi><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup></mrow><mrow><mi>n</mi></mrow></mfrac></mrow></math> 的收敛半径和收敛域。</p>
+</li>
+</ol>
+<hr>
+<h2>12. 答案与简解</h2>
+<details>
+<summary>点击展开（做完再看）</summary>
+<p><strong>1.</strong> 收敛半径 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>R</mi><mo>&#x0003D;</mo><mn>2</mn></mrow></math>，收敛域为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+<p>系数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>a</mi><mi>n</mi></msub><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mn>2</mn><mi>n</mi></msup></mrow></mfrac></mrow></math>，</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mfrac><mrow><msub><mi>a</mi><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub></mrow><mrow><msub><mi>a</mi><mi>n</mi></msub></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>R</mi><mo>&#x0003D;</mo><mn>2</mn></mrow></math></div>
+<p>端点 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mi>&#x000B1;</mi><mn>2</mn></mrow></math> 时，通项为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mi>&#x000B1;</mi><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup></mrow></math>，不趋于 0，发散。</p>
+<p><strong>2.</strong> 收敛半径 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>R</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math>，收敛域为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><mo>&#x02212;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">]</mo></mrow></math>。</p>
+<p>中心 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>x</mi><mn>0</mn></msub><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>1</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>a</mi><mi>n</mi></msub><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow></mfrac></mrow></math>，</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mfrac><mrow><msub><mi>a</mi><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub></mrow><mrow><msub><mi>a</mi><mi>n</mi></msub></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x0003D;</mo><mfrac><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow><mrow><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup></mrow></mfrac><mo>&#x02192;</mo><mn>1</mn><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>R</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math></div>
+<p>端点：</p>
+<ul>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>2</mn></mrow></math>：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow></mfrac></mrow></math> 绝对收敛；</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math>：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow></mfrac></mrow></math> 收敛。</li>
+</ul>
+<p>所以收敛域为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><mo>&#x02212;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">]</mo></mrow></math>。</p>
+<p><strong>3.</strong> 收敛半径 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>R</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math>，收敛域为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+<p><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>a</mi><mi>n</mi></msub><mo>&#x0003D;</mo><mi>n</mi></mrow></math>，</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mfrac><mrow><msub><mi>a</mi><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub></mrow><mrow><msub><mi>a</mi><mi>n</mi></msub></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x0003D;</mo><mfrac><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow><mrow><mi>n</mi></mrow></mfrac><mo>&#x02192;</mo><mn>1</mn><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>R</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math></div>
+<p>端点 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mi>&#x000B1;</mi><mn>1</mn></mrow></math> 时，通项为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x000B1;</mi><mi>n</mi></mrow></math>，不趋于 0，发散。</p>
+<p><strong>4.</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mi>x</mi></mrow></msup><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>0</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup><msup><mi>x</mi><mi>n</mi></msup></mrow><mrow><mi>n</mi><mo>&#x00021;</mo></mrow></mfrac></mrow></math></div>
+<p>收敛半径 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>R</mi><mo>&#x0003D;</mo><mo>&#x0002B;</mo><mo>&#x0221E;</mo></mrow></math>。</p>
+<p><strong>5.</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>sin</mi><mo stretchy="false">&#x00028;</mo><msup><mi>x</mi><mn>2</mn></msup><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>0</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup><msup><mi>x</mi><mrow><mn>4</mn><mi>n</mi><mo>&#x0002B;</mo><mn>2</mn></mrow></msup></mrow><mrow><mo stretchy="false">&#x00028;</mo><mn>2</mn><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x00021;</mo></mrow></mfrac><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x02212;</mo><mfrac><mrow><msup><mi>x</mi><mn>6</mn></msup></mrow><mrow><mn>3</mn><mo>&#x00021;</mo></mrow></mfrac><mo>&#x0002B;</mo><mfrac><mrow><msup><mi>x</mi><mrow><mn>10</mn></mrow></msup></mrow><mrow><mn>5</mn><mo>&#x00021;</mo></mrow></mfrac><mo>&#x02212;</mo><mo>&#x022EF;</mo></mrow></math></div>
+<p><strong>6.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02212;</mo><mfrac><mn>1</mn><mn>6</mn></mfrac></mrow></math>。见本课应用二例 2。</p>
+<p><strong>7.</strong> 近似值为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mn>23</mn></mrow><mrow><mn>30</mn></mrow></mfrac></mrow></math>，误差上界为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mn>42</mn></mrow></mfrac></mrow></math>。见本课应用三。</p>
+<p><strong>8.</strong> 收敛半径 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>R</mi><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow></math>，收敛域为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><mo>&#x02212;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>&#x0002C;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow></mrow></math>。</p>
+<p>通项为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><msup><mn>2</mn><mi>n</mi></msup><msup><mi>x</mi><mi>n</mi></msup></mrow><mrow><mi>n</mi></mrow></mfrac></mrow></math>，系数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>a</mi><mi>n</mi></msub><mo>&#x0003D;</mo><mfrac><mrow><msup><mn>2</mn><mi>n</mi></msup></mrow><mrow><mi>n</mi></mrow></mfrac></mrow></math>，</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mfrac><mrow><msub><mi>a</mi><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub></mrow><mrow><msub><mi>a</mi><mi>n</mi></msub></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x0003D;</mo><mfrac><mrow><msup><mn>2</mn><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msup></mrow><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac><mo>&#x000B7;</mo><mfrac><mrow><mi>n</mi></mrow><mrow><msup><mn>2</mn><mi>n</mi></msup></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>2</mn><mi>n</mi></mrow><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac><mo>&#x02192;</mo><mn>2</mn><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>R</mi><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow></math></div>
+<p>端点：</p>
+<ul>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow></math>：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi></mrow></mfrac></mrow></math>，发散；</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow></math>：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup></mrow><mrow><mi>n</mi></mrow></mfrac></mrow></math>，收敛。</li>
+</ul>
+</details>
+<hr>
+<h2>13. 下节预告</h2>
+<p><strong>第 22 课：傅里叶级数初步（选学）</strong></p>
+<ul>
+<li>周期函数的三角级数展开</li>
+<li>傅里叶系数</li>
+<li>方波的傅里叶级数</li>
+<li>收敛性与吉布斯现象</li>
+</ul>
+<hr>
+<h2>自查清单</h2>
+<ul>
+<li>[ ] 会求幂级数的收敛半径</li>
+<li>[ ] 知道端点要单独判断</li>
+<li>[ ] 会用逐项求导、逐项积分</li>
+<li>[ ] 能默写五个基本泰勒展开</li>
+<li>[ ] 知道泰勒级数不一定收敛到原函数</li>
+<li>[ ] 会用级数求简单极限</li>
+<li>[ ] 会用交错级数估计近似误差</li>
+</ul>
+<footer>微积分讲义 · 数学公式使用 MathML 渲染，建议使用 Chrome / Edge / Firefox 打开</footer>
+</main>
+</body>
+</html>

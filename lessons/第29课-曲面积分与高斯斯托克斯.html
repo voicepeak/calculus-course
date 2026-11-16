@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>微积分进阶 · 第 29 课：曲面积分与高斯、斯托克斯公式</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --quote-bg: #f6f8fa;
+  --code-bg: #eff2f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --border: #30363d;
+    --accent: #4493f8;
+    --quote-bg: #161b22;
+    --code-bg: #1f242c;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; font-weight: 650; }
+h1 { font-size: 2rem; margin: 0 0 .8em; padding-bottom: .35em; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 2.2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.2rem; margin: 1.8em 0 .55em; }
+p { margin: .85em 0; }
+a { color: var(--accent); }
+blockquote {
+  margin: 1em 0;
+  padding: .6em 1em;
+  border-left: 4px solid var(--accent);
+  background: var(--quote-bg);
+  color: var(--muted);
+  border-radius: 4px;
+}
+blockquote p { margin: .25em 0; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: .96em;
+  overflow: hidden;
+}
+th, td { border: 1px solid var(--border); padding: .45em .7em; text-align: left; vertical-align: top; }
+th { background: var(--quote-bg); font-weight: 600; }
+details {
+  margin: 1.2em 0;
+  padding: .8em 1em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--quote-bg);
+}
+summary { cursor: pointer; font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+ul, ol { padding-left: 1.7em; }
+li { margin: .3em 0; }
+.math-block {
+  margin: 1.15em 0;
+  padding: .7em .9em;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--quote-bg);
+  border-radius: 6px;
+}
+math { font-size: 1.14em; line-height: 1.2; }
+math[display="inline"] { font-size: 1.05em; vertical-align: baseline; }
+.math-block math { font-size: 1.24em; }
+.math-fallback, .math-fallback-block {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .08em .3em;
+  border-radius: 3px;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .12em .35em;
+  border-radius: 3px;
+  font-size: .92em;
+}
+pre code { display: block; padding: .8em 1em; overflow-x: auto; }
+footer { margin-top: 4em; color: var(--muted); font-size: .85em; text-align: center; }
+@media print {
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  .math-block { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>微积分进阶 · 第 29 课：曲面积分与高斯、斯托克斯公式</h1>
+<blockquote>
+<p><strong>本课目标</strong>：理解第一类、第二类曲面积分，掌握高斯公式和斯托克斯公式，会用它们简化计算。</p>
+<p><strong>使用方法</strong>：第一类看面积，第二类看通量。高斯公式处理闭曲面，斯托克斯公式处理空间闭曲线。</p>
+</blockquote>
+<hr>
+<h2>目录</h2>
+<ol>
+<li>曲面与面积元素</li>
+<li>第一类曲面积分</li>
+<li>第二类曲面积分与通量</li>
+<li>高斯公式</li>
+<li>斯托克斯公式</li>
+<li>散度与旋度</li>
+<li>易错点</li>
+<li>练习</li>
+<li>答案与简解</li>
+<li>下节预告</li>
+</ol>
+<hr>
+<h2>1. 曲面与面积元素</h2>
+<p>设曲面 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A3;</mi></mrow></math> 由参数方程给出：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mover><mi>r</mi><mo stretchy="true">&#x02192;</mo></mover><mo stretchy="false">&#x00028;</mo><mi>u</mi><mo>&#x0002C;</mo><mi>v</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00028;</mo><mi>u</mi><mo>&#x0002C;</mo><mi>v</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00028;</mo><mi>u</mi><mo>&#x0002C;</mo><mi>v</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mi>z</mi><mo stretchy="false">&#x00028;</mo><mi>u</mi><mo>&#x0002C;</mo><mi>v</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mo stretchy="false">&#x00028;</mo><mi>u</mi><mo>&#x0002C;</mo><mi>v</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02208;</mo><mi>D</mi></mrow></math></div>
+<p>则面积元素为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>d</mi><mi>S</mi><mo>&#x0003D;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><msub><mover><mi>r</mi><mo stretchy="true">&#x02192;</mo></mover><mi>u</mi></msub><mo>&#x000D7;</mo><msub><mover><mi>r</mi><mo stretchy="true">&#x02192;</mo></mover><mi>v</mi></msub><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mspace width="0.167em" /><mi>d</mi><mi>u</mi><mspace width="0.167em" /><mi>d</mi><mi>v</mi></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mover><mi>r</mi><mo stretchy="true">&#x02192;</mo></mover><mi>u</mi></msub></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mover><mi>r</mi><mo stretchy="true">&#x02192;</mo></mover><mi>v</mi></msub></mrow></math> 分别是对 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>u</mi></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>v</mi></mrow></math> 的偏导向量。</p>
+<p><strong>常见情形：曲面是函数图像</strong></p>
+<p>如果</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>z</mi><mo>&#x0003D;</mo><mi>z</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02208;</mo><mi>D</mi></mrow></math></div>
+<p>则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>d</mi><mi>S</mi><mo>&#x0003D;</mo><msqrt><mrow><mn>1</mn><mo>&#x0002B;</mo><msubsup><mi>z</mi><mi>x</mi><mn>2</mn></msubsup><mo>&#x0002B;</mo><msubsup><mi>z</mi><mi>y</mi><mn>2</mn></msubsup></mrow></msqrt><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi></mrow></math></div>
+<p><strong>例</strong>：平面 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>z</mi><mo>&#x0003D;</mo><mi>x</mi><mo>&#x0002B;</mo><mi>y</mi></mrow></math> 在区域 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x02264;</mo><mi>x</mi><mo>&#x02264;</mo><mn>1</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x02264;</mo><mi>y</mi><mo>&#x02264;</mo><mn>1</mn></mrow></math> 上。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>z</mi><mi>x</mi></msub><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>z</mi><mi>y</mi></msub><mo>&#x0003D;</mo><mn>1</mn></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>d</mi><mi>S</mi><mo>&#x0003D;</mo><msqrt><mrow><mn>1</mn><mo>&#x0002B;</mo><mn>1</mn><mo>&#x0002B;</mo><mn>1</mn></mrow></msqrt><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mo>&#x0003D;</mo><msqrt><mn>3</mn></msqrt><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi></mrow></math></div>
+<hr>
+<h2>2. 第一类曲面积分</h2>
+<p><strong>定义</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222C;</mo><mi>&#x003A3;</mi></msub><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo>&#x0002C;</mo><mi>z</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>S</mi></mrow></math></div>
+<p><strong>物理意义</strong>：如果 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi></mrow></math> 是曲面薄壳的面密度，那么积分就是它的质量。</p>
+<p><strong>几何意义</strong>：当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math> 时，</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222C;</mo><mi>&#x003A3;</mi></msub><mn>1</mn><mspace width="0.167em" /><mi>d</mi><mi>S</mi><mo>&#x0003D;</mo><mtext>曲面&#x000A0;</mtext><mi>&#x003A3;</mi><mtext>&#x000A0;的面积</mtext></mrow></math></div>
+<p><strong>特点</strong>：与曲面的方向无关。</p>
+<p><strong>例 1</strong>：计算</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222C;</mo><mi>&#x003A3;</mi></msub><mi>z</mi><mspace width="0.167em" /><mi>d</mi><mi>S</mi></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A3;</mi></mrow></math> 是平面 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>z</mi><mo>&#x0003D;</mo><mi>x</mi><mo>&#x0002B;</mo><mi>y</mi></mrow></math> 在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x02264;</mo><mi>x</mi><mo>&#x02264;</mo><mn>1</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x02264;</mo><mi>y</mi><mo>&#x02264;</mo><mn>1</mn></mrow></math> 上的部分。</p>
+<p>由第 1 节，</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>d</mi><mi>S</mi><mo>&#x0003D;</mo><msqrt><mn>3</mn></msqrt><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222C;</mo><mi>&#x003A3;</mi></msub><mi>z</mi><mspace width="0.167em" /><mi>d</mi><mi>S</mi><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002B;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><msqrt><mn>3</mn></msqrt><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0003D;</mo><msqrt><mn>3</mn></msqrt><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mo>&#x0002B;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><mi>y</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0003D;</mo><msqrt><mn>3</mn></msqrt><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>&#x0002B;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0003D;</mo><msqrt><mn>3</mn></msqrt></mrow></math></div>
+<p><strong>例 2</strong>：半径为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>R</mi></mrow></math> 的球面面积。</p>
+<p>球面参数化：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>x</mi><mo>&#x0003D;</mo><mi>R</mi><mi>sin</mi><mi>&#x003C6;</mi><mi>cos</mi><mi>&#x003B8;</mi><mo>&#x0002C;</mo><mspace width="1em" /><mi>y</mi><mo>&#x0003D;</mo><mi>R</mi><mi>sin</mi><mi>&#x003C6;</mi><mi>sin</mi><mi>&#x003B8;</mi><mo>&#x0002C;</mo><mspace width="1em" /><mi>z</mi><mo>&#x0003D;</mo><mi>R</mi><mi>cos</mi><mi>&#x003C6;</mi></mrow></math></div>
+<p>其中</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>0</mn><mo>&#x02264;</mo><mi>&#x003C6;</mi><mo>&#x02264;</mo><mi>&#x003C0;</mi><mo>&#x0002C;</mo><mspace width="2em" /><mn>0</mn><mo>&#x02264;</mo><mi>&#x003B8;</mi><mo>&#x0003C;</mo><mn>2</mn><mi>&#x003C0;</mi></mrow></math></div>
+<p>面积元素为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>d</mi><mi>S</mi><mo>&#x0003D;</mo><msup><mi>R</mi><mn>2</mn></msup><mi>sin</mi><mi>&#x003C6;</mi><mspace width="0.167em" /><mi>d</mi><mi>&#x003C6;</mi><mspace width="0.167em" /><mi>d</mi><mi>&#x003B8;</mi></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>S</mi><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mrow><mn>2</mn><mi>&#x003C0;</mi></mrow></msubsup><msubsup><mo>&#x0222B;</mo><mn>0</mn><mrow><mi>&#x003C0;</mi></mrow></msubsup><msup><mi>R</mi><mn>2</mn></msup><mi>sin</mi><mi>&#x003C6;</mi><mspace width="0.167em" /><mi>d</mi><mi>&#x003C6;</mi><mspace width="0.167em" /><mi>d</mi><mi>&#x003B8;</mi><mo>&#x0003D;</mo><mn>2</mn><mi>&#x003C0;</mi><msup><mi>R</mi><mn>2</mn></msup><mo>&#x000B7;</mo><mn>2</mn><mo>&#x0003D;</mo><mn>4</mn><mi>&#x003C0;</mi><msup><mi>R</mi><mn>2</mn></msup></mrow></math></div>
+<hr>
+<h2>3. 第二类曲面积分与通量</h2>
+<p><strong>定义</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222C;</mo><mi>&#x003A3;</mi></msub><mi>P</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mspace width="0.167em" /><mi>d</mi><mi>z</mi><mo>&#x0002B;</mo><mi>Q</mi><mspace width="0.167em" /><mi>d</mi><mi>z</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mi>R</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi></mrow></math></div>
+<p>也可以写成向量形式：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222C;</mo><mi>&#x003A3;</mi></msub><mover><mi>F</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x000B7;</mo><mover><mi>n</mi><mo stretchy="true">&#x02192;</mo></mover><mspace width="0.167em" /><mi>d</mi><mi>S</mi></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover><mi>F</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo>&#x0002C;</mo><mi>Q</mi><mo>&#x0002C;</mo><mi>R</mi><mo stretchy="false">&#x00029;</mo></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover><mi>n</mi><mo stretchy="true">&#x02192;</mo></mover></mrow></math> 是曲面的单位法向量。</p>
+<p><strong>物理意义</strong>：如果 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover><mi>F</mi><mo stretchy="true">&#x02192;</mo></mover></mrow></math> 是流速场，那么积分表示单位时间穿过曲面 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A3;</mi></mrow></math> 的流量，称为<strong>通量</strong>。</p>
+<p><strong>方向</strong>：第二类曲面积分与曲面的侧有关。换侧要变号。</p>
+<p><strong>曲面是函数图像 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>z</mi><mo>&#x0003D;</mo><mi>z</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo></mrow></math>，取上侧</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mover><mi>n</mi><mo stretchy="true">&#x02192;</mo></mover><mspace width="0.167em" /><mi>d</mi><mi>S</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><msub><mi>z</mi><mi>x</mi></msub><mo>&#x0002C;</mo><mo>&#x02212;</mo><msub><mi>z</mi><mi>y</mi></msub><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222C;</mo><mi>&#x003A3;</mi></msub><mover><mi>F</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x000B7;</mo><mover><mi>n</mi><mo stretchy="true">&#x02192;</mo></mover><mspace width="0.167em" /><mi>d</mi><mi>S</mi><mo>&#x0003D;</mo><msub><mo>&#x0222C;</mo><mi>D</mi></msub><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mo>&#x02212;</mo><mi>P</mi><msub><mi>z</mi><mi>x</mi></msub><mo>&#x02212;</mo><mi>Q</mi><msub><mi>z</mi><mi>y</mi></msub><mo>&#x0002B;</mo><mi>R</mi><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mi>d</mi><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>D</mi></mrow></math> 是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A3;</mi></mrow></math> 在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mi>y</mi></mrow></math> 平面上的投影。</p>
+<p><strong>例</strong>：计算</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222C;</mo><mi>&#x003A3;</mi></msub><mover><mi>F</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x000B7;</mo><mover><mi>n</mi><mo stretchy="true">&#x02192;</mo></mover><mspace width="0.167em" /><mi>d</mi><mi>S</mi></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover><mi>F</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A3;</mi></mrow></math> 是平面 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>z</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math> 上的单位正方形 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x02264;</mo><mi>x</mi><mo>&#x02264;</mo><mn>1</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x02264;</mo><mi>y</mi><mo>&#x02264;</mo><mn>1</mn></mrow></math>，取上侧。</p>
+<p>在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>z</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math> 上，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover><mi>n</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mover><mi>F</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x000B7;</mo><mover><mi>n</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0003D;</mo><mn>1</mn></mrow></math></div>
+<p>面积是 1，所以通量为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222C;</mo><mi>&#x003A3;</mi></msub><mn>1</mn><mspace width="0.167em" /><mi>d</mi><mi>S</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math></div>
+<hr>
+<h2>4. 高斯公式</h2>
+<p><strong>高斯公式</strong>（散度定理）：设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A9;</mi></mrow></math> 是由分片光滑闭曲面 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A3;</mi></mrow></math> 围成的空间区域，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A3;</mi></mrow></math> 取外侧，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover><mi>F</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo>&#x0002C;</mo><mi>Q</mi><mo>&#x0002C;</mo><mi>R</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 有连续偏导数，则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222C;</mo><mi>&#x003A3;</mi></msub><mi>P</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mspace width="0.167em" /><mi>d</mi><mi>z</mi><mo>&#x0002B;</mo><mi>Q</mi><mspace width="0.167em" /><mi>d</mi><mi>z</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mi>R</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mo>&#x0003D;</mo><msub><mo>&#x0222D;</mo><mi>&#x003A9;</mi></msub><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mrow><mo>&#x02202;</mo><mi>P</mi></mrow><mrow><mo>&#x02202;</mo><mi>x</mi></mrow></mfrac><mo>&#x0002B;</mo><mfrac><mrow><mo>&#x02202;</mo><mi>Q</mi></mrow><mrow><mo>&#x02202;</mo><mi>y</mi></mrow></mfrac><mo>&#x0002B;</mo><mfrac><mrow><mo>&#x02202;</mo><mi>R</mi></mrow><mrow><mo>&#x02202;</mo><mi>z</mi></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mi>d</mi><mi>V</mi></mrow></math></div>
+<p><strong>记忆方法</strong>：闭曲面上的通量，等于内部散度的三重积分。</p>
+<p><strong>条件</strong>：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A3;</mi></mrow></math> 是闭曲面，取外侧。</p>
+<p><strong>例 1</strong>：计算</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222C;</mo><mi>&#x003A3;</mi></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo>&#x0002C;</mo><mi>z</mi><mo stretchy="false">&#x00029;</mo><mo>&#x000B7;</mo><mover><mi>n</mi><mo stretchy="true">&#x02192;</mo></mover><mspace width="0.167em" /><mi>d</mi><mi>S</mi></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A3;</mi></mrow></math> 是半径为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>R</mi></mrow></math> 的球面，取外侧。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo>&#x0003D;</mo><mi>x</mi><mo>&#x0002C;</mo><mspace width="2em" /><mi>Q</mi><mo>&#x0003D;</mo><mi>y</mi><mo>&#x0002C;</mo><mspace width="2em" /><mi>R</mi><mo>&#x0003D;</mo><mi>z</mi></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>P</mi><mi>x</mi></msub><mo>&#x0002B;</mo><msub><mi>Q</mi><mi>y</mi></msub><mo>&#x0002B;</mo><msub><mi>R</mi><mi>z</mi></msub><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002B;</mo><mn>1</mn><mo>&#x0002B;</mo><mn>1</mn><mo>&#x0003D;</mo><mn>3</mn></mrow></math></div>
+<p>由高斯公式：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222C;</mo><mi>&#x003A3;</mi></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo>&#x0002C;</mo><mi>z</mi><mo stretchy="false">&#x00029;</mo><mo>&#x000B7;</mo><mover><mi>n</mi><mo stretchy="true">&#x02192;</mo></mover><mspace width="0.167em" /><mi>d</mi><mi>S</mi><mo>&#x0003D;</mo><msub><mo>&#x0222D;</mo><mi>&#x003A9;</mi></msub><mn>3</mn><mspace width="0.167em" /><mi>d</mi><mi>V</mi><mo>&#x0003D;</mo><mn>3</mn><mo>&#x000B7;</mo><mfrac><mrow><mn>4</mn><mi>&#x003C0;</mi><msup><mi>R</mi><mn>3</mn></msup></mrow><mrow><mn>3</mn></mrow></mfrac><mo>&#x0003D;</mo><mn>4</mn><mi>&#x003C0;</mi><msup><mi>R</mi><mn>3</mn></msup></mrow></math></div>
+<p><strong>验证</strong>：在球面上，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover><mi>n</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0003D;</mo><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo>&#x0002C;</mo><mi>z</mi><mo stretchy="false">&#x00029;</mo></mrow><mrow><mi>R</mi></mrow></mfrac></mrow></math>，所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo>&#x0002C;</mo><mi>z</mi><mo stretchy="false">&#x00029;</mo><mo>&#x000B7;</mo><mover><mi>n</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0003D;</mo><mfrac><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>z</mi><mn>2</mn></msup></mrow><mrow><mi>R</mi></mrow></mfrac><mo>&#x0003D;</mo><mi>R</mi></mrow></math></div>
+<p>通量等于 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>R</mi></mrow></math> 乘以球面面积：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>R</mi><mo>&#x000B7;</mo><mn>4</mn><mi>&#x003C0;</mi><msup><mi>R</mi><mn>2</mn></msup><mo>&#x0003D;</mo><mn>4</mn><mi>&#x003C0;</mi><msup><mi>R</mi><mn>3</mn></msup></mrow></math></div>
+<p><strong>例 2</strong>：计算</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222C;</mo><mi>&#x003A3;</mi></msub><mo stretchy="false">&#x00028;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002C;</mo><msup><mi>y</mi><mn>2</mn></msup><mo>&#x0002C;</mo><msup><mi>z</mi><mn>2</mn></msup><mo stretchy="false">&#x00029;</mo><mo>&#x000B7;</mo><mover><mi>n</mi><mo stretchy="true">&#x02192;</mo></mover><mspace width="0.167em" /><mi>d</mi><mi>S</mi></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A3;</mi></mrow></math> 是单位正方体 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><msup><mo stretchy="false">]</mo><mn>3</mn></msup></mrow></math> 的表面，取外侧。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>P</mi><mi>x</mi></msub><mo>&#x0002B;</mo><msub><mi>Q</mi><mi>y</mi></msub><mo>&#x0002B;</mo><msub><mi>R</mi><mi>z</mi></msub><mo>&#x0003D;</mo><mn>2</mn><mi>x</mi><mo>&#x0002B;</mo><mn>2</mn><mi>y</mi><mo>&#x0002B;</mo><mn>2</mn><mi>z</mi></mrow></math></div>
+<p>由高斯公式：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222C;</mo><mi>&#x003A3;</mi></msub><mo>&#x022EF;</mo><mo>&#x0003D;</mo><msub><mo>&#x0222D;</mo><mrow><mo stretchy="false">[</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><msup><mo stretchy="false">]</mo><mn>3</mn></msup></mrow></msub><mn>2</mn><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002B;</mo><mi>y</mi><mo>&#x0002B;</mo><mi>z</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>V</mi></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0003D;</mo><mn>2</mn><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>&#x0002B;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>&#x0002B;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0003D;</mo><mn>3</mn></mrow></math></div>
+<hr>
+<h2>5. 斯托克斯公式</h2>
+<p><strong>斯托克斯公式</strong>：设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A3;</mi></mrow></math> 是分片光滑的有向曲面，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x00393;</mi></mrow></math> 是它的边界曲线，方向与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A3;</mi></mrow></math> 的法向量满足右手法则，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover><mi>F</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo>&#x0002C;</mo><mi>Q</mi><mo>&#x0002C;</mo><mi>R</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 有连续偏导数，则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222E;</mo><mi>&#x00393;</mi></msub><mi>P</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mi>Q</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mo>&#x0002B;</mo><mi>R</mi><mspace width="0.167em" /><mi>d</mi><mi>z</mi><mo>&#x0003D;</mo><msub><mo>&#x0222C;</mo><mi>&#x003A3;</mi></msub><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mrow><mo>&#x02202;</mo><mi>R</mi></mrow><mrow><mo>&#x02202;</mo><mi>y</mi></mrow></mfrac><mo>&#x02212;</mo><mfrac><mrow><mo>&#x02202;</mo><mi>Q</mi></mrow><mrow><mo>&#x02202;</mo><mi>z</mi></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mi>d</mi><mi>y</mi><mspace width="0.167em" /><mi>d</mi><mi>z</mi><mo>&#x0002B;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mrow><mo>&#x02202;</mo><mi>P</mi></mrow><mrow><mo>&#x02202;</mo><mi>z</mi></mrow></mfrac><mo>&#x02212;</mo><mfrac><mrow><mo>&#x02202;</mo><mi>R</mi></mrow><mrow><mo>&#x02202;</mo><mi>x</mi></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mi>d</mi><mi>z</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mrow><mo>&#x02202;</mo><mi>Q</mi></mrow><mrow><mo>&#x02202;</mo><mi>x</mi></mrow></mfrac><mo>&#x02212;</mo><mfrac><mrow><mo>&#x02202;</mo><mi>P</mi></mrow><mrow><mo>&#x02202;</mo><mi>y</mi></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mi>d</mi><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi></mrow></math></div>
+<p>向量形式：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222E;</mo><mi>&#x00393;</mi></msub><mover><mi>F</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x000B7;</mo><mi>d</mi><mover><mi>r</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0003D;</mo><msub><mo>&#x0222C;</mo><mi>&#x003A3;</mi></msub><mo stretchy="false">&#x00028;</mo><mo>&#x02207;</mo><mo>&#x000D7;</mo><mover><mi>F</mi><mo stretchy="true">&#x02192;</mo></mover><mo stretchy="false">&#x00029;</mo><mo>&#x000B7;</mo><mover><mi>n</mi><mo stretchy="true">&#x02192;</mo></mover><mspace width="0.167em" /><mi>d</mi><mi>S</mi></mrow></math></div>
+<p><strong>记忆方法</strong>：空间闭曲线上的环量，等于曲面上旋度的通量。</p>
+<p><strong>右手法则</strong>：右手四指沿 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x00393;</mi></mrow></math> 的方向弯曲，拇指指向 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A3;</mi></mrow></math> 的法向量方向。</p>
+<p><strong>例</strong>：计算</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222E;</mo><mi>&#x00393;</mi></msub><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x00393;</mi></mrow></math> 是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mi>y</mi></mrow></math> 平面上的单位圆，取逆时针方向。</p>
+<p>取 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A3;</mi></mrow></math> 为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mi>y</mi></mrow></math> 平面上的单位圆盘，法向量 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover><mi>n</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mover><mi>F</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mi>y</mi><mo>&#x0002C;</mo><mi>x</mi><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>旋度：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x02207;</mo><mo>&#x000D7;</mo><mover><mi>F</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0003D;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mtext>&#x000A0;</mtext><mn>0</mn><mo>&#x0002C;</mo><mtext>&#x000A0;</mtext><mfrac><mrow><mo>&#x02202;</mo><mi>x</mi></mrow><mrow><mo>&#x02202;</mo><mi>x</mi></mrow></mfrac><mo>&#x02212;</mo><mfrac><mrow><mo>&#x02202;</mo><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo></mrow><mrow><mo>&#x02202;</mo><mi>y</mi></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222E;</mo><mi>&#x00393;</mi></msub><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mo>&#x0003D;</mo><msub><mo>&#x0222C;</mo><mi>&#x003A3;</mi></msub><mn>2</mn><mspace width="0.167em" /><mi>d</mi><mi>S</mi><mo>&#x0003D;</mo><mn>2</mn><mo>&#x000B7;</mo><mi>&#x003C0;</mi><mo>&#x0003D;</mo><mn>2</mn><mi>&#x003C0;</mi></mrow></math></div>
+<p><strong>直接验证</strong>：令 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mi>cos</mi><mi>t</mi></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>sin</mi><mi>t</mi></mrow></math>，则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222E;</mo><mi>&#x00393;</mi></msub><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mrow><mn>2</mn><mi>&#x003C0;</mi></mrow></msubsup><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mo>&#x02212;</mo><mi>sin</mi><mi>t</mi><mo>&#x000B7;</mo><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mi>sin</mi><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><mi>cos</mi><mi>t</mi><mo>&#x000B7;</mo><mi>cos</mi><mi>t</mi><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mi>d</mi><mi>t</mi><mo>&#x0003D;</mo><mn>2</mn><mi>&#x003C0;</mi></mrow></math></div>
+<hr>
+<h2>6. 散度与旋度</h2>
+<p><strong>散度</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>div</mo><mover><mi>F</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0003D;</mo><mo>&#x02207;</mo><mo>&#x000B7;</mo><mover><mi>F</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0003D;</mo><mfrac><mrow><mo>&#x02202;</mo><mi>P</mi></mrow><mrow><mo>&#x02202;</mo><mi>x</mi></mrow></mfrac><mo>&#x0002B;</mo><mfrac><mrow><mo>&#x02202;</mo><mi>Q</mi></mrow><mrow><mo>&#x02202;</mo><mi>y</mi></mrow></mfrac><mo>&#x0002B;</mo><mfrac><mrow><mo>&#x02202;</mo><mi>R</mi></mrow><mrow><mo>&#x02202;</mo><mi>z</mi></mrow></mfrac></mrow></math></div>
+<p><strong>旋度</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>curl</mo><mover><mi>F</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0003D;</mo><mo>&#x02207;</mo><mo>&#x000D7;</mo><mover><mi>F</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0003D;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mrow><mo>&#x02202;</mo><mi>R</mi></mrow><mrow><mo>&#x02202;</mo><mi>y</mi></mrow></mfrac><mo>&#x02212;</mo><mfrac><mrow><mo>&#x02202;</mo><mi>Q</mi></mrow><mrow><mo>&#x02202;</mo><mi>z</mi></mrow></mfrac><mo>&#x0002C;</mo><mspace width="1em" /><mfrac><mrow><mo>&#x02202;</mo><mi>P</mi></mrow><mrow><mo>&#x02202;</mo><mi>z</mi></mrow></mfrac><mo>&#x02212;</mo><mfrac><mrow><mo>&#x02202;</mo><mi>R</mi></mrow><mrow><mo>&#x02202;</mo><mi>x</mi></mrow></mfrac><mo>&#x0002C;</mo><mspace width="1em" /><mfrac><mrow><mo>&#x02202;</mo><mi>Q</mi></mrow><mrow><mo>&#x02202;</mo><mi>x</mi></mrow></mfrac><mo>&#x02212;</mo><mfrac><mrow><mo>&#x02202;</mo><mi>P</mi></mrow><mrow><mo>&#x02202;</mo><mi>y</mi></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow></mrow></math></div>
+<p><strong>记忆方法</strong>：把 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover><mi>i</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0002C;</mo><mover><mi>j</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0002C;</mo><mover><mi>k</mi><mo stretchy="true">&#x02192;</mo></mover></mrow></math> 放在第一行，把 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mo>&#x02202;</mo></mrow><mrow><mo>&#x02202;</mo><mi>x</mi></mrow></mfrac><mo>&#x0002C;</mo><mfrac><mrow><mo>&#x02202;</mo></mrow><mrow><mo>&#x02202;</mo><mi>y</mi></mrow></mfrac><mo>&#x0002C;</mo><mfrac><mrow><mo>&#x02202;</mo></mrow><mrow><mo>&#x02202;</mo><mi>z</mi></mrow></mfrac></mrow></math> 放在第二行，把 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo>&#x0002C;</mo><mi>Q</mi><mo>&#x0002C;</mo><mi>R</mi></mrow></math> 放在第三行，按三阶行列式展开，就得到上面的公式。</p>
+<p><strong>物理意义</strong>：</p>
+<ul>
+<li>散度描述“源”或“汇”的强弱；</li>
+<li>旋度描述“旋转”的强弱。</li>
+</ul>
+<p><strong>两个重要结论</strong>：</p>
+<ul>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>div</mo><mo stretchy="false">&#x00028;</mo><mo>&#x02207;</mo><mo>&#x000D7;</mo><mover><mi>F</mi><mo stretchy="true">&#x02192;</mo></mover><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math>；</li>
+<li>在单连通区域内，如果 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02207;</mo><mo>&#x000D7;</mo><mover><mi>F</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，则 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover><mi>F</mi><mo stretchy="true">&#x02192;</mo></mover></mrow></math> 是保守场。</li>
+</ul>
+<hr>
+<h2>7. 易错点</h2>
+<ol>
+<li><strong>第一类曲面积分与方向无关，第二类与方向有关</strong>。</li>
+<li><strong>高斯公式要求闭曲面且取外侧</strong>。不是闭曲面不能用。</li>
+<li><strong>斯托克斯公式的方向要满足右手法则</strong>，方向反了会差一个负号。</li>
+<li><strong><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>d</mi><mi>S</mi></mrow></math> 的根号不要漏</strong>：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>d</mi><mi>S</mi><mo>&#x0003D;</mo><msqrt><mrow><mn>1</mn><mo>&#x0002B;</mo><msubsup><mi>z</mi><mi>x</mi><mn>2</mn></msubsup><mo>&#x0002B;</mo><msubsup><mi>z</mi><mi>y</mi><mn>2</mn></msubsup></mrow></msqrt><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi></mrow></math>。</li>
+<li><strong>第二类曲面积分中，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>d</mi><mi>y</mi><mspace width="0.167em" /><mi>d</mi><mi>z</mi></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>d</mi><mi>z</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>d</mi><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi></mrow></math> 的符号由方向决定</strong>。</li>
+<li><strong>高斯公式中散度是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>P</mi><mi>x</mi></msub><mo>&#x0002B;</mo><msub><mi>Q</mi><mi>y</mi></msub><mo>&#x0002B;</mo><msub><mi>R</mi><mi>z</mi></msub></mrow></math></strong>，不是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>P</mi><mi>x</mi></msub><mo>&#x0002B;</mo><msub><mi>Q</mi><mi>x</mi></msub><mo>&#x0002B;</mo><msub><mi>R</mi><mi>x</mi></msub></mrow></math>。</li>
+<li><strong>旋度的三个分量顺序不要记错</strong>，可以用行列式帮助记忆。</li>
+<li><strong>有洞的区域不能直接用高斯公式</strong>，要挖去洞或分段处理。</li>
+</ol>
+<hr>
+<h2>8. 练习</h2>
+<ol>
+<li>
+<p>计算 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>&#x0222C;</mo><mi>&#x003A3;</mi></msub><mi>z</mi><mspace width="0.167em" /><mi>d</mi><mi>S</mi></mrow></math>，其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A3;</mi></mrow></math> 是平面 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>z</mi><mo>&#x0003D;</mo><mi>x</mi><mo>&#x0002B;</mo><mi>y</mi></mrow></math> 在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x02264;</mo><mi>x</mi><mo>&#x02264;</mo><mn>1</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x02264;</mo><mi>y</mi><mo>&#x02264;</mo><mn>1</mn></mrow></math> 上的部分。</p>
+</li>
+<li>
+<p>求半径为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>R</mi></mrow></math> 的球面面积。</p>
+</li>
+<li>
+<p>计算 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>&#x0222C;</mo><mi>&#x003A3;</mi></msub><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x000B7;</mo><mover><mi>n</mi><mo stretchy="true">&#x02192;</mo></mover><mspace width="0.167em" /><mi>d</mi><mi>S</mi></mrow></math>，其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A3;</mi></mrow></math> 是平面 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>z</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math> 上的单位正方形，取上侧。</p>
+</li>
+<li>
+<p>用高斯公式计算 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>&#x0222C;</mo><mi>&#x003A3;</mi></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo>&#x0002C;</mo><mi>z</mi><mo stretchy="false">&#x00029;</mo><mo>&#x000B7;</mo><mover><mi>n</mi><mo stretchy="true">&#x02192;</mo></mover><mspace width="0.167em" /><mi>d</mi><mi>S</mi></mrow></math>，其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A3;</mi></mrow></math> 是半径为 2 的球面，取外侧。</p>
+</li>
+<li>
+<p>用高斯公式计算 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>&#x0222C;</mo><mi>&#x003A3;</mi></msub><mo stretchy="false">&#x00028;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002C;</mo><msup><mi>y</mi><mn>2</mn></msup><mo>&#x0002C;</mo><msup><mi>z</mi><mn>2</mn></msup><mo stretchy="false">&#x00029;</mo><mo>&#x000B7;</mo><mover><mi>n</mi><mo stretchy="true">&#x02192;</mo></mover><mspace width="0.167em" /><mi>d</mi><mi>S</mi></mrow></math>，其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A3;</mi></mrow></math> 是单位正方体 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><msup><mo stretchy="false">]</mo><mn>3</mn></msup></mrow></math> 的表面，取外侧。</p>
+</li>
+<li>
+<p>用斯托克斯公式计算 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>&#x0222E;</mo><mi>&#x00393;</mi></msub><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi></mrow></math>，其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x00393;</mi></mrow></math> 是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mi>y</mi></mrow></math> 平面上的单位圆，取逆时针方向。</p>
+</li>
+<li>
+<p>用斯托克斯公式计算 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>&#x0222E;</mo><mi>&#x00393;</mi></msub><mi>y</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mi>z</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mo>&#x0002B;</mo><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>z</mi></mrow></math>，其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x00393;</mi></mrow></math> 是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mi>y</mi></mrow></math> 平面上的单位圆，取逆时针方向。</p>
+</li>
+<li>
+<p>计算 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover><mi>F</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mi>y</mi><mo>&#x0002C;</mo><mi>x</mi><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 通过单位正方体表面的通量（取外侧）。</p>
+</li>
+</ol>
+<hr>
+<h2>9. 答案与简解</h2>
+<details>
+<summary>点击展开（做完再看）</summary>
+<p><strong>1.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msqrt><mn>3</mn></msqrt></mrow></math>。见本课第一类曲面积分例 1。</p>
+<p><strong>2.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>4</mn><mi>&#x003C0;</mi><msup><mi>R</mi><mn>2</mn></msup></mrow></math>。见本课第一类曲面积分例 2。</p>
+<p><strong>3.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn></mrow></math>。见本课第二类曲面积分例。</p>
+<p><strong>4.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>32</mn><mi>&#x003C0;</mi></mrow></math>。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>P</mi><mi>x</mi></msub><mo>&#x0002B;</mo><msub><mi>Q</mi><mi>y</mi></msub><mo>&#x0002B;</mo><msub><mi>R</mi><mi>z</mi></msub><mo>&#x0003D;</mo><mn>3</mn></mrow></math></div>
+<p>球体积为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mn>4</mn><mi>&#x003C0;</mi><mo>&#x000B7;</mo><msup><mn>2</mn><mn>3</mn></msup></mrow><mrow><mn>3</mn></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>32</mn><mi>&#x003C0;</mi></mrow><mrow><mn>3</mn></mrow></mfrac></mrow></math>，所以通量为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>3</mn><mo>&#x000B7;</mo><mfrac><mrow><mn>32</mn><mi>&#x003C0;</mi></mrow><mrow><mn>3</mn></mrow></mfrac><mo>&#x0003D;</mo><mn>32</mn><mi>&#x003C0;</mi></mrow></math></div>
+<p><strong>5.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>3</mn></mrow></math>。见本课高斯公式例 2。</p>
+<p><strong>6.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mi>&#x003C0;</mi></mrow></math>。见本课斯托克斯公式例。</p>
+<p><strong>7.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02212;</mo><mi>&#x003C0;</mi></mrow></math>。</p>
+<p><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover><mi>F</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mi>y</mi><mo>&#x0002C;</mo><mi>z</mi><mo>&#x0002C;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math>，旋度：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x02207;</mo><mo>&#x000D7;</mo><mover><mi>F</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0003D;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mrow><mo>&#x02202;</mo><mi>x</mi></mrow><mrow><mo>&#x02202;</mo><mi>y</mi></mrow></mfrac><mo>&#x02212;</mo><mfrac><mrow><mo>&#x02202;</mo><mi>z</mi></mrow><mrow><mo>&#x02202;</mo><mi>z</mi></mrow></mfrac><mo>&#x0002C;</mo><mspace width="1em" /><mfrac><mrow><mo>&#x02202;</mo><mi>y</mi></mrow><mrow><mo>&#x02202;</mo><mi>z</mi></mrow></mfrac><mo>&#x02212;</mo><mfrac><mrow><mo>&#x02202;</mo><mi>x</mi></mrow><mrow><mo>&#x02202;</mo><mi>x</mi></mrow></mfrac><mo>&#x0002C;</mo><mspace width="1em" /><mfrac><mrow><mo>&#x02202;</mo><mi>z</mi></mrow><mrow><mo>&#x02202;</mo><mi>x</mi></mrow></mfrac><mo>&#x02212;</mo><mfrac><mrow><mo>&#x02202;</mo><mi>y</mi></mrow><mrow><mo>&#x02202;</mo><mi>y</mi></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><mo>&#x0002C;</mo><mo>&#x02212;</mo><mn>1</mn><mo>&#x0002C;</mo><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mi>y</mi></mrow></math> 平面上，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover><mi>n</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02207;</mo><mo>&#x000D7;</mo><mover><mi>F</mi><mo stretchy="true">&#x02192;</mo></mover><mo stretchy="false">&#x00029;</mo><mo>&#x000B7;</mo><mover><mi>n</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>1</mn></mrow></math></div>
+<p>单位圆盘面积为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C0;</mi></mrow></math>，所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222E;</mo><mi>&#x00393;</mi></msub><mi>y</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mi>z</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mo>&#x0002B;</mo><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>z</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mi>&#x003C0;</mi></mrow></math></div>
+<p><strong>8.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn></mrow></math>。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mi>y</mi><mo>&#x0002C;</mo><mspace width="2em" /><mi>Q</mi><mo>&#x0003D;</mo><mi>x</mi><mo>&#x0002C;</mo><mspace width="2em" /><mi>R</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>P</mi><mi>x</mi></msub><mo>&#x0002B;</mo><msub><mi>Q</mi><mi>y</mi></msub><mo>&#x0002B;</mo><msub><mi>R</mi><mi>z</mi></msub><mo>&#x0003D;</mo><mn>0</mn><mo>&#x0002B;</mo><mn>0</mn><mo>&#x0002B;</mo><mn>0</mn><mo>&#x0003D;</mo><mn>0</mn></mrow></math></div>
+<p>由高斯公式，通量为 0。</p>
+</details>
+<hr>
+<h2>10. 下节预告</h2>
+<p><strong>第 30 课：综合模拟卷 3</strong></p>
+<ul>
+<li>中值定理与严格定义</li>
+<li>级数敛散性</li>
+<li>幂级数与泰勒展开</li>
+<li>微分方程</li>
+<li>多元微积分与向量积分</li>
+</ul>
+<hr>
+<h2>自查清单</h2>
+<ul>
+<li>[ ] 会求曲面的面积元素</li>
+<li>[ ] 会计算第一类曲面积分</li>
+<li>[ ] 理解第二类曲面积分与通量</li>
+<li>[ ] 记住高斯公式并会判断外侧</li>
+<li>[ ] 记住斯托克斯公式并会判断方向</li>
+<li>[ ] 会计算简单的散度和旋度</li>
+<li>[ ] 知道闭曲面、单连通等条件</li>
+</ul>
+<footer>微积分讲义 · 数学公式使用 MathML 渲染，建议使用 Chrome / Edge / Firefox 打开</footer>
+</main>
+</body>
+</html>

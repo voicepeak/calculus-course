@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>微积分进阶 · 第 24 课：可降阶方程与建模</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --quote-bg: #f6f8fa;
+  --code-bg: #eff2f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --border: #30363d;
+    --accent: #4493f8;
+    --quote-bg: #161b22;
+    --code-bg: #1f242c;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; font-weight: 650; }
+h1 { font-size: 2rem; margin: 0 0 .8em; padding-bottom: .35em; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 2.2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.2rem; margin: 1.8em 0 .55em; }
+p { margin: .85em 0; }
+a { color: var(--accent); }
+blockquote {
+  margin: 1em 0;
+  padding: .6em 1em;
+  border-left: 4px solid var(--accent);
+  background: var(--quote-bg);
+  color: var(--muted);
+  border-radius: 4px;
+}
+blockquote p { margin: .25em 0; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: .96em;
+  overflow: hidden;
+}
+th, td { border: 1px solid var(--border); padding: .45em .7em; text-align: left; vertical-align: top; }
+th { background: var(--quote-bg); font-weight: 600; }
+details {
+  margin: 1.2em 0;
+  padding: .8em 1em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--quote-bg);
+}
+summary { cursor: pointer; font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+ul, ol { padding-left: 1.7em; }
+li { margin: .3em 0; }
+.math-block {
+  margin: 1.15em 0;
+  padding: .7em .9em;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--quote-bg);
+  border-radius: 6px;
+}
+math { font-size: 1.14em; line-height: 1.2; }
+math[display="inline"] { font-size: 1.05em; vertical-align: baseline; }
+.math-block math { font-size: 1.24em; }
+.math-fallback, .math-fallback-block {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .08em .3em;
+  border-radius: 3px;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .12em .35em;
+  border-radius: 3px;
+  font-size: .92em;
+}
+pre code { display: block; padding: .8em 1em; overflow-x: auto; }
+footer { margin-top: 4em; color: var(--muted); font-size: .85em; text-align: center; }
+@media print {
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  .math-block { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>微积分进阶 · 第 24 课：可降阶方程与建模</h1>
+<blockquote>
+<p><strong>本课目标</strong>：掌握三类可降阶方程，复习一阶线性方程与积分因子，会把简单的实际问题列成微分方程。</p>
+<p><strong>使用方法</strong>：先判断方程“缺什么”，再选择降阶方法。建模题先写“变化率 = 输入 − 输出”。</p>
+</blockquote>
+<hr>
+<h2>目录</h2>
+<ol>
+<li>可直接积分的方程</li>
+<li>缺 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi></mrow></math> 的方程</li>
+<li>缺 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math> 的方程</li>
+<li>一阶线性方程与积分因子</li>
+<li>伯努利方程（选学）</li>
+<li>建模：冷却定律</li>
+<li>建模：混合问题</li>
+<li>建模：人口增长</li>
+<li>易错点</li>
+<li>练习</li>
+<li>答案与简解</li>
+<li>下节预告</li>
+</ol>
+<hr>
+<h2>1. 可直接积分的方程</h2>
+<p>形如</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>y</mi><mrow><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo stretchy="false">&#x00029;</mo></mrow></msup><mo>&#x0003D;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>的方程，右边只含 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math>，可以直接积分 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math> 次。</p>
+<p><strong>例</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>y</mi><mi>&#x02033;</mi></msup><mo>&#x0003D;</mo><mn>6</mn><mi>x</mi></mrow></math></div>
+<p>积分一次：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mn>3</mn><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msub><mi>C</mi><mn>1</mn></msub></mrow></math></div>
+<p>再积分一次：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x0003D;</mo><msup><mi>x</mi><mn>3</mn></msup><mo>&#x0002B;</mo><msub><mi>C</mi><mn>1</mn></msub><mi>x</mi><mo>&#x0002B;</mo><msub><mi>C</mi><mn>2</mn></msub></mrow></math></div>
+<p>如果有初始条件，例如 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>C</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>C</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mn>0</mn></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x0003D;</mo><msup><mi>x</mi><mn>3</mn></msup><mo>&#x0002B;</mo><mn>1</mn></mrow></math></div>
+<p><strong>注意</strong>：每积分一次，就多一个任意常数。二阶方程的通解有两个常数。</p>
+<hr>
+<h2>2. 缺 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi></mrow></math> 的方程</h2>
+<p>形如</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>y</mi><mi>&#x02033;</mi></msup><mo>&#x0003D;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>的方程中不显含 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi></mrow></math>。令</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>p</mi><mo>&#x0003D;</mo><msup><mi>y</mi><mi>&#x02032;</mi></msup></mrow></math></div>
+<p>则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>y</mi><mi>&#x02033;</mi></msup><mo>&#x0003D;</mo><msup><mi>p</mi><mi>&#x02032;</mi></msup></mrow></math></div>
+<p>方程化为一阶方程：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>p</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>p</mi><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>解出 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi></mrow></math> 后，再由 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mi>p</mi></mrow></math> 积分一次，得到 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi></mrow></math>。</p>
+<p><strong>例</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>y</mi><mi>&#x02033;</mi></msup><mo>&#x0003D;</mo><msup><mi>y</mi><mi>&#x02032;</mi></msup></mrow></math></div>
+<p>令 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi><mo>&#x0003D;</mo><msup><mi>y</mi><mi>&#x02032;</mi></msup></mrow></math>，则 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>p</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mi>p</mi></mrow></math>。分离变量：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mi>d</mi><mi>p</mi></mrow><mrow><mi>p</mi></mrow></mfrac><mo>&#x0003D;</mo><mi>d</mi><mi>x</mi><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>ln</mi><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mi>p</mi><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x0003D;</mo><mi>x</mi><mo>&#x0002B;</mo><mi>C</mi><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>p</mi><mo>&#x0003D;</mo><msub><mi>C</mi><mn>1</mn></msub><msup><mi>e</mi><mi>x</mi></msup></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><msub><mi>C</mi><mn>1</mn></msub><msup><mi>e</mi><mi>x</mi></msup></mrow></math></div>
+<p>再积分：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x0003D;</mo><msub><mi>C</mi><mn>1</mn></msub><msup><mi>e</mi><mi>x</mi></msup><mo>&#x0002B;</mo><msub><mi>C</mi><mn>2</mn></msub></mrow></math></div>
+<p>如果 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn></mrow></math>，则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>C</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>C</mi><mn>1</mn></msub><mo>&#x0002B;</mo><msub><mi>C</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mn>0</mn><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><msub><mi>C</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>1</mn></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x0003D;</mo><msup><mi>e</mi><mi>x</mi></msup><mo>&#x02212;</mo><mn>1</mn></mrow></math></div>
+<hr>
+<h2>3. 缺 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math> 的方程</h2>
+<p>形如</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>y</mi><mi>&#x02033;</mi></msup><mo>&#x0003D;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>y</mi><mo>&#x0002C;</mo><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>的方程中不显含 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math>。令</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>p</mi><mo>&#x0003D;</mo><msup><mi>y</mi><mi>&#x02032;</mi></msup></mrow></math></div>
+<p>并把 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi></mrow></math> 看成 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi></mrow></math> 的函数：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi><mo>&#x0003D;</mo><mi>p</mi><mo stretchy="false">&#x00028;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。由链式法则，</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>y</mi><mi>&#x02033;</mi></msup><mo>&#x0003D;</mo><mfrac><mrow><mi>d</mi><mi>p</mi></mrow><mrow><mi>d</mi><mi>x</mi></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mi>d</mi><mi>p</mi></mrow><mrow><mi>d</mi><mi>y</mi></mrow></mfrac><mo>&#x000B7;</mo><mfrac><mrow><mi>d</mi><mi>y</mi></mrow><mrow><mi>d</mi><mi>x</mi></mrow></mfrac><mo>&#x0003D;</mo><mi>p</mi><mfrac><mrow><mi>d</mi><mi>p</mi></mrow><mrow><mi>d</mi><mi>y</mi></mrow></mfrac></mrow></math></div>
+<p>于是方程化为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>p</mi><mfrac><mrow><mi>d</mi><mi>p</mi></mrow><mrow><mi>d</mi><mi>y</mi></mrow></mfrac><mo>&#x0003D;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>y</mi><mo>&#x0002C;</mo><mi>p</mi><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>这是关于 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi></mrow></math> 和 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi></mrow></math> 的一阶方程。解出 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi></mrow></math> 后，再用</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mi>d</mi><mi>y</mi></mrow><mrow><mi>d</mi><mi>x</mi></mrow></mfrac><mo>&#x0003D;</mo><mi>p</mi><mo stretchy="false">&#x00028;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>分离变量求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi></mrow></math>。</p>
+<p><strong>例</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>y</mi><mi>&#x02033;</mi></msup><mo>&#x0003D;</mo><mo>&#x02212;</mo><mi>y</mi><mo>&#x0002C;</mo><mspace width="2em" /><mi>y</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002C;</mo><mspace width="1em" /><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math></div>
+<p>令 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi><mo>&#x0003D;</mo><msup><mi>y</mi><mi>&#x02032;</mi></msup></mrow></math>，则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>y</mi><mi>&#x02033;</mi></msup><mo>&#x0003D;</mo><mi>p</mi><mfrac><mrow><mi>d</mi><mi>p</mi></mrow><mrow><mi>d</mi><mi>y</mi></mrow></mfrac></mrow></math></div>
+<p>代入：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>p</mi><mfrac><mrow><mi>d</mi><mi>p</mi></mrow><mrow><mi>d</mi><mi>y</mi></mrow></mfrac><mo>&#x0003D;</mo><mo>&#x02212;</mo><mi>y</mi></mrow></math></div>
+<p>分离变量：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>p</mi><mspace width="0.167em" /><mi>d</mi><mi>p</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mi>y</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi></mrow></math></div>
+<p>积分：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><msup><mi>p</mi><mn>2</mn></msup></mrow><mrow><mn>2</mn></mrow></mfrac><mo>&#x0003D;</mo><mo>&#x02212;</mo><mfrac><mrow><msup><mi>y</mi><mn>2</mn></msup></mrow><mrow><mn>2</mn></mrow></mfrac><mo>&#x0002B;</mo><mi>C</mi><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><msup><mi>p</mi><mn>2</mn></msup><mo>&#x0003D;</mo><msub><mi>C</mi><mn>1</mn></msub><mo>&#x02212;</mo><msup><mi>y</mi><mn>2</mn></msup></mrow></math></div>
+<p>由 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，得</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>0</mn><mo>&#x0003D;</mo><msub><mi>C</mi><mn>1</mn></msub><mo>&#x02212;</mo><mn>1</mn><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><msub><mi>C</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mn>1</mn></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>p</mi><mn>2</mn></msup><mo>&#x0003D;</mo><mn>1</mn><mo>&#x02212;</mo><msup><mi>y</mi><mn>2</mn></msup></mrow></math></div>
+<p>在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math> 附近，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi></mrow></math> 从 1 开始减小，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi><mo>&#x0003D;</mo><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003C;</mo><mn>0</mn></mrow></math>，取负号：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mi>d</mi><mi>y</mi></mrow><mrow><mi>d</mi><mi>x</mi></mrow></mfrac><mo>&#x0003D;</mo><mo>&#x02212;</mo><msqrt><mrow><mn>1</mn><mo>&#x02212;</mo><msup><mi>y</mi><mn>2</mn></msup></mrow></msqrt></mrow></math></div>
+<p>分离变量：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mi>d</mi><mi>y</mi></mrow><mrow><msqrt><mrow><mn>1</mn><mo>&#x02212;</mo><msup><mi>y</mi><mn>2</mn></msup></mrow></msqrt></mrow></mfrac><mo>&#x0003D;</mo><mo>&#x02212;</mo><mi>d</mi><mi>x</mi></mrow></math></div>
+<p>积分：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>arcsin</mi><mi>y</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mi>x</mi><mo>&#x0002B;</mo><msub><mi>C</mi><mn>2</mn></msub></mrow></math></div>
+<p>由 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn></mrow></math>，得</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>arcsin</mi><mn>1</mn><mo>&#x0003D;</mo><mfrac><mrow><mi>&#x003C0;</mi></mrow><mrow><mn>2</mn></mrow></mfrac><mo>&#x0003D;</mo><msub><mi>C</mi><mn>2</mn></msub></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>arcsin</mi><mi>y</mi><mo>&#x0003D;</mo><mfrac><mrow><mi>&#x003C0;</mi></mrow><mrow><mn>2</mn></mrow></mfrac><mo>&#x02212;</mo><mi>x</mi><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>y</mi><mo>&#x0003D;</mo><mi>sin</mi><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mrow><mi>&#x003C0;</mi></mrow><mrow><mn>2</mn></mrow></mfrac><mo>&#x02212;</mo><mi>x</mi><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0003D;</mo><mi>cos</mi><mi>x</mi></mrow></math></div>
+<hr>
+<h2>4. 一阶线性方程与积分因子</h2>
+<p>形如</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0002B;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mi>y</mi><mo>&#x0003D;</mo><mi>Q</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>的方程称为<strong>一阶线性方程</strong>。</p>
+<p><strong>解法</strong>：两边乘以积分因子</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x003BC;</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>e</mi><mrow><mo>&#x0222B;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></msup></mrow></math></div>
+<p>则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo stretchy="false">&#x00028;</mo><mi>&#x003BC;</mi><mi>y</mi><msup><mo stretchy="false">&#x00029;</mo><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mi>&#x003BC;</mi><mi>Q</mi></mrow></math></div>
+<p>两边积分：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x003BC;</mi><mi>y</mi><mo>&#x0003D;</mo><mo>&#x0222B;</mo><mi>&#x003BC;</mi><mi>Q</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mi>C</mi></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>&#x003BC;</mi></mrow></mfrac><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mo>&#x0222B;</mo><mi>&#x003BC;</mi><mi>Q</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mi>C</mi><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow></mrow></math></div>
+<p><strong>例 1</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0002B;</mo><mn>2</mn><mi>x</mi><mi>y</mi><mo>&#x0003D;</mo><mi>x</mi></mrow></math></div>
+<p>这里 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>2</mn><mi>x</mi></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>Q</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>x</mi></mrow></math>。积分因子：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x003BC;</mi><mo>&#x0003D;</mo><msup><mi>e</mi><mrow><mo>&#x0222B;</mo><mn>2</mn><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></msup><mo>&#x0003D;</mo><msup><mi>e</mi><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow></msup></mrow></math></div>
+<p>方程两边乘以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>e</mi><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow></msup></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo stretchy="false">&#x00028;</mo><mi>y</mi><msup><mi>e</mi><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow></msup><msup><mo stretchy="false">&#x00029;</mo><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mi>x</mi><msup><mi>e</mi><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow></msup></mrow></math></div>
+<p>积分：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><msup><mi>e</mi><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow></msup><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><msup><mi>e</mi><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow></msup><mo>&#x0002B;</mo><mi>C</mi></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>&#x0002B;</mo><mi>C</mi><msup><mi>e</mi><mrow><mo>&#x02212;</mo><msup><mi>x</mi><mn>2</mn></msup></mrow></msup></mrow></math></div>
+<p><strong>例 2</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0002B;</mo><mi>y</mi><mo>&#x0003D;</mo><msup><mi>e</mi><mi>x</mi></msup><mo>&#x0002C;</mo><mspace width="2em" /><mi>y</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math></div>
+<p>积分因子：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x003BC;</mi><mo>&#x0003D;</mo><msup><mi>e</mi><mrow><mo>&#x0222B;</mo><mn>1</mn><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></msup><mo>&#x0003D;</mo><msup><mi>e</mi><mi>x</mi></msup></mrow></math></div>
+<p>方程化为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo stretchy="false">&#x00028;</mo><mi>y</mi><msup><mi>e</mi><mi>x</mi></msup><msup><mo stretchy="false">&#x00029;</mo><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><msup><mi>e</mi><mrow><mn>2</mn><mi>x</mi></mrow></msup></mrow></math></div>
+<p>积分：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><msup><mi>e</mi><mi>x</mi></msup><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><msup><mi>e</mi><mrow><mn>2</mn><mi>x</mi></mrow></msup><mo>&#x0002B;</mo><mi>C</mi></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><msup><mi>e</mi><mi>x</mi></msup><mo>&#x0002B;</mo><mi>C</mi><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mi>x</mi></mrow></msup></mrow></math></div>
+<p>代入 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>0</mn><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>&#x0002B;</mo><mi>C</mi><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>C</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><msup><mi>e</mi><mi>x</mi></msup><mo>&#x02212;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mi>x</mi></mrow></msup></mrow></math></div>
+<hr>
+<h2>5. 伯努利方程（选学）</h2>
+<p>形如</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0002B;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mi>y</mi><mo>&#x0003D;</mo><mi>Q</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><msup><mi>y</mi><mi>n</mi></msup><mspace width="2em" /><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo>&#x02260;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>的方程称为<strong>伯努利方程</strong>。</p>
+<p><strong>解法</strong>：令</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>z</mi><mo>&#x0003D;</mo><msup><mi>y</mi><mrow><mn>1</mn><mo>&#x02212;</mo><mi>n</mi></mrow></msup></mrow></math></div>
+<p>则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>z</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><mi>n</mi><mo stretchy="false">&#x00029;</mo><msup><mi>y</mi><mrow><mo>&#x02212;</mo><mi>n</mi></mrow></msup><msup><mi>y</mi><mi>&#x02032;</mi></msup></mrow></math></div>
+<p>方程两边除以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>n</mi></msup></mrow></math>，再乘以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><mi>n</mi><mo stretchy="false">&#x00029;</mo></mrow></math>，可以化为一阶线性方程。</p>
+<p><strong>例</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0002B;</mo><mi>y</mi><mo>&#x0003D;</mo><msup><mi>y</mi><mn>2</mn></msup></mrow></math></div>
+<p>这里 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>2</mn></mrow></math>，令</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>z</mi><mo>&#x0003D;</mo><msup><mi>y</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup><mo>&#x0003D;</mo><mfrac><mn>1</mn><mi>y</mi></mfrac></mrow></math></div>
+<p>则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>z</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mo>&#x02212;</mo><msup><mi>y</mi><mrow><mo>&#x02212;</mo><mn>2</mn></mrow></msup><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mo>&#x02212;</mo><msup><mi>z</mi><mn>2</mn></msup><msup><mi>y</mi><mi>&#x02032;</mi></msup></mrow></math></div>
+<p>原方程两边除以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mn>2</mn></msup></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>y</mi><mrow><mo>&#x02212;</mo><mn>2</mn></mrow></msup><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup><mo>&#x0003D;</mo><mn>1</mn></mrow></math></div>
+<p>即</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x02212;</mo><msup><mi>z</mi><mi>&#x02032;</mi></msup><mo>&#x0002B;</mo><mi>z</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math></div>
+<p>整理：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>z</mi><mi>&#x02032;</mi></msup><mo>&#x02212;</mo><mi>z</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>1</mn></mrow></math></div>
+<p>这是一阶线性方程。积分因子：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x003BC;</mi><mo>&#x0003D;</mo><msup><mi>e</mi><mrow><mo>&#x0222B;</mo><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></msup><mo>&#x0003D;</mo><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mi>x</mi></mrow></msup></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo stretchy="false">&#x00028;</mo><mi>z</mi><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mi>x</mi></mrow></msup><msup><mo stretchy="false">&#x00029;</mo><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mo>&#x02212;</mo><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mi>x</mi></mrow></msup></mrow></math></div>
+<p>积分：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>z</mi><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mi>x</mi></mrow></msup><mo>&#x0003D;</mo><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mi>x</mi></mrow></msup><mo>&#x0002B;</mo><mi>C</mi></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>z</mi><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002B;</mo><mi>C</mi><msup><mi>e</mi><mi>x</mi></msup></mrow></math></div>
+<p>因此</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>1</mn><mo>&#x0002B;</mo><mi>C</mi><msup><mi>e</mi><mi>x</mi></msup></mrow></mfrac></mrow></math></div>
+<hr>
+<h2>6. 建模：冷却定律</h2>
+<p><strong>牛顿冷却定律</strong>：物体温度的变化率，与物体温度和周围环境温度之差成正比。</p>
+<p>设物体温度为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>T</mi><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo></mrow></math>，环境温度为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>T</mi><mi>e</mi></msub></mrow></math>，则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mi>d</mi><mi>T</mi></mrow><mrow><mi>d</mi><mi>t</mi></mrow></mfrac><mo>&#x0003D;</mo><mi>k</mi><mo stretchy="false">&#x00028;</mo><msub><mi>T</mi><mi>e</mi></msub><mo>&#x02212;</mo><mi>T</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mi>k</mi><mo>&#x0003E;</mo><mn>0</mn></mrow></math></div>
+<p>分离变量：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mi>d</mi><mi>T</mi></mrow><mrow><mi>T</mi><mo>&#x02212;</mo><msub><mi>T</mi><mi>e</mi></msub></mrow></mfrac><mo>&#x0003D;</mo><mo>&#x02212;</mo><mi>k</mi><mspace width="0.167em" /><mi>d</mi><mi>t</mi></mrow></math></div>
+<p>积分：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>T</mi><mo>&#x02212;</mo><msub><mi>T</mi><mi>e</mi></msub><mo>&#x0003D;</mo><mi>C</mi><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mi>k</mi><mi>t</mi></mrow></msup></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>T</mi><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msub><mi>T</mi><mi>e</mi></msub><mo>&#x0002B;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mi>T</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><msub><mi>T</mi><mi>e</mi></msub><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mi>k</mi><mi>t</mi></mrow></msup></mrow></math></div>
+<p><strong>例</strong>：一杯咖啡初始温度 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mn>90</mn><mo>&#x02218;</mo></msup><mtext>C</mtext></mrow></math>，房间温度 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mn>20</mn><mo>&#x02218;</mo></msup><mtext>C</mtext></mrow></math>，10 分钟后降到 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mn>60</mn><mo>&#x02218;</mo></msup><mtext>C</mtext></mrow></math>。</p>
+<p>设</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>T</mi><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>20</mn><mo>&#x0002B;</mo><mn>70</mn><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mi>k</mi><mi>t</mi></mrow></msup></mrow></math></div>
+<p>由 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>T</mi><mo stretchy="false">&#x00028;</mo><mn>10</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>60</mn></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>60</mn><mo>&#x0003D;</mo><mn>20</mn><mo>&#x0002B;</mo><mn>70</mn><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mn>10</mn><mi>k</mi></mrow></msup><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mn>10</mn><mi>k</mi></mrow></msup><mo>&#x0003D;</mo><mfrac><mn>4</mn><mn>7</mn></mfrac></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>k</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>10</mn></mrow></mfrac><mi>ln</mi><mfrac><mn>4</mn><mn>7</mn></mfrac><mo>&#x02248;</mo><mn>0.056</mn></mrow></math></div>
+<p>20 分钟后：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>T</mi><mo stretchy="false">&#x00028;</mo><mn>20</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>20</mn><mo>&#x0002B;</mo><mn>70</mn><msup><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mn>4</mn><mn>7</mn></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mn>2</mn></msup><mo>&#x0003D;</mo><mn>20</mn><mo>&#x0002B;</mo><mn>70</mn><mo>&#x000B7;</mo><mfrac><mrow><mn>16</mn></mrow><mrow><mn>49</mn></mrow></mfrac><mo>&#x0003D;</mo><mn>20</mn><mo>&#x0002B;</mo><mfrac><mrow><mn>160</mn></mrow><mrow><mn>7</mn></mrow></mfrac><mo>&#x02248;</mo><msup><mn>42.9</mn><mo>&#x02218;</mo></msup><mtext>C</mtext></mrow></math></div>
+<hr>
+<h2>7. 建模：混合问题</h2>
+<p><strong>基本关系</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mi>d</mi><mi>y</mi></mrow><mrow><mi>d</mi><mi>t</mi></mrow></mfrac><mo>&#x0003D;</mo><mtext>输入速率</mtext><mo>&#x02212;</mo><mtext>输出速率</mtext></mrow></math></div>
+<p><strong>例</strong>：水箱中有 200 L 水，初始不含盐。以 5 L/min 的速度流入含盐 0.1 kg/L 的盐水，同时以 5 L/min 的速度流出。求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>t</mi></mrow></math> 时刻箱中盐的质量 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+<p><strong>输入速率</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>5</mn><mo>&#x000D7;</mo><mn>0.1</mn><mo>&#x0003D;</mo><mn>0.5</mn><mtext>&#x000A0;</mtext><mtext>kg/min</mtext></mrow></math></div>
+<p><strong>输出速率</strong>：箱中盐水浓度为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mi>y</mi></mrow><mrow><mn>200</mn></mrow></mfrac></mrow></math>，所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>5</mn><mo>&#x000B7;</mo><mfrac><mrow><mi>y</mi></mrow><mrow><mn>200</mn></mrow></mfrac><mo>&#x0003D;</mo><mn>0.025</mn><mi>y</mi><mtext>&#x000A0;</mtext><mtext>kg/min</mtext></mrow></math></div>
+<p><strong>方程</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mi>d</mi><mi>y</mi></mrow><mrow><mi>d</mi><mi>t</mi></mrow></mfrac><mo>&#x0003D;</mo><mn>0.5</mn><mo>&#x02212;</mo><mn>0.025</mn><mi>y</mi></mrow></math></div>
+<p>即</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mi>d</mi><mi>y</mi></mrow><mrow><mi>d</mi><mi>t</mi></mrow></mfrac><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>0.025</mn><mo stretchy="false">&#x00028;</mo><mi>y</mi><mo>&#x02212;</mo><mn>20</mn><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>分离变量：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mi>d</mi><mi>y</mi></mrow><mrow><mi>y</mi><mo>&#x02212;</mo><mn>20</mn></mrow></mfrac><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>0.025</mn><mspace width="0.167em" /><mi>d</mi><mi>t</mi></mrow></math></div>
+<p>积分：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x02212;</mo><mn>20</mn><mo>&#x0003D;</mo><mi>C</mi><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mn>0.025</mn><mi>t</mi></mrow></msup></mrow></math></div>
+<p>由 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，得 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>C</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>20</mn></mrow></math>。所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>20</mn><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mn>0.025</mn><mi>t</mi></mrow></msup><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow></mrow></math></div>
+<p>当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>t</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></math> 时，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x02192;</mo><mn>20</mn></mrow></math> kg。这是平衡状态：输入速率等于输出速率时，盐量不再增加。</p>
+<hr>
+<h2>8. 建模：人口增长</h2>
+<p><strong>指数增长模型</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>P</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mi>r</mi><mi>P</mi></mrow></math></div>
+<p>解为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msub><mi>P</mi><mn>0</mn></msub><msup><mi>e</mi><mrow><mi>r</mi><mi>t</mi></mrow></msup></mrow></math></div>
+<p>当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>r</mi><mo>&#x0003E;</mo><mn>0</mn></mrow></math> 时，人口无限增长，不符合资源有限的现实。</p>
+<p><strong>逻辑斯蒂模型</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>P</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mi>r</mi><mi>P</mi><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><mfrac><mrow><mi>P</mi></mrow><mrow><mi>K</mi></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>K</mi></mrow></math> 是环境容量。当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi></mrow></math> 接近 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>K</mi></mrow></math> 时，增长变慢。</p>
+<p><strong>解</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><mi>K</mi></mrow><mrow><mn>1</mn><mo>&#x0002B;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mrow><mi>K</mi></mrow><mrow><msub><mi>P</mi><mn>0</mn></msub></mrow></mfrac><mo>&#x02212;</mo><mn>1</mn><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mi>r</mi><mi>t</mi></mrow></msup></mrow></mfrac></mrow></math></div>
+<p><strong>性质</strong>：</p>
+<ul>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msub><mi>P</mi><mn>0</mn></msub></mrow></math>；</li>
+<li>当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>t</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></math> 时，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo>&#x02192;</mo><mi>K</mi></mrow></math>；</li>
+<li>曲线呈 S 形，先加速增长，后逐渐饱和。</li>
+</ul>
+<hr>
+<h2>9. 易错点</h2>
+<ol>
+<li><strong>降阶时不要忘记 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02033;</mi></msup><mo>&#x0003D;</mo><mi>p</mi><mfrac><mrow><mi>d</mi><mi>p</mi></mrow><mrow><mi>d</mi><mi>y</mi></mrow></mfrac></mrow></math></strong>，尤其是缺 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math> 的方程。</li>
+<li><strong>积分因子是指数形式</strong>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>e</mi><mrow><mo>&#x0222B;</mo><mi>P</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></msup></mrow></math>，不要漏掉积分号。</li>
+<li><strong>每次积分都要加常数</strong>，最后用初始条件确定。</li>
+<li><strong>建模先统一单位</strong>。流量、浓度、时间的单位要一致。</li>
+<li><strong>冷却定律中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>T</mi><mi>e</mi></msub><mo>&#x02212;</mo><mi>T</mi></mrow></math> 的符号</strong>要保证温度趋向环境温度。</li>
+<li><strong>混合问题中输出浓度是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0002F;</mo><mi>V</mi></mrow></math></strong>，体积变化时 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>V</mi></mrow></math> 也可能是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>t</mi></mrow></math> 的函数。</li>
+<li><strong>逻辑斯蒂模型的解中，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>K</mi><mo>&#x0002F;</mo><msub><mi>P</mi><mn>0</mn></msub><mo>&#x02212;</mo><mn>1</mn></mrow></math> 的符号</strong>决定曲线从下方还是上方趋近 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>K</mi></mrow></math>。</li>
+</ol>
+<hr>
+<h2>10. 练习</h2>
+<ol>
+<li>
+<p>解 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02033;</mi></msup><mo>&#x0003D;</mo><mn>6</mn><mi>x</mi></mrow></math>，且 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math>。</p>
+</li>
+<li>
+<p>解 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02033;</mi></msup><mo>&#x0003D;</mo><msup><mi>y</mi><mi>&#x02032;</mi></msup></mrow></math>，且 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn></mrow></math>。</p>
+</li>
+<li>
+<p>解 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02033;</mi></msup><mo>&#x0003D;</mo><mo>&#x02212;</mo><mi>y</mi></mrow></math>，且 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn></mrow></math>。</p>
+</li>
+<li>
+<p>解 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0002B;</mo><mn>2</mn><mi>x</mi><mi>y</mi><mo>&#x0003D;</mo><mi>x</mi></mrow></math>，且 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn></mrow></math>。</p>
+</li>
+<li>
+<p>解 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0002B;</mo><mi>y</mi><mo>&#x0003D;</mo><msup><mi>e</mi><mi>x</mi></msup></mrow></math>，且 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math>。</p>
+</li>
+<li>
+<p>物体初始温度 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mn>100</mn><mo>&#x02218;</mo></msup><mtext>C</mtext></mrow></math>，环境温度 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mn>25</mn><mo>&#x02218;</mo></msup><mtext>C</mtext></mrow></math>，10 分钟后温度 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mn>70</mn><mo>&#x02218;</mo></msup><mtext>C</mtext></mrow></math>。求 20 分钟后的温度。</p>
+</li>
+<li>
+<p>水箱中有 200 L 水，初始不含盐。以 5 L/min 流入含盐 0.1 kg/L 的盐水，同时以 5 L/min 流出。写出盐量 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 满足的微分方程，并求平衡时的盐量。</p>
+</li>
+<li>
+<p>解伯努利方程 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0002B;</mo><mi>y</mi><mo>&#x0003D;</mo><msup><mi>y</mi><mn>2</mn></msup></mrow></math>，且 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow></math>。</p>
+</li>
+</ol>
+<hr>
+<h2>11. 答案与简解</h2>
+<details>
+<summary>点击展开（做完再看）</summary>
+<p><strong>1.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><msup><mi>x</mi><mn>3</mn></msup><mo>&#x0002B;</mo><mn>1</mn></mrow></math>。见本课第 1 节。</p>
+<p><strong>2.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><msup><mi>e</mi><mi>x</mi></msup><mo>&#x02212;</mo><mn>1</mn></mrow></math>。见本课第 2 节。</p>
+<p><strong>3.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>sin</mi><mi>x</mi></mrow></math>。</p>
+<p>通解为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><msub><mi>C</mi><mn>1</mn></msub><mi>cos</mi><mi>x</mi><mo>&#x0002B;</mo><msub><mi>C</mi><mn>2</mn></msub><mi>sin</mi><mi>x</mi></mrow></math>。由 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math> 得 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>C</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mn>0</mn></mrow></math>；由 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn></mrow></math> 得 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>C</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mn>1</mn></mrow></math>。</p>
+<p><strong>4.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>&#x0002B;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><msup><mi>e</mi><mrow><mo>&#x02212;</mo><msup><mi>x</mi><mn>2</mn></msup></mrow></msup></mrow></math>。</p>
+<p>通解为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>&#x0002B;</mo><mi>C</mi><msup><mi>e</mi><mrow><mo>&#x02212;</mo><msup><mi>x</mi><mn>2</mn></msup></mrow></msup></mrow></math></div>
+<p>由 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn></mrow></math> 得</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>1</mn><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>&#x0002B;</mo><mi>C</mi><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>C</mi><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow></math></div>
+<p><strong>5.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><msup><mi>e</mi><mi>x</mi></msup><mo>&#x02212;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mi>x</mi></mrow></msup></mrow></math>。见本课第 4 节例 2。</p>
+<p><strong>6.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mn>52</mn><mo>&#x02218;</mo></msup><mtext>C</mtext></mrow></math>。</p>
+<p>设</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>T</mi><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>25</mn><mo>&#x0002B;</mo><mn>75</mn><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mi>k</mi><mi>t</mi></mrow></msup></mrow></math></div>
+<p>由 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>T</mi><mo stretchy="false">&#x00028;</mo><mn>10</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>70</mn></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>70</mn><mo>&#x0003D;</mo><mn>25</mn><mo>&#x0002B;</mo><mn>75</mn><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mn>10</mn><mi>k</mi></mrow></msup><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mn>10</mn><mi>k</mi></mrow></msup><mo>&#x0003D;</mo><mfrac><mn>3</mn><mn>5</mn></mfrac></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>T</mi><mo stretchy="false">&#x00028;</mo><mn>20</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>25</mn><mo>&#x0002B;</mo><mn>75</mn><msup><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mn>3</mn><mn>5</mn></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mn>2</mn></msup><mo>&#x0003D;</mo><mn>25</mn><mo>&#x0002B;</mo><mn>75</mn><mo>&#x000B7;</mo><mfrac><mrow><mn>9</mn></mrow><mrow><mn>25</mn></mrow></mfrac><mo>&#x0003D;</mo><mn>25</mn><mo>&#x0002B;</mo><mn>27</mn><mo>&#x0003D;</mo><mn>52</mn></mrow></math></div>
+<p><strong>7.</strong> 方程为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mi>d</mi><mi>y</mi></mrow><mrow><mi>d</mi><mi>t</mi></mrow></mfrac><mo>&#x0003D;</mo><mn>0.5</mn><mo>&#x02212;</mo><mn>0.025</mn><mi>y</mi></mrow></math></div>
+<p>平衡盐量为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>20</mn></mrow></math> kg。</p>
+<p>令 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mn>0</mn></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>0.5</mn><mo>&#x02212;</mo><mn>0.025</mn><mi>y</mi><mo>&#x0003D;</mo><mn>0</mn><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>y</mi><mo>&#x0003D;</mo><mn>20</mn></mrow></math></div>
+<p><strong>8.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>1</mn><mo>&#x0002B;</mo><msup><mi>e</mi><mi>x</mi></msup></mrow></mfrac></mrow></math>。</p>
+<p>由本课第 5 节，通解为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>1</mn><mo>&#x0002B;</mo><mi>C</mi><msup><mi>e</mi><mi>x</mi></msup></mrow></mfrac></mrow></math></div>
+<p>代入 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>1</mn><mo>&#x0002B;</mo><mi>C</mi></mrow></mfrac><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mn>1</mn><mo>&#x0002B;</mo><mi>C</mi><mo>&#x0003D;</mo><mn>2</mn><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>C</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>1</mn><mo>&#x0002B;</mo><msup><mi>e</mi><mi>x</mi></msup></mrow></mfrac></mrow></math></div>
+</details>
+<hr>
+<h2>12. 下节预告</h2>
+<p><strong>第 25 课：多元函数的极限与连续</strong></p>
+<ul>
+<li>二元函数的定义域与图像</li>
+<li>二重极限</li>
+<li>路径无关性</li>
+<li>多元函数的连续性</li>
+</ul>
+<hr>
+<h2>自查清单</h2>
+<ul>
+<li>[ ] 会直接积分求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>y</mi><mrow><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo stretchy="false">&#x00029;</mo></mrow></msup><mo>&#x0003D;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math></li>
+<li>[ ] 会用 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi><mo>&#x0003D;</mo><msup><mi>y</mi><mi>&#x02032;</mi></msup></mrow></math> 处理缺 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi></mrow></math> 的方程</li>
+<li>[ ] 会用 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi><mfrac><mrow><mi>d</mi><mi>p</mi></mrow><mrow><mi>d</mi><mi>y</mi></mrow></mfrac></mrow></math> 处理缺 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math> 的方程</li>
+<li>[ ] 会求一阶线性方程的积分因子</li>
+<li>[ ] 会解简单伯努利方程</li>
+<li>[ ] 会列冷却、混合、人口增长模型</li>
+<li>[ ] 知道平衡状态的含义</li>
+</ul>
+<footer>微积分讲义 · 数学公式使用 MathML 渲染，建议使用 Chrome / Edge / Firefox 打开</footer>
+</main>
+</body>
+</html>

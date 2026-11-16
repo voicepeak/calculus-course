@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>微积分进阶 · 第 26 课：方向导数、梯度与多元极值</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --quote-bg: #f6f8fa;
+  --code-bg: #eff2f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --border: #30363d;
+    --accent: #4493f8;
+    --quote-bg: #161b22;
+    --code-bg: #1f242c;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; font-weight: 650; }
+h1 { font-size: 2rem; margin: 0 0 .8em; padding-bottom: .35em; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 2.2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.2rem; margin: 1.8em 0 .55em; }
+p { margin: .85em 0; }
+a { color: var(--accent); }
+blockquote {
+  margin: 1em 0;
+  padding: .6em 1em;
+  border-left: 4px solid var(--accent);
+  background: var(--quote-bg);
+  color: var(--muted);
+  border-radius: 4px;
+}
+blockquote p { margin: .25em 0; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: .96em;
+  overflow: hidden;
+}
+th, td { border: 1px solid var(--border); padding: .45em .7em; text-align: left; vertical-align: top; }
+th { background: var(--quote-bg); font-weight: 600; }
+details {
+  margin: 1.2em 0;
+  padding: .8em 1em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--quote-bg);
+}
+summary { cursor: pointer; font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+ul, ol { padding-left: 1.7em; }
+li { margin: .3em 0; }
+.math-block {
+  margin: 1.15em 0;
+  padding: .7em .9em;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--quote-bg);
+  border-radius: 6px;
+}
+math { font-size: 1.14em; line-height: 1.2; }
+math[display="inline"] { font-size: 1.05em; vertical-align: baseline; }
+.math-block math { font-size: 1.24em; }
+.math-fallback, .math-fallback-block {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .08em .3em;
+  border-radius: 3px;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .12em .35em;
+  border-radius: 3px;
+  font-size: .92em;
+}
+pre code { display: block; padding: .8em 1em; overflow-x: auto; }
+footer { margin-top: 4em; color: var(--muted); font-size: .85em; text-align: center; }
+@media print {
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  .math-block { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>微积分进阶 · 第 26 课：方向导数、梯度与多元极值</h1>
+<blockquote>
+<p><strong>本课目标</strong>：会求方向导数和梯度，掌握二元函数极值的判别法，会用拉格朗日乘数法处理条件极值。</p>
+<p><strong>使用方法</strong>：先求偏导，再判断驻点。条件极值先写约束，再解方程组。</p>
+</blockquote>
+<hr>
+<h2>目录</h2>
+<ol>
+<li>偏导数复习</li>
+<li>方向导数</li>
+<li>梯度</li>
+<li>梯度与方向导数的关系</li>
+<li>多元函数的极值</li>
+<li>二阶判别法</li>
+<li>条件极值与拉格朗日乘数法</li>
+<li>易错点</li>
+<li>练习</li>
+<li>答案与简解</li>
+<li>下节预告</li>
+</ol>
+<hr>
+<h2>1. 偏导数复习</h2>
+<p>对 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 求关于 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math> 的偏导数，就是把 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi></mrow></math> 看成常数，对 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math> 求导：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>f</mi><mi>x</mi></msub><mo>&#x0003D;</mo><mfrac><mrow><mo>&#x02202;</mo><mi>f</mi></mrow><mrow><mo>&#x02202;</mo><mi>x</mi></mrow></mfrac></mrow></math></div>
+<p>对 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi></mrow></math> 的偏导数类似：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>f</mi><mi>y</mi></msub><mo>&#x0003D;</mo><mfrac><mrow><mo>&#x02202;</mo><mi>f</mi></mrow><mrow><mo>&#x02202;</mo><mi>y</mi></mrow></mfrac></mrow></math></div>
+<p><strong>例</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup><mi>y</mi><mo>&#x0002B;</mo><msup><mi>y</mi><mn>3</mn></msup></mrow></math></div>
+<p>则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>f</mi><mi>x</mi></msub><mo>&#x0003D;</mo><mn>2</mn><mi>x</mi><mi>y</mi><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>f</mi><mi>y</mi></msub><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>3</mn><msup><mi>y</mi><mn>2</mn></msup></mrow></math></div>
+<p>在点 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>f</mi><mi>x</mi></msub><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>4</mn><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>f</mi><mi>y</mi></msub><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002B;</mo><mn>12</mn><mo>&#x0003D;</mo><mn>13</mn></mrow></math></div>
+<p><strong>二阶偏导数</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>f</mi><mrow><mi>x</mi><mi>x</mi></mrow></msub><mo>&#x0003D;</mo><mfrac><mrow><msup><mo>&#x02202;</mo><mn>2</mn></msup><mi>f</mi></mrow><mrow><mo>&#x02202;</mo><msup><mi>x</mi><mn>2</mn></msup></mrow></mfrac><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>f</mi><mrow><mi>y</mi><mi>y</mi></mrow></msub><mo>&#x0003D;</mo><mfrac><mrow><msup><mo>&#x02202;</mo><mn>2</mn></msup><mi>f</mi></mrow><mrow><mo>&#x02202;</mo><msup><mi>y</mi><mn>2</mn></msup></mrow></mfrac><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>f</mi><mrow><mi>x</mi><mi>y</mi></mrow></msub><mo>&#x0003D;</mo><mfrac><mrow><msup><mo>&#x02202;</mo><mn>2</mn></msup><mi>f</mi></mrow><mrow><mo>&#x02202;</mo><mi>y</mi><mspace width="0.167em" /><mo>&#x02202;</mo><mi>x</mi></mrow></mfrac></mrow></math></div>
+<p>当二阶偏导数连续时，</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>f</mi><mrow><mi>x</mi><mi>y</mi></mrow></msub><mo>&#x0003D;</mo><msub><mi>f</mi><mrow><mi>y</mi><mi>x</mi></mrow></msub></mrow></math></div>
+<hr>
+<h2>2. 方向导数</h2>
+<p>偏导数只描述沿坐标轴方向的变化率。方向导数描述沿任意方向的变化率。</p>
+<p>设</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mover><mi>l</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mi>cos</mi><mi>&#x003B1;</mi><mo>&#x0002C;</mo><mi>cos</mi><mi>&#x003B2;</mi><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>是单位向量，其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003B1;</mi></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003B2;</mi></mrow></math> 分别是它与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math> 轴、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi></mrow></math> 轴的夹角。</p>
+<p>如果 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 在点 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><msub><mi>x</mi><mn>0</mn></msub><mo>&#x0002C;</mo><msub><mi>y</mi><mn>0</mn></msub><mo stretchy="false">&#x00029;</mo></mrow></math> 处可微，那么沿方向 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover><mi>l</mi><mo stretchy="true">&#x02192;</mo></mover></mrow></math> 的方向导数为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mo>&#x02202;</mo><mi>f</mi></mrow><mrow><mo>&#x02202;</mo><mi>l</mi></mrow></mfrac><mo>&#x0003D;</mo><msub><mi>f</mi><mi>x</mi></msub><mo stretchy="false">&#x00028;</mo><msub><mi>x</mi><mn>0</mn></msub><mo>&#x0002C;</mo><msub><mi>y</mi><mn>0</mn></msub><mo stretchy="false">&#x00029;</mo><mi>cos</mi><mi>&#x003B1;</mi><mo>&#x0002B;</mo><msub><mi>f</mi><mi>y</mi></msub><mo stretchy="false">&#x00028;</mo><msub><mi>x</mi><mn>0</mn></msub><mo>&#x0002C;</mo><msub><mi>y</mi><mn>0</mn></msub><mo stretchy="false">&#x00029;</mo><mi>cos</mi><mi>&#x003B2;</mi></mrow></math></div>
+<p><strong>例</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup></mrow></math></div>
+<p>在点 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 处，沿方向</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mover><mi>l</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0003D;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msqrt><mn>2</mn></msqrt></mrow></mfrac><mo>&#x0002C;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msqrt><mn>2</mn></msqrt></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow></mrow></math></div>
+<p>的方向导数。</p>
+<p>先求偏导：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>f</mi><mi>x</mi></msub><mo>&#x0003D;</mo><mn>2</mn><mi>x</mi><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>f</mi><mi>y</mi></msub><mo>&#x0003D;</mo><mn>2</mn><mi>y</mi></mrow></math></div>
+<p>在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>f</mi><mi>x</mi></msub><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>2</mn><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>f</mi><mi>y</mi></msub><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>4</mn></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mo>&#x02202;</mo><mi>f</mi></mrow><mrow><mo>&#x02202;</mo><mi>l</mi></mrow></mfrac><mo>&#x0003D;</mo><mn>2</mn><mo>&#x000B7;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msqrt><mn>2</mn></msqrt></mrow></mfrac><mo>&#x0002B;</mo><mn>4</mn><mo>&#x000B7;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msqrt><mn>2</mn></msqrt></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>6</mn></mrow><mrow><msqrt><mn>2</mn></msqrt></mrow></mfrac><mo>&#x0003D;</mo><mn>3</mn><msqrt><mn>2</mn></msqrt></mrow></math></div>
+<p><strong>注意</strong>：方向向量必须是单位向量。如果不是，要先除以它的长度。</p>
+<hr>
+<h2>3. 梯度</h2>
+<p><strong>定义</strong>：函数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 的梯度是一个向量：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x02207;</mo><mi>f</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><msub><mi>f</mi><mi>x</mi></msub><mo>&#x0002C;</mo><msub><mi>f</mi><mi>y</mi></msub><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p><strong>例</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x02207;</mo><mi>f</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>2</mn><mi>x</mi><mo>&#x0002C;</mo><mn>2</mn><mi>y</mi><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>在点 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x02207;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>4</mn><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p><strong>梯度的意义</strong>：</p>
+<ul>
+<li>梯度的方向，是函数值增长最快的方向；</li>
+<li>梯度的模，是最大的变化率。</li>
+</ul>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mo>&#x02207;</mo><mi>f</mi><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x0003D;</mo><msqrt><mrow><msubsup><mi>f</mi><mi>x</mi><mn>2</mn></msubsup><mo>&#x0002B;</mo><msubsup><mi>f</mi><mi>y</mi><mn>2</mn></msubsup></mrow></msqrt></mrow></math></div>
+<p><strong>例</strong>：上面的梯度在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 处的模为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mo>&#x02207;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x0003D;</mo><msqrt><mrow><msup><mn>2</mn><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mn>4</mn><mn>2</mn></msup></mrow></msqrt><mo>&#x0003D;</mo><msqrt><mrow><mn>20</mn></mrow></msqrt><mo>&#x0003D;</mo><mn>2</mn><msqrt><mn>5</mn></msqrt></mrow></math></div>
+<p>所以从 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 出发，沿方向 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>4</mn><mo stretchy="false">&#x00029;</mo></mrow><mrow><msqrt><mrow><mn>20</mn></mrow></msqrt></mrow></mfrac></mrow></math> 函数增长最快，最大变化率为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><msqrt><mn>5</mn></msqrt></mrow></math>。</p>
+<p><strong>几何意义</strong>：梯度垂直于等值线（等高线）。</p>
+<hr>
+<h2>4. 梯度与方向导数的关系</h2>
+<p>方向导数可以写成点积：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mo>&#x02202;</mo><mi>f</mi></mrow><mrow><mo>&#x02202;</mo><mi>l</mi></mrow></mfrac><mo>&#x0003D;</mo><mo>&#x02207;</mo><mi>f</mi><mo>&#x000B7;</mo><mover><mi>l</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0003D;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mo>&#x02207;</mo><mi>f</mi><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x000B7;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mover><mi>l</mi><mo stretchy="true">&#x02192;</mo></mover><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mi>cos</mi><mi>&#x003B8;</mi><mo>&#x0003D;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mo>&#x02207;</mo><mi>f</mi><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mi>cos</mi><mi>&#x003B8;</mi></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003B8;</mi></mrow></math> 是梯度与方向 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover><mi>l</mi><mo stretchy="true">&#x02192;</mo></mover></mrow></math> 的夹角。</p>
+<p><strong>结论</strong>：</p>
+<ul>
+<li>当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover><mi>l</mi><mo stretchy="true">&#x02192;</mo></mover></mrow></math> 与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02207;</mo><mi>f</mi></mrow></math> 同向时，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>cos</mi><mi>&#x003B8;</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math>，方向导数最大，等于 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mo>&#x02207;</mo><mi>f</mi><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow></mrow></math>；</li>
+<li>当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover><mi>l</mi><mo stretchy="true">&#x02192;</mo></mover></mrow></math> 与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02207;</mo><mi>f</mi></mrow></math> 反向时，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>cos</mi><mi>&#x003B8;</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>1</mn></mrow></math>，方向导数最小，等于 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02212;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mo>&#x02207;</mo><mi>f</mi><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow></mrow></math>；</li>
+<li>当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover><mi>l</mi><mo stretchy="true">&#x02192;</mo></mover></mrow></math> 与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02207;</mo><mi>f</mi></mrow></math> 垂直时，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>cos</mi><mi>&#x003B8;</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，方向导数为 0，此时沿等值线方向移动。</li>
+</ul>
+<p><strong>例</strong>：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup></mrow></math> 在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 处：</p>
+<ul>
+<li>增长最快的方向：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>4</mn><mo stretchy="false">&#x00029;</mo></mrow><mrow><msqrt><mrow><mn>20</mn></mrow></msqrt></mrow></mfrac><mo>&#x0003D;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msqrt><mn>5</mn></msqrt></mrow></mfrac><mo>&#x0002C;</mo><mfrac><mrow><mn>2</mn></mrow><mrow><msqrt><mn>5</mn></msqrt></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow></mrow></math>；</li>
+<li>最大变化率：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><msqrt><mn>5</mn></msqrt></mrow></math>；</li>
+<li>下降最快的方向：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mo>&#x02212;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msqrt><mn>5</mn></msqrt></mrow></mfrac><mo>&#x0002C;</mo><mo>&#x02212;</mo><mfrac><mrow><mn>2</mn></mrow><mrow><msqrt><mn>5</mn></msqrt></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow></mrow></math>。</li>
+</ul>
+<hr>
+<h2>5. 多元函数的极值</h2>
+<p><strong>定义</strong>：如果存在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><msub><mi>x</mi><mn>0</mn></msub><mo>&#x0002C;</mo><msub><mi>y</mi><mn>0</mn></msub><mo stretchy="false">&#x00029;</mo></mrow></math> 的某个邻域，使得对该邻域内所有 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 都有</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02264;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><msub><mi>x</mi><mn>0</mn></msub><mo>&#x0002C;</mo><msub><mi>y</mi><mn>0</mn></msub><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>则称 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi></mrow></math> 在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><msub><mi>x</mi><mn>0</mn></msub><mo>&#x0002C;</mo><msub><mi>y</mi><mn>0</mn></msub><mo stretchy="false">&#x00029;</mo></mrow></math> 处取得<strong>极大值</strong>。极小值的定义类似。</p>
+<p><strong>必要条件</strong>：如果 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi></mrow></math> 在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><msub><mi>x</mi><mn>0</mn></msub><mo>&#x0002C;</mo><msub><mi>y</mi><mn>0</mn></msub><mo stretchy="false">&#x00029;</mo></mrow></math> 处可微，并且取得极值，那么</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x02207;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><msub><mi>x</mi><mn>0</mn></msub><mo>&#x0002C;</mo><msub><mi>y</mi><mn>0</mn></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>即</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>f</mi><mi>x</mi></msub><mo stretchy="false">&#x00028;</mo><msub><mi>x</mi><mn>0</mn></msub><mo>&#x0002C;</mo><msub><mi>y</mi><mn>0</mn></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>f</mi><mi>y</mi></msub><mo stretchy="false">&#x00028;</mo><msub><mi>x</mi><mn>0</mn></msub><mo>&#x0002C;</mo><msub><mi>y</mi><mn>0</mn></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math></div>
+<p>满足这个条件的点称为<strong>驻点</strong>。</p>
+<p><strong>注意</strong>：驻点不一定是极值点，也可能是鞍点。</p>
+<p><strong>例</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x02212;</mo><msup><mi>y</mi><mn>2</mn></msup></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>f</mi><mi>x</mi></msub><mo>&#x0003D;</mo><mn>2</mn><mi>x</mi><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>f</mi><mi>y</mi></msub><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>2</mn><mi>y</mi></mrow></math></div>
+<p>令它们为 0，得驻点 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。但在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math> 轴方向 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x02265;</mo><mn>0</mn></mrow></math>，在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi></mrow></math> 轴方向 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><msup><mi>y</mi><mn>2</mn></msup><mo>&#x02264;</mo><mn>0</mn></mrow></math>，所以原点既不是极大值，也不是极小值，而是<strong>鞍点</strong>。</p>
+<hr>
+<h2>6. 二阶判别法</h2>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 在驻点 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><msub><mi>x</mi><mn>0</mn></msub><mo>&#x0002C;</mo><msub><mi>y</mi><mn>0</mn></msub><mo stretchy="false">&#x00029;</mo></mrow></math> 的某邻域内有连续的二阶偏导数。记</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>A</mi><mo>&#x0003D;</mo><msub><mi>f</mi><mrow><mi>x</mi><mi>x</mi></mrow></msub><mo stretchy="false">&#x00028;</mo><msub><mi>x</mi><mn>0</mn></msub><mo>&#x0002C;</mo><msub><mi>y</mi><mn>0</mn></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mi>B</mi><mo>&#x0003D;</mo><msub><mi>f</mi><mrow><mi>x</mi><mi>y</mi></mrow></msub><mo stretchy="false">&#x00028;</mo><msub><mi>x</mi><mn>0</mn></msub><mo>&#x0002C;</mo><msub><mi>y</mi><mn>0</mn></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mi>C</mi><mo>&#x0003D;</mo><msub><mi>f</mi><mrow><mi>y</mi><mi>y</mi></mrow></msub><mo stretchy="false">&#x00028;</mo><msub><mi>x</mi><mn>0</mn></msub><mo>&#x0002C;</mo><msub><mi>y</mi><mn>0</mn></msub><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>以及判别式</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>D</mi><mo>&#x0003D;</mo><mi>A</mi><mi>C</mi><mo>&#x02212;</mo><msup><mi>B</mi><mn>2</mn></msup></mrow></math></div>
+<p>则：</p>
+<table>
+<thead>
+<tr>
+<th>条件</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>D</mi><mo>&#x0003E;</mo><mn>0</mn></mrow></math> 且 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi><mo>&#x0003E;</mo><mn>0</mn></mrow></math></td>
+<td>极小值</td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>D</mi><mo>&#x0003E;</mo><mn>0</mn></mrow></math> 且 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi><mo>&#x0003C;</mo><mn>0</mn></mrow></math></td>
+<td>极大值</td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>D</mi><mo>&#x0003C;</mo><mn>0</mn></mrow></math></td>
+<td>鞍点，不是极值</td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>D</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math></td>
+<td>判别法失效，需要其他方法</td>
+</tr>
+</tbody>
+</table>
+<p><strong>记忆方法</strong>：</p>
+<ul>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>D</mi><mo>&#x0003E;</mo><mn>0</mn></mrow></math>：有极值，看 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi></mrow></math> 的正负（<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi><mo>&#x0003E;</mo><mn>0</mn></mrow></math> 开口向上，极小；<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi><mo>&#x0003C;</mo><mn>0</mn></mrow></math> 开口向下，极大）；</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>D</mi><mo>&#x0003C;</mo><mn>0</mn></mrow></math>：鞍点；</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>D</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math>：无法判断。</li>
+</ul>
+<p><strong>例 1</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup><mo>&#x02212;</mo><mn>2</mn><mi>x</mi><mo>&#x02212;</mo><mn>4</mn><mi>y</mi></mrow></math></div>
+<p>求偏导：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>f</mi><mi>x</mi></msub><mo>&#x0003D;</mo><mn>2</mn><mi>x</mi><mo>&#x02212;</mo><mn>2</mn><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>f</mi><mi>y</mi></msub><mo>&#x0003D;</mo><mn>2</mn><mi>y</mi><mo>&#x02212;</mo><mn>4</mn></mrow></math></div>
+<p>令它们为 0：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>x</mi><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002C;</mo><mspace width="2em" /><mi>y</mi><mo>&#x0003D;</mo><mn>2</mn></mrow></math></div>
+<p>驻点为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+<p>二阶偏导：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>A</mi><mo>&#x0003D;</mo><msub><mi>f</mi><mrow><mi>x</mi><mi>x</mi></mrow></msub><mo>&#x0003D;</mo><mn>2</mn><mo>&#x0002C;</mo><mspace width="2em" /><mi>B</mi><mo>&#x0003D;</mo><msub><mi>f</mi><mrow><mi>x</mi><mi>y</mi></mrow></msub><mo>&#x0003D;</mo><mn>0</mn><mo>&#x0002C;</mo><mspace width="2em" /><mi>C</mi><mo>&#x0003D;</mo><msub><mi>f</mi><mrow><mi>y</mi><mi>y</mi></mrow></msub><mo>&#x0003D;</mo><mn>2</mn></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>D</mi><mo>&#x0003D;</mo><mn>2</mn><mo>&#x000B7;</mo><mn>2</mn><mo>&#x02212;</mo><mn>0</mn><mo>&#x0003D;</mo><mn>4</mn><mo>&#x0003E;</mo><mn>0</mn></mrow></math></div>
+<p>且 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi><mo>&#x0003D;</mo><mn>2</mn><mo>&#x0003E;</mo><mn>0</mn></mrow></math>，所以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 是极小值点。极小值为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002B;</mo><mn>4</mn><mo>&#x02212;</mo><mn>2</mn><mo>&#x02212;</mo><mn>8</mn><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>5</mn></mrow></math></div>
+<p><strong>例 2</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>x</mi><mn>3</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>3</mn></msup><mo>&#x02212;</mo><mn>3</mn><mi>x</mi><mi>y</mi></mrow></math></div>
+<p>求偏导：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>f</mi><mi>x</mi></msub><mo>&#x0003D;</mo><mn>3</mn><msup><mi>x</mi><mn>2</mn></msup><mo>&#x02212;</mo><mn>3</mn><mi>y</mi><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>f</mi><mi>y</mi></msub><mo>&#x0003D;</mo><mn>3</mn><msup><mi>y</mi><mn>2</mn></msup><mo>&#x02212;</mo><mn>3</mn><mi>x</mi></mrow></math></div>
+<p>令它们为 0：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002C;</mo><mspace width="2em" /><mi>x</mi><mo>&#x0003D;</mo><msup><mi>y</mi><mn>2</mn></msup></mrow></math></div>
+<p>代入得</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>x</mi><mo>&#x0003D;</mo><msup><mi>x</mi><mn>4</mn></msup><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>x</mi><mo stretchy="false">&#x00028;</mo><msup><mi>x</mi><mn>3</mn></msup><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>x</mi><mo>&#x0003D;</mo><mn>0</mn><mtext>&#x000A0;或&#x000A0;</mtext><mi>x</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math></div>
+<p>对应驻点：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>二阶偏导：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>A</mi><mo>&#x0003D;</mo><msub><mi>f</mi><mrow><mi>x</mi><mi>x</mi></mrow></msub><mo>&#x0003D;</mo><mn>6</mn><mi>x</mi><mo>&#x0002C;</mo><mspace width="2em" /><mi>B</mi><mo>&#x0003D;</mo><msub><mi>f</mi><mrow><mi>x</mi><mi>y</mi></mrow></msub><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>3</mn><mo>&#x0002C;</mo><mspace width="2em" /><mi>C</mi><mo>&#x0003D;</mo><msub><mi>f</mi><mrow><mi>y</mi><mi>y</mi></mrow></msub><mo>&#x0003D;</mo><mn>6</mn><mi>y</mi></mrow></math></div>
+<p>在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>D</mi><mo>&#x0003D;</mo><mn>0</mn><mo>&#x000B7;</mo><mn>0</mn><mo>&#x02212;</mo><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>3</mn><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>9</mn><mo>&#x0003C;</mo><mn>0</mn></mrow></math></div>
+<p>所以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 是鞍点。</p>
+<p>在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>D</mi><mo>&#x0003D;</mo><mn>6</mn><mo>&#x000B7;</mo><mn>6</mn><mo>&#x02212;</mo><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>3</mn><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup><mo>&#x0003D;</mo><mn>36</mn><mo>&#x02212;</mo><mn>9</mn><mo>&#x0003D;</mo><mn>27</mn><mo>&#x0003E;</mo><mn>0</mn></mrow></math></div>
+<p>且 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi><mo>&#x0003D;</mo><mn>6</mn><mo>&#x0003E;</mo><mn>0</mn></mrow></math>，所以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 是极小值点。极小值为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002B;</mo><mn>1</mn><mo>&#x02212;</mo><mn>3</mn><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>1</mn></mrow></math></div>
+<hr>
+<h2>7. 条件极值与拉格朗日乘数法</h2>
+<p><strong>问题</strong>：在约束</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math></div>
+<p>下，求</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>的极值。</p>
+<p><strong>拉格朗日乘数法</strong>：</p>
+<ol>
+<li>构造拉格朗日函数</li>
+</ol>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>L</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo>&#x0002C;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><mi>&#x003BB;</mi><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<ol start="2">
+<li>解方程组</li>
+</ol>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007B;</mo><mtable><mtr><mtd columnalign="left"><msub><mi>L</mi><mi>x</mi></msub><mo>&#x0003D;</mo><msub><mi>f</mi><mi>x</mi></msub><mo>&#x0002B;</mo><mi>&#x003BB;</mi><msub><mi>g</mi><mi>x</mi></msub><mo>&#x0003D;</mo><mn>0</mn><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><msub><mi>L</mi><mi>y</mi></msub><mo>&#x0003D;</mo><msub><mi>f</mi><mi>y</mi></msub><mo>&#x0002B;</mo><mi>&#x003BB;</mi><msub><mi>g</mi><mi>y</mi></msub><mo>&#x0003D;</mo><mn>0</mn><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mtd></mtr></mtable></mrow></mrow></math></div>
+<ol start="3">
+<li>解出的点就是可能的极值点，再根据实际问题判断最大或最小。</li>
+</ol>
+<p><strong>几何意义</strong>：在极值点处，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi></mrow></math> 的等值线与约束曲线相切，所以两个梯度平行：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x02207;</mo><mi>f</mi><mo>&#x0003D;</mo><mi>&#x003BC;</mi><mo>&#x02207;</mo><mi>g</mi></mrow></math></div>
+<p><strong>例 1</strong>：在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0002B;</mo><mi>y</mi><mo>&#x0003D;</mo><mn>10</mn></mrow></math> 的条件下，求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mi>y</mi></mrow></math> 的最大值。</p>
+<p>令</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>x</mi><mo>&#x0002B;</mo><mi>y</mi><mo>&#x02212;</mo><mn>10</mn></mrow></math></div>
+<p>则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>L</mi><mo>&#x0003D;</mo><mi>x</mi><mi>y</mi><mo>&#x0002B;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002B;</mo><mi>y</mi><mo>&#x02212;</mo><mn>10</mn><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>方程组：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007B;</mo><mtable><mtr><mtd columnalign="left"><mi>y</mi><mo>&#x0002B;</mo><mi>&#x003BB;</mi><mo>&#x0003D;</mo><mn>0</mn><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><mi>x</mi><mo>&#x0002B;</mo><mi>&#x003BB;</mi><mo>&#x0003D;</mo><mn>0</mn><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><mi>x</mi><mo>&#x0002B;</mo><mi>y</mi><mo>&#x02212;</mo><mn>10</mn><mo>&#x0003D;</mo><mn>0</mn></mtd></mtr></mtable></mrow></mrow></math></div>
+<p>由前两式得</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>x</mi><mo>&#x0003D;</mo><mi>y</mi></mrow></math></div>
+<p>代入约束：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>2</mn><mi>x</mi><mo>&#x0003D;</mo><mn>10</mn><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>x</mi><mo>&#x0003D;</mo><mn>5</mn><mo>&#x0002C;</mo><mspace width="1em" /><mi>y</mi><mo>&#x0003D;</mo><mn>5</mn></mrow></math></div>
+<p>最大值为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>x</mi><mi>y</mi><mo>&#x0003D;</mo><mn>25</mn></mrow></math></div>
+<p><strong>例 2</strong>：在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup><mo>&#x0003D;</mo><mn>1</mn></mrow></math> 的条件下，求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mi>y</mi></mrow></math> 的极值。</p>
+<p>令</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup><mo>&#x02212;</mo><mn>1</mn></mrow></math></div>
+<p>则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>L</mi><mo>&#x0003D;</mo><mi>x</mi><mi>y</mi><mo>&#x0002B;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x00028;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>方程组：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007B;</mo><mtable><mtr><mtd columnalign="left"><mi>y</mi><mo>&#x0002B;</mo><mn>2</mn><mi>&#x003BB;</mi><mi>x</mi><mo>&#x0003D;</mo><mn>0</mn><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><mi>x</mi><mo>&#x0002B;</mo><mn>2</mn><mi>&#x003BB;</mi><mi>y</mi><mo>&#x0003D;</mo><mn>0</mn><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup><mo>&#x0003D;</mo><mn>1</mn></mtd></mtr></mtable></mrow></mrow></math></div>
+<p>由前两式分别乘以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>x</mi><mi>y</mi><mo>&#x0002B;</mo><mn>2</mn><mi>&#x003BB;</mi><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0003D;</mo><mn>0</mn><mo>&#x0002C;</mo><mspace width="2em" /><mi>x</mi><mi>y</mi><mo>&#x0002B;</mo><mn>2</mn><mi>&#x003BB;</mi><msup><mi>y</mi><mn>2</mn></msup><mo>&#x0003D;</mo><mn>0</mn></mrow></math></div>
+<p>两式相减：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>2</mn><mi>&#x003BB;</mi><mo stretchy="false">&#x00028;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x02212;</mo><msup><mi>y</mi><mn>2</mn></msup><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0003D;</mo><msup><mi>y</mi><mn>2</mn></msup></mrow></math></div>
+<p>结合 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup><mo>&#x0003D;</mo><mn>1</mn></mrow></math>，得</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0003D;</mo><msup><mi>y</mi><mn>2</mn></msup><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow></math></div>
+<p>可能的点为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msqrt><mn>2</mn></msqrt></mrow></mfrac><mo>&#x0002C;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msqrt><mn>2</mn></msqrt></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0002C;</mo><mspace width="1em" /><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mo>&#x02212;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msqrt><mn>2</mn></msqrt></mrow></mfrac><mo>&#x0002C;</mo><mo>&#x02212;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msqrt><mn>2</mn></msqrt></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0002C;</mo><mspace width="1em" /><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msqrt><mn>2</mn></msqrt></mrow></mfrac><mo>&#x0002C;</mo><mo>&#x02212;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msqrt><mn>2</mn></msqrt></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0002C;</mo><mspace width="1em" /><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mo>&#x02212;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msqrt><mn>2</mn></msqrt></mrow></mfrac><mo>&#x0002C;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msqrt><mn>2</mn></msqrt></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow></mrow></math></div>
+<p>在这些点上，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mi>y</mi></mrow></math> 的值为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow></math> 或 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02212;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow></math>。所以最大值为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow></math>，最小值为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02212;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow></math>。</p>
+<hr>
+<h2>8. 易错点</h2>
+<ol>
+<li><strong>方向向量必须单位化</strong>。不单位化就套公式，结果会多一个长度因子。</li>
+<li><strong>梯度是向量，方向导数是数</strong>。不要混淆。</li>
+<li><strong>驻点不一定是极值点</strong>，还要用二阶判别法或定义判断。</li>
+<li><strong><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>D</mi><mo>&#x0003D;</mo><mi>A</mi><mi>C</mi><mo>&#x02212;</mo><msup><mi>B</mi><mn>2</mn></msup></mrow></math> 中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>B</mi></mrow></math> 是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>f</mi><mrow><mi>x</mi><mi>y</mi></mrow></msub></mrow></math></strong>，不是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>f</mi><mrow><mi>y</mi><mi>x</mi></mrow></msub></mrow></math> 的相反数；二阶偏导连续时两者相等。</li>
+<li><strong><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>D</mi><mo>&#x0003C;</mo><mn>0</mn></mrow></math> 是鞍点，不是极值</strong>；<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>D</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math> 时判别法失效。</li>
+<li><strong>条件极值不要漏掉约束方程</strong>。拉格朗日方程组必须包含 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>g</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math>。</li>
+<li><strong>实际问题要结合定义域判断</strong>。边界上的最值可能不在驻点处取到。</li>
+</ol>
+<hr>
+<h2>9. 练习</h2>
+<ol>
+<li>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup><mi>y</mi><mo>&#x0002B;</mo><mi>x</mi><msup><mi>y</mi><mn>2</mn></msup></mrow></math>，求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>f</mi><mi>x</mi></msub><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 和 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>f</mi><mi>y</mi></msub><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+</li>
+<li>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup></mrow></math>，求在点 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 处沿方向 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow><mrow><msqrt><mn>2</mn></msqrt></mrow></mfrac></mrow></math> 的方向导数。</p>
+</li>
+<li>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup><mi>y</mi><mo>&#x0002B;</mo><msup><mi>y</mi><mn>3</mn></msup></mrow></math>，求在点 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 处的梯度，以及最大方向导数的值和方向。</p>
+</li>
+<li>
+<p>求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup><mo>&#x02212;</mo><mn>4</mn><mi>x</mi><mo>&#x0002B;</mo><mn>2</mn><mi>y</mi></mrow></math> 的极值。</p>
+</li>
+<li>
+<p>求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x02212;</mo><msup><mi>y</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>2</mn><mi>x</mi></mrow></math> 的极值。</p>
+</li>
+<li>
+<p>求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>x</mi><mn>3</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>3</mn></msup><mo>&#x02212;</mo><mn>3</mn><mi>x</mi><mi>y</mi></mrow></math> 的驻点，并判断类型。</p>
+</li>
+<li>
+<p>在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0002B;</mo><mi>y</mi><mo>&#x0003D;</mo><mn>10</mn></mrow></math> 的条件下，求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mi>y</mi></mrow></math> 的最大值。</p>
+</li>
+<li>
+<p>在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0002B;</mo><mn>2</mn><mi>y</mi><mo>&#x0003D;</mo><mn>3</mn></mrow></math> 的条件下，求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup></mrow></math> 的最小值。</p>
+</li>
+</ol>
+<hr>
+<h2>10. 答案与简解</h2>
+<details>
+<summary>点击展开（做完再看）</summary>
+<p><strong>1.</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>f</mi><mi>x</mi></msub><mo>&#x0003D;</mo><mn>2</mn><mi>x</mi><mi>y</mi><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>f</mi><mi>y</mi></msub><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>2</mn><mi>x</mi><mi>y</mi></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>f</mi><mi>x</mi></msub><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>4</mn><mo>&#x0002B;</mo><mn>4</mn><mo>&#x0003D;</mo><mn>8</mn><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>f</mi><mi>y</mi></msub><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002B;</mo><mn>4</mn><mo>&#x0003D;</mo><mn>5</mn></mrow></math></div>
+<p><strong>2.</strong> 分别为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><msqrt><mn>2</mn></msqrt></mrow></math>。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>f</mi><mi>x</mi></msub><mo>&#x0003D;</mo><mn>2</mn><mi>x</mi><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>f</mi><mi>y</mi></msub><mo>&#x0003D;</mo><mn>2</mn><mi>y</mi></mrow></math></div>
+<p>在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 处：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>f</mi><mi>x</mi></msub><mo>&#x0003D;</mo><mn>2</mn><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>f</mi><mi>y</mi></msub><mo>&#x0003D;</mo><mn>2</mn></mrow></math></div>
+<p>沿 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>2</mn><mo>&#x000B7;</mo><mn>1</mn><mo>&#x0002B;</mo><mn>2</mn><mo>&#x000B7;</mo><mn>0</mn><mo>&#x0003D;</mo><mn>2</mn></mrow></math></div>
+<p>沿 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>2</mn><mo>&#x000B7;</mo><mn>0</mn><mo>&#x0002B;</mo><mn>2</mn><mo>&#x000B7;</mo><mn>1</mn><mo>&#x0003D;</mo><mn>2</mn></mrow></math></div>
+<p>沿 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow><mrow><msqrt><mn>2</mn></msqrt></mrow></mfrac></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>2</mn><mo>&#x000B7;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msqrt><mn>2</mn></msqrt></mrow></mfrac><mo>&#x0002B;</mo><mn>2</mn><mo>&#x000B7;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msqrt><mn>2</mn></msqrt></mrow></mfrac><mo>&#x0003D;</mo><mn>2</mn><msqrt><mn>2</mn></msqrt></mrow></math></div>
+<p><strong>3.</strong> 梯度为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>4</mn><mo stretchy="false">&#x00029;</mo></mrow></math>；最大方向导数为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><msqrt><mn>5</mn></msqrt></mrow></math>，方向为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow><mrow><msqrt><mn>5</mn></msqrt></mrow></mfrac></mrow></math>。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>f</mi><mi>x</mi></msub><mo>&#x0003D;</mo><mn>2</mn><mi>x</mi><mi>y</mi><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>f</mi><mi>y</mi></msub><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>3</mn><msup><mi>y</mi><mn>2</mn></msup></mrow></math></div>
+<p>在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x02207;</mo><mi>f</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>4</mn><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mo>&#x02207;</mo><mi>f</mi><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x0003D;</mo><msqrt><mrow><mn>4</mn><mo>&#x0002B;</mo><mn>16</mn></mrow></msqrt><mo>&#x0003D;</mo><mn>2</mn><msqrt><mn>5</mn></msqrt></mrow></math></div>
+<p><strong>4.</strong> 极小值为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02212;</mo><mn>5</mn></mrow></math>，在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo>&#x0002C;</mo><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 处取得。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>f</mi><mi>x</mi></msub><mo>&#x0003D;</mo><mn>2</mn><mi>x</mi><mo>&#x02212;</mo><mn>4</mn><mo>&#x0003D;</mo><mn>0</mn><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>x</mi><mo>&#x0003D;</mo><mn>2</mn></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>f</mi><mi>y</mi></msub><mo>&#x0003D;</mo><mn>2</mn><mi>y</mi><mo>&#x0002B;</mo><mn>2</mn><mo>&#x0003D;</mo><mn>0</mn><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>y</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>1</mn></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>A</mi><mo>&#x0003D;</mo><mn>2</mn><mo>&#x0002C;</mo><mspace width="1em" /><mi>B</mi><mo>&#x0003D;</mo><mn>0</mn><mo>&#x0002C;</mo><mspace width="1em" /><mi>C</mi><mo>&#x0003D;</mo><mn>2</mn><mo>&#x0002C;</mo><mspace width="1em" /><mi>D</mi><mo>&#x0003D;</mo><mn>4</mn><mo>&#x0003E;</mo><mn>0</mn></mrow></math></div>
+<p>且 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi><mo>&#x0003E;</mo><mn>0</mn></mrow></math>，所以是极小值点。</p>
+<p><strong>5.</strong> 鞍点 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，没有极值。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>f</mi><mi>x</mi></msub><mo>&#x0003D;</mo><mn>2</mn><mi>x</mi><mo>&#x0002B;</mo><mn>2</mn><mo>&#x0003D;</mo><mn>0</mn><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>x</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>1</mn></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>f</mi><mi>y</mi></msub><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>2</mn><mi>y</mi><mo>&#x0003D;</mo><mn>0</mn><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>y</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>A</mi><mo>&#x0003D;</mo><mn>2</mn><mo>&#x0002C;</mo><mspace width="1em" /><mi>B</mi><mo>&#x0003D;</mo><mn>0</mn><mo>&#x0002C;</mo><mspace width="1em" /><mi>C</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>2</mn><mo>&#x0002C;</mo><mspace width="1em" /><mi>D</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>4</mn><mo>&#x0003C;</mo><mn>0</mn></mrow></math></div>
+<p>所以是鞍点。</p>
+<p><strong>6.</strong> 驻点 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 和 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>；<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 是鞍点，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 是极小值点，极小值为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></math>。见本课例 2。</p>
+<p><strong>7.</strong> 最大值为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>25</mn></mrow></math>，在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mn>5</mn></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mn>5</mn></mrow></math> 处取得。见本课例 1。</p>
+<p><strong>8.</strong> 最小值为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mn>9</mn><mn>5</mn></mfrac></mrow></math>，在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mfrac><mn>3</mn><mn>5</mn></mfrac></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mfrac><mn>6</mn><mn>5</mn></mfrac></mrow></math> 处取得。</p>
+<p>令</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>x</mi><mo>&#x0002B;</mo><mn>2</mn><mi>y</mi><mo>&#x02212;</mo><mn>3</mn></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>L</mi><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002B;</mo><mn>2</mn><mi>y</mi><mo>&#x02212;</mo><mn>3</mn><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>方程组：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007B;</mo><mtable><mtr><mtd columnalign="left"><mn>2</mn><mi>x</mi><mo>&#x0002B;</mo><mi>&#x003BB;</mi><mo>&#x0003D;</mo><mn>0</mn><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><mn>2</mn><mi>y</mi><mo>&#x0002B;</mo><mn>2</mn><mi>&#x003BB;</mi><mo>&#x0003D;</mo><mn>0</mn><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><mi>x</mi><mo>&#x0002B;</mo><mn>2</mn><mi>y</mi><mo>&#x02212;</mo><mn>3</mn><mo>&#x0003D;</mo><mn>0</mn></mtd></mtr></mtable></mrow></mrow></math></div>
+<p>由前两式：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>x</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mfrac><mrow><mi>&#x003BB;</mi></mrow><mrow><mn>2</mn></mrow></mfrac><mo>&#x0002C;</mo><mspace width="2em" /><mi>y</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mi>&#x003BB;</mi></mrow></math></div>
+<p>代入约束：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x02212;</mo><mfrac><mrow><mi>&#x003BB;</mi></mrow><mrow><mn>2</mn></mrow></mfrac><mo>&#x02212;</mo><mn>2</mn><mi>&#x003BB;</mi><mo>&#x0003D;</mo><mn>3</mn><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mo>&#x02212;</mo><mfrac><mrow><mn>5</mn><mi>&#x003BB;</mi></mrow><mrow><mn>2</mn></mrow></mfrac><mo>&#x0003D;</mo><mn>3</mn><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>&#x003BB;</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mfrac><mn>6</mn><mn>5</mn></mfrac></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>x</mi><mo>&#x0003D;</mo><mfrac><mn>3</mn><mn>5</mn></mfrac><mo>&#x0002C;</mo><mspace width="2em" /><mi>y</mi><mo>&#x0003D;</mo><mfrac><mn>6</mn><mn>5</mn></mfrac></mrow></math></div>
+<p>最小值为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup><mo>&#x0003D;</mo><mfrac><mrow><mn>9</mn></mrow><mrow><mn>25</mn></mrow></mfrac><mo>&#x0002B;</mo><mfrac><mrow><mn>36</mn></mrow><mrow><mn>25</mn></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>45</mn></mrow><mrow><mn>25</mn></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mn>9</mn><mn>5</mn></mfrac></mrow></math></div>
+</details>
+<hr>
+<h2>11. 下节预告</h2>
+<p><strong>第 27 课：三重积分</strong></p>
+<ul>
+<li>三重积分的定义与意义</li>
+<li>直角坐标下的累次积分</li>
+<li>柱坐标</li>
+<li>球坐标</li>
+</ul>
+<hr>
+<h2>自查清单</h2>
+<ul>
+<li>[ ] 会求偏导数和二阶偏导数</li>
+<li>[ ] 会求方向导数，方向向量会单位化</li>
+<li>[ ] 理解梯度的方向和大小</li>
+<li>[ ] 会用二阶判别法判断极值</li>
+<li>[ ] 知道驻点不一定是极值点</li>
+<li>[ ] 会用拉格朗日乘数法处理条件极值</li>
+<li>[ ] 会结合约束方程解方程组</li>
+</ul>
+<footer>微积分讲义 · 数学公式使用 MathML 渲染，建议使用 Chrome / Edge / Firefox 打开</footer>
+</main>
+</body>
+</html>

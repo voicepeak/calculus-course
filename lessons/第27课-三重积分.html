@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>微积分进阶 · 第 27 课：三重积分</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --quote-bg: #f6f8fa;
+  --code-bg: #eff2f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --border: #30363d;
+    --accent: #4493f8;
+    --quote-bg: #161b22;
+    --code-bg: #1f242c;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; font-weight: 650; }
+h1 { font-size: 2rem; margin: 0 0 .8em; padding-bottom: .35em; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 2.2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.2rem; margin: 1.8em 0 .55em; }
+p { margin: .85em 0; }
+a { color: var(--accent); }
+blockquote {
+  margin: 1em 0;
+  padding: .6em 1em;
+  border-left: 4px solid var(--accent);
+  background: var(--quote-bg);
+  color: var(--muted);
+  border-radius: 4px;
+}
+blockquote p { margin: .25em 0; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: .96em;
+  overflow: hidden;
+}
+th, td { border: 1px solid var(--border); padding: .45em .7em; text-align: left; vertical-align: top; }
+th { background: var(--quote-bg); font-weight: 600; }
+details {
+  margin: 1.2em 0;
+  padding: .8em 1em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--quote-bg);
+}
+summary { cursor: pointer; font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+ul, ol { padding-left: 1.7em; }
+li { margin: .3em 0; }
+.math-block {
+  margin: 1.15em 0;
+  padding: .7em .9em;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--quote-bg);
+  border-radius: 6px;
+}
+math { font-size: 1.14em; line-height: 1.2; }
+math[display="inline"] { font-size: 1.05em; vertical-align: baseline; }
+.math-block math { font-size: 1.24em; }
+.math-fallback, .math-fallback-block {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .08em .3em;
+  border-radius: 3px;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .12em .35em;
+  border-radius: 3px;
+  font-size: .92em;
+}
+pre code { display: block; padding: .8em 1em; overflow-x: auto; }
+footer { margin-top: 4em; color: var(--muted); font-size: .85em; text-align: center; }
+@media print {
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  .math-block { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>微积分进阶 · 第 27 课：三重积分</h1>
+<blockquote>
+<p><strong>本课目标</strong>：理解三重积分的意义，会在直角坐标、柱坐标、球坐标下计算简单三重积分。</p>
+<p><strong>使用方法</strong>：先画区域，再选坐标系。看到圆柱对称用柱坐标，看到球对称用球坐标。</p>
+</blockquote>
+<hr>
+<h2>目录</h2>
+<ol>
+<li>三重积分是什么</li>
+<li>直角坐标下的累次积分</li>
+<li>柱坐标</li>
+<li>球坐标</li>
+<li>对称性</li>
+<li>易错点</li>
+<li>练习</li>
+<li>答案与简解</li>
+<li>下节预告</li>
+</ol>
+<hr>
+<h2>1. 三重积分是什么</h2>
+<p>三重积分是对三维区域 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A9;</mi></mrow></math> 上的函数进行积分：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222D;</mo><mi>&#x003A9;</mi></msub><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo>&#x0002C;</mo><mi>z</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>V</mi></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>d</mi><mi>V</mi></mrow></math> 是体积元素。</p>
+<p><strong>物理意义</strong>：如果 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo>&#x0002C;</mo><mi>z</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 是密度，那么</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222D;</mo><mi>&#x003A9;</mi></msub><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo>&#x0002C;</mo><mi>z</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>V</mi></mrow></math></div>
+<p>就是区域 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A9;</mi></mrow></math> 的总质量。</p>
+<p><strong>几何意义</strong>：当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo>&#x0002C;</mo><mi>z</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn></mrow></math> 时，</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222D;</mo><mi>&#x003A9;</mi></msub><mn>1</mn><mspace width="0.167em" /><mi>d</mi><mi>V</mi><mo>&#x0003D;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mi>&#x003A9;</mi><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow></mrow></math></div>
+<p>就是区域 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A9;</mi></mrow></math> 的体积。</p>
+<p><strong>直观理解</strong>：把 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A9;</mi></mrow></math> 切成很多小块，每块体积为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x00394;</mi><mi>V</mi></mrow></math>，用 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi></mrow></math> 在块内的值乘以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x00394;</mi><mi>V</mi></mrow></math>，再全部加起来，取极限就是三重积分。</p>
+<hr>
+<h2>2. 直角坐标下的累次积分</h2>
+<h3>长方体区域</h3>
+<p>如果</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x003A9;</mi><mo>&#x0003D;</mo><mo stretchy="false">[</mo><mi>a</mi><mo>&#x0002C;</mo><mi>b</mi><mo stretchy="false">]</mo><mo>&#x000D7;</mo><mo stretchy="false">[</mo><mi>c</mi><mo>&#x0002C;</mo><mi>d</mi><mo stretchy="false">]</mo><mo>&#x000D7;</mo><mo stretchy="false">[</mo><mi>e</mi><mo>&#x0002C;</mo><mi>f</mi><mo stretchy="false">]</mo></mrow></math></div>
+<p>那么</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222D;</mo><mi>&#x003A9;</mi></msub><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo>&#x0002C;</mo><mi>z</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>V</mi><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mi>a</mi><mi>b</mi></msubsup><msubsup><mo>&#x0222B;</mo><mi>c</mi><mi>d</mi></msubsup><msubsup><mo>&#x0222B;</mo><mi>e</mi><mi>f</mi></msubsup><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo>&#x0002C;</mo><mi>z</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>z</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></math></div>
+<p>积分顺序可以交换（在函数连续时）。</p>
+<p><strong>例 1</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222D;</mo><mi>&#x003A9;</mi></msub><mi>x</mi><mi>y</mi><mi>z</mi><mspace width="0.167em" /><mi>d</mi><mi>V</mi></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A9;</mi><mo>&#x0003D;</mo><mo stretchy="false">[</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">]</mo><mo>&#x000D7;</mo><mo stretchy="false">[</mo><mn>0</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">]</mo><mo>&#x000D7;</mo><mo stretchy="false">[</mo><mn>0</mn><mo>&#x0002C;</mo><mn>3</mn><mo stretchy="false">]</mo></mrow></math>。</p>
+<p>因为被积函数可以分离变量，</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222D;</mo><mi>&#x003A9;</mi></msub><mi>x</mi><mi>y</mi><mi>z</mi><mspace width="0.167em" /><mi>d</mi><mi>V</mi><mo>&#x0003D;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>2</mn></msubsup><mi>y</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>3</mn></msubsup><mi>z</mi><mspace width="0.167em" /><mi>d</mi><mi>z</mi><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow></mrow></math></div>
+<p>计算：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>2</mn></msubsup><mi>y</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mo>&#x0003D;</mo><mn>2</mn></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>3</mn></msubsup><mi>z</mi><mspace width="0.167em" /><mi>d</mi><mi>z</mi><mo>&#x0003D;</mo><mfrac><mn>9</mn><mn>2</mn></mfrac></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222D;</mo><mi>&#x003A9;</mi></msub><mi>x</mi><mi>y</mi><mi>z</mi><mspace width="0.167em" /><mi>d</mi><mi>V</mi><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>&#x000B7;</mo><mn>2</mn><mo>&#x000B7;</mo><mfrac><mn>9</mn><mn>2</mn></mfrac><mo>&#x0003D;</mo><mfrac><mn>9</mn><mn>2</mn></mfrac></mrow></math></div>
+<h3>一般区域</h3>
+<p>如果区域由上下曲面围成：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x003A9;</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x0007B;</mo><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo>&#x0002C;</mo><mi>z</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02223;</mo><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02208;</mo><mi>D</mi><mo>&#x0002C;</mo><mtext>&#x000A0;</mtext><msub><mi>z</mi><mn>1</mn></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02264;</mo><mi>z</mi><mo>&#x02264;</mo><msub><mi>z</mi><mn>2</mn></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x0007D;</mo></mrow></math></div>
+<p>那么</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222D;</mo><mi>&#x003A9;</mi></msub><mi>f</mi><mspace width="0.167em" /><mi>d</mi><mi>V</mi><mo>&#x0003D;</mo><msub><mo>&#x0222C;</mo><mi>D</mi></msub><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><msubsup><mo>&#x0222B;</mo><mrow><msub><mi>z</mi><mn>1</mn></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo></mrow><mrow><msub><mi>z</mi><mn>2</mn></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo></mrow></msubsup><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo>&#x0002C;</mo><mi>z</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>z</mi><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mi>d</mi><mi>A</mi></mrow></math></div>
+<p><strong>例 2</strong>：求由平面</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>x</mi><mo>&#x0002B;</mo><mi>y</mi><mo>&#x0002B;</mo><mi>z</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math></div>
+<p>和三个坐标面围成的四面体的体积。</p>
+<p>区域为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x003A9;</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x0007B;</mo><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo>&#x0002C;</mo><mi>z</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02223;</mo><mi>x</mi><mo>&#x02265;</mo><mn>0</mn><mo>&#x0002C;</mo><mtext>&#x000A0;</mtext><mi>y</mi><mo>&#x02265;</mo><mn>0</mn><mo>&#x0002C;</mo><mtext>&#x000A0;</mtext><mi>z</mi><mo>&#x02265;</mo><mn>0</mn><mo>&#x0002C;</mo><mtext>&#x000A0;</mtext><mi>x</mi><mo>&#x0002B;</mo><mi>y</mi><mo>&#x0002B;</mo><mi>z</mi><mo>&#x02264;</mo><mn>1</mn><mo stretchy="false">&#x0007D;</mo></mrow></math></div>
+<p>体积：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>V</mi><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><msubsup><mo>&#x0222B;</mo><mn>0</mn><mrow><mn>1</mn><mo>&#x02212;</mo><mi>x</mi></mrow></msubsup><msubsup><mo>&#x0222B;</mo><mn>0</mn><mrow><mn>1</mn><mo>&#x02212;</mo><mi>x</mi><mo>&#x02212;</mo><mi>y</mi></mrow></msubsup><mi>d</mi><mi>z</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></math></div>
+<p>先算最内层：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mn>0</mn><mrow><mn>1</mn><mo>&#x02212;</mo><mi>x</mi><mo>&#x02212;</mo><mi>y</mi></mrow></msubsup><mi>d</mi><mi>z</mi><mo>&#x0003D;</mo><mn>1</mn><mo>&#x02212;</mo><mi>x</mi><mo>&#x02212;</mo><mi>y</mi></mrow></math></div>
+<p>再算中间层：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mn>0</mn><mrow><mn>1</mn><mo>&#x02212;</mo><mi>x</mi></mrow></msubsup><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><mi>x</mi><mo>&#x02212;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mo>&#x0003D;</mo><msubsup><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mi>y</mi><mo>&#x02212;</mo><mfrac><mrow><msup><mi>y</mi><mn>2</mn></msup></mrow><mrow><mn>2</mn></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">]</mo></mrow><mn>0</mn><mrow><mn>1</mn><mo>&#x02212;</mo><mi>x</mi></mrow></msubsup><mo>&#x0003D;</mo><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><mi>x</mi><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></math></div>
+<p>最后：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>V</mi><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><mi>x</mi><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup></mrow><mrow><mn>2</mn></mrow></mfrac><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>&#x000B7;</mo><mfrac><mn>1</mn><mn>3</mn></mfrac><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>6</mn></mfrac></mrow></math></div>
+<hr>
+<h2>3. 柱坐标</h2>
+<p>柱坐标与极坐标类似：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>x</mi><mo>&#x0003D;</mo><mi>r</mi><mi>cos</mi><mi>&#x003B8;</mi><mo>&#x0002C;</mo><mspace width="2em" /><mi>y</mi><mo>&#x0003D;</mo><mi>r</mi><mi>sin</mi><mi>&#x003B8;</mi><mo>&#x0002C;</mo><mspace width="2em" /><mi>z</mi><mo>&#x0003D;</mo><mi>z</mi></mrow></math></div>
+<p>其中</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>r</mi><mo>&#x02265;</mo><mn>0</mn><mo>&#x0002C;</mo><mspace width="2em" /><mn>0</mn><mo>&#x02264;</mo><mi>&#x003B8;</mi><mo>&#x0003C;</mo><mn>2</mn><mi>&#x003C0;</mi><mo>&#x0002C;</mo><mspace width="2em" /><mi>z</mi><mo>&#x02208;</mo><mi>&#x0211D;</mi></mrow></math></div>
+<p><strong>体积元素</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>d</mi><mi>V</mi><mo>&#x0003D;</mo><mi>r</mi><mspace width="0.167em" /><mi>d</mi><mi>z</mi><mspace width="0.167em" /><mi>d</mi><mi>r</mi><mspace width="0.167em" /><mi>d</mi><mi>&#x003B8;</mi></mrow></math></div>
+<p><strong>注意</strong>：多出来的 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>r</mi></mrow></math> 是雅可比因子，不能漏。</p>
+<p><strong>例 1</strong>：计算</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222D;</mo><mi>&#x003A9;</mi></msub><mi>z</mi><mspace width="0.167em" /><mi>d</mi><mi>V</mi></mrow></math></div>
+<p>其中</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x003A9;</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x0007B;</mo><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo>&#x0002C;</mo><mi>z</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02223;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup><mo>&#x02264;</mo><mn>1</mn><mo>&#x0002C;</mo><mtext>&#x000A0;</mtext><mn>0</mn><mo>&#x02264;</mo><mi>z</mi><mo>&#x02264;</mo><mn>2</mn><mo stretchy="false">&#x0007D;</mo></mrow></math></div>
+<p>用柱坐标：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup><mo>&#x02264;</mo><mn>1</mn><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mn>0</mn><mo>&#x02264;</mo><mi>r</mi><mo>&#x02264;</mo><mn>1</mn></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222D;</mo><mi>&#x003A9;</mi></msub><mi>z</mi><mspace width="0.167em" /><mi>d</mi><mi>V</mi><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mrow><mn>2</mn><mi>&#x003C0;</mi></mrow></msubsup><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>2</mn></msubsup><mi>z</mi><mo>&#x000B7;</mo><mi>r</mi><mspace width="0.167em" /><mi>d</mi><mi>z</mi><mspace width="0.167em" /><mi>d</mi><mi>r</mi><mspace width="0.167em" /><mi>d</mi><mi>&#x003B8;</mi></mrow></math></div>
+<p>分离变量：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0003D;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mrow><mn>2</mn><mi>&#x003C0;</mi></mrow></msubsup><mi>d</mi><mi>&#x003B8;</mi><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><mi>r</mi><mspace width="0.167em" /><mi>d</mi><mi>r</mi><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>2</mn></msubsup><mi>z</mi><mspace width="0.167em" /><mi>d</mi><mi>z</mi><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0003D;</mo><mn>2</mn><mi>&#x003C0;</mi><mo>&#x000B7;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>&#x000B7;</mo><mn>2</mn><mo>&#x0003D;</mo><mn>2</mn><mi>&#x003C0;</mi></mrow></math></div>
+<p><strong>例 2</strong>：求抛物面</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>z</mi><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup></mrow></math></div>
+<p>与平面 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>z</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math> 围成的体积。</p>
+<p>区域：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup><mo>&#x02264;</mo><mn>1</mn><mo>&#x0002C;</mo><mspace width="2em" /><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup><mo>&#x02264;</mo><mi>z</mi><mo>&#x02264;</mo><mn>1</mn></mrow></math></div>
+<p>即</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>r</mi><mn>2</mn></msup><mo>&#x02264;</mo><mi>z</mi><mo>&#x02264;</mo><mn>1</mn></mrow></math></div>
+<p>体积：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>V</mi><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mrow><mn>2</mn><mi>&#x003C0;</mi></mrow></msubsup><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><msubsup><mo>&#x0222B;</mo><mrow><msup><mi>r</mi><mn>2</mn></msup></mrow><mrow><mn>1</mn></mrow></msubsup><mi>r</mi><mspace width="0.167em" /><mi>d</mi><mi>z</mi><mspace width="0.167em" /><mi>d</mi><mi>r</mi><mspace width="0.167em" /><mi>d</mi><mi>&#x003B8;</mi></mrow></math></div>
+<p>先算 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>z</mi></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mrow><msup><mi>r</mi><mn>2</mn></msup></mrow><mrow><mn>1</mn></mrow></msubsup><mi>r</mi><mspace width="0.167em" /><mi>d</mi><mi>z</mi><mo>&#x0003D;</mo><mi>r</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><msup><mi>r</mi><mn>2</mn></msup><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>再算 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>r</mi></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><mi>r</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><msup><mi>r</mi><mn>2</mn></msup><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>r</mi><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>&#x02212;</mo><mfrac><mn>1</mn><mn>4</mn></mfrac><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>4</mn></mfrac></mrow></math></div>
+<p>最后：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>V</mi><mo>&#x0003D;</mo><mn>2</mn><mi>&#x003C0;</mi><mo>&#x000B7;</mo><mfrac><mn>1</mn><mn>4</mn></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mi>&#x003C0;</mi></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></math></div>
+<hr>
+<h2>4. 球坐标</h2>
+<p>球坐标：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>x</mi><mo>&#x0003D;</mo><mi>&#x003C1;</mi><mi>sin</mi><mi>&#x003C6;</mi><mi>cos</mi><mi>&#x003B8;</mi></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>&#x003C1;</mi><mi>sin</mi><mi>&#x003C6;</mi><mi>sin</mi><mi>&#x003B8;</mi></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>z</mi><mo>&#x0003D;</mo><mi>&#x003C1;</mi><mi>cos</mi><mi>&#x003C6;</mi></mrow></math></div>
+<p>其中</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x003C1;</mi><mo>&#x02265;</mo><mn>0</mn><mo>&#x0002C;</mo><mspace width="2em" /><mn>0</mn><mo>&#x02264;</mo><mi>&#x003C6;</mi><mo>&#x02264;</mo><mi>&#x003C0;</mi><mo>&#x0002C;</mo><mspace width="2em" /><mn>0</mn><mo>&#x02264;</mo><mi>&#x003B8;</mi><mo>&#x0003C;</mo><mn>2</mn><mi>&#x003C0;</mi></mrow></math></div>
+<p><strong>角的含义</strong>：</p>
+<ul>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C1;</mi></mrow></math>：到原点的距离；</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C6;</mi></mrow></math>：与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>z</mi></mrow></math> 轴正方向的夹角（极角）；</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003B8;</mi></mrow></math>：在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mi>y</mi></mrow></math> 平面上的投影与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math> 轴正方向的夹角（方位角）。</li>
+</ul>
+<p><strong>体积元素</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>d</mi><mi>V</mi><mo>&#x0003D;</mo><msup><mi>&#x003C1;</mi><mn>2</mn></msup><mi>sin</mi><mi>&#x003C6;</mi><mspace width="0.167em" /><mi>d</mi><mi>&#x003C1;</mi><mspace width="0.167em" /><mi>d</mi><mi>&#x003C6;</mi><mspace width="0.167em" /><mi>d</mi><mi>&#x003B8;</mi></mrow></math></div>
+<p><strong>注意</strong>：球坐标的雅可比因子是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x003C1;</mi><mn>2</mn></msup><mi>sin</mi><mi>&#x003C6;</mi></mrow></math>，不是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>r</mi></mrow></math>。</p>
+<p><strong>例 1</strong>：求单位球的体积。</p>
+<p>单位球：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x003C1;</mi><mo>&#x02264;</mo><mn>1</mn><mo>&#x0002C;</mo><mspace width="2em" /><mn>0</mn><mo>&#x02264;</mo><mi>&#x003C6;</mi><mo>&#x02264;</mo><mi>&#x003C0;</mi><mo>&#x0002C;</mo><mspace width="2em" /><mn>0</mn><mo>&#x02264;</mo><mi>&#x003B8;</mi><mo>&#x0003C;</mo><mn>2</mn><mi>&#x003C0;</mi></mrow></math></div>
+<p>体积：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>V</mi><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mrow><mn>2</mn><mi>&#x003C0;</mi></mrow></msubsup><msubsup><mo>&#x0222B;</mo><mn>0</mn><mrow><mi>&#x003C0;</mi></mrow></msubsup><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><msup><mi>&#x003C1;</mi><mn>2</mn></msup><mi>sin</mi><mi>&#x003C6;</mi><mspace width="0.167em" /><mi>d</mi><mi>&#x003C1;</mi><mspace width="0.167em" /><mi>d</mi><mi>&#x003C6;</mi><mspace width="0.167em" /><mi>d</mi><mi>&#x003B8;</mi></mrow></math></div>
+<p>分离变量：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0003D;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mrow><mn>2</mn><mi>&#x003C0;</mi></mrow></msubsup><mi>d</mi><mi>&#x003B8;</mi><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mrow><mi>&#x003C0;</mi></mrow></msubsup><mi>sin</mi><mi>&#x003C6;</mi><mspace width="0.167em" /><mi>d</mi><mi>&#x003C6;</mi><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><msup><mi>&#x003C1;</mi><mn>2</mn></msup><mspace width="0.167em" /><mi>d</mi><mi>&#x003C1;</mi><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow></mrow></math></div>
+<p>计算：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mn>0</mn><mrow><mn>2</mn><mi>&#x003C0;</mi></mrow></msubsup><mi>d</mi><mi>&#x003B8;</mi><mo>&#x0003D;</mo><mn>2</mn><mi>&#x003C0;</mi></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mn>0</mn><mrow><mi>&#x003C0;</mi></mrow></msubsup><mi>sin</mi><mi>&#x003C6;</mi><mspace width="0.167em" /><mi>d</mi><mi>&#x003C6;</mi><mo>&#x0003D;</mo><msubsup><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><mo>&#x02212;</mo><mi>cos</mi><mi>&#x003C6;</mi><mo stretchy="true" fence="true" form="postfix">]</mo></mrow><mn>0</mn><mrow><mi>&#x003C0;</mi></mrow></msubsup><mo>&#x0003D;</mo><mn>2</mn></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><msup><mi>&#x003C1;</mi><mn>2</mn></msup><mspace width="0.167em" /><mi>d</mi><mi>&#x003C1;</mi><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>3</mn></mfrac></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>V</mi><mo>&#x0003D;</mo><mn>2</mn><mi>&#x003C0;</mi><mo>&#x000B7;</mo><mn>2</mn><mo>&#x000B7;</mo><mfrac><mn>1</mn><mn>3</mn></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>4</mn><mi>&#x003C0;</mi></mrow><mrow><mn>3</mn></mrow></mfrac></mrow></math></div>
+<p><strong>例 2</strong>：计算</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222D;</mo><mi>&#x003A9;</mi></msub><mo stretchy="false">&#x00028;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>z</mi><mn>2</mn></msup><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>V</mi></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A9;</mi></mrow></math> 是单位球。</p>
+<p>因为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>z</mi><mn>2</mn></msup><mo>&#x0003D;</mo><msup><mi>&#x003C1;</mi><mn>2</mn></msup></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222D;</mo><mi>&#x003A9;</mi></msub><msup><mi>&#x003C1;</mi><mn>2</mn></msup><mspace width="0.167em" /><mi>d</mi><mi>V</mi><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mrow><mn>2</mn><mi>&#x003C0;</mi></mrow></msubsup><msubsup><mo>&#x0222B;</mo><mn>0</mn><mrow><mi>&#x003C0;</mi></mrow></msubsup><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><msup><mi>&#x003C1;</mi><mn>2</mn></msup><mo>&#x000B7;</mo><msup><mi>&#x003C1;</mi><mn>2</mn></msup><mi>sin</mi><mi>&#x003C6;</mi><mspace width="0.167em" /><mi>d</mi><mi>&#x003C1;</mi><mspace width="0.167em" /><mi>d</mi><mi>&#x003C6;</mi><mspace width="0.167em" /><mi>d</mi><mi>&#x003B8;</mi></mrow></math></div>
+<p>分离变量：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0003D;</mo><mn>2</mn><mi>&#x003C0;</mi><mo>&#x000B7;</mo><mn>2</mn><mo>&#x000B7;</mo><mfrac><mn>1</mn><mn>5</mn></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>4</mn><mi>&#x003C0;</mi></mrow><mrow><mn>5</mn></mrow></mfrac></mrow></math></div>
+<hr>
+<h2>5. 对称性</h2>
+<p><strong>关于坐标面对称</strong>：</p>
+<ul>
+<li>如果区域关于 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mi>y</mi></mrow></math> 平面对称，且 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo>&#x0002C;</mo><mo>&#x02212;</mo><mi>z</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo>&#x02212;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo>&#x0002C;</mo><mi>z</mi><mo stretchy="false">&#x00029;</mo></mrow></math>，则</li>
+</ul>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222D;</mo><mi>&#x003A9;</mi></msub><mi>f</mi><mspace width="0.167em" /><mi>d</mi><mi>V</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math></div>
+<ul>
+<li>如果 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo>&#x0002C;</mo><mo>&#x02212;</mo><mi>z</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo>&#x0002C;</mo><mi>z</mi><mo stretchy="false">&#x00029;</mo></mrow></math>，则</li>
+</ul>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222D;</mo><mi>&#x003A9;</mi></msub><mi>f</mi><mspace width="0.167em" /><mi>d</mi><mi>V</mi><mo>&#x0003D;</mo><mn>2</mn><msub><mo>&#x0222D;</mo><mrow><msub><mi>&#x003A9;</mi><mo>&#x0002B;</mo></msub></mrow></msub><mi>f</mi><mspace width="0.167em" /><mi>d</mi><mi>V</mi></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x003A9;</mi><mo>&#x0002B;</mo></msub></mrow></math> 是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>z</mi><mo>&#x02265;</mo><mn>0</mn></mrow></math> 的部分。</p>
+<p><strong>例</strong>：区域 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A9;</mi></mrow></math> 是单位球，计算</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222D;</mo><mi>&#x003A9;</mi></msub><mi>z</mi><mspace width="0.167em" /><mi>d</mi><mi>V</mi></mrow></math></div>
+<p>因为区域关于 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mi>y</mi></mrow></math> 平面对称，且 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>z</mi></mrow></math> 是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>z</mi></mrow></math> 的奇函数，所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222D;</mo><mi>&#x003A9;</mi></msub><mi>z</mi><mspace width="0.167em" /><mi>d</mi><mi>V</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math></div>
+<p><strong>常见奇函数</strong>：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>z</mi></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mi>y</mi><mi>z</mi></mrow></math> 等。遇到对称区域，先看奇偶性，可以省很多计算。</p>
+<hr>
+<h2>6. 易错点</h2>
+<ol>
+<li><strong>柱坐标的体积元素是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>r</mi><mspace width="0.167em" /><mi>d</mi><mi>z</mi><mspace width="0.167em" /><mi>d</mi><mi>r</mi><mspace width="0.167em" /><mi>d</mi><mi>&#x003B8;</mi></mrow></math></strong>，不要漏掉 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>r</mi></mrow></math>。</li>
+<li><strong>球坐标的体积元素是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x003C1;</mi><mn>2</mn></msup><mi>sin</mi><mi>&#x003C6;</mi><mspace width="0.167em" /><mi>d</mi><mi>&#x003C1;</mi><mspace width="0.167em" /><mi>d</mi><mi>&#x003C6;</mi><mspace width="0.167em" /><mi>d</mi><mi>&#x003B8;</mi></mrow></math></strong>，不要漏掉 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x003C1;</mi><mn>2</mn></msup><mi>sin</mi><mi>&#x003C6;</mi></mrow></math>。</li>
+<li><strong>球坐标中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C6;</mi></mrow></math> 的范围是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><mn>0</mn><mo>&#x0002C;</mo><mi>&#x003C0;</mi><mo stretchy="false">]</mo></mrow></math></strong>，不是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><mn>0</mn><mo>&#x0002C;</mo><mn>2</mn><mi>&#x003C0;</mi><mo stretchy="false">]</mo></mrow></math>。</li>
+<li><strong>积分限要由区域决定</strong>，不能机械地都写 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn></mrow></math> 到 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn></mrow></math>。</li>
+<li><strong>先画区域再写限</strong>。三重积分最容易错在上下限。</li>
+<li><strong>对称性使用前要确认区域和被积函数都满足条件</strong>。</li>
+<li><strong>交换积分顺序时，限也要跟着变</strong>，不能只换符号。</li>
+</ol>
+<hr>
+<h2>7. 练习</h2>
+<ol>
+<li>
+<p>计算 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>&#x0222D;</mo><mi>&#x003A9;</mi></msub><mo stretchy="false">&#x00028;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>V</mi></mrow></math>，其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A9;</mi><mo>&#x0003D;</mo><mo stretchy="false">[</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">]</mo><mo>&#x000D7;</mo><mo stretchy="false">[</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">]</mo><mo>&#x000D7;</mo><mo stretchy="false">[</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">]</mo></mrow></math>。</p>
+</li>
+<li>
+<p>求由 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0002B;</mo><mi>y</mi><mo>&#x0002B;</mo><mi>z</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math> 和三个坐标面围成的四面体体积。</p>
+</li>
+<li>
+<p>计算 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>&#x0222D;</mo><mi>&#x003A9;</mi></msub><mi>z</mi><mspace width="0.167em" /><mi>d</mi><mi>V</mi></mrow></math>，其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup><mo>&#x02264;</mo><mn>4</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x02264;</mo><mi>z</mi><mo>&#x02264;</mo><mn>3</mn></mrow></math>。</p>
+</li>
+<li>
+<p>求抛物面 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>z</mi><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup></mrow></math> 与平面 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>z</mi><mo>&#x0003D;</mo><mn>4</mn></mrow></math> 围成的体积。</p>
+</li>
+<li>
+<p>用球坐标求单位球的体积。</p>
+</li>
+<li>
+<p>计算 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>&#x0222D;</mo><mi>&#x003A9;</mi></msub><mo stretchy="false">&#x00028;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>z</mi><mn>2</mn></msup><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>V</mi></mrow></math>，其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A9;</mi></mrow></math> 是单位球。</p>
+</li>
+<li>
+<p>计算 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>&#x0222D;</mo><mi>&#x003A9;</mi></msub><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>V</mi></mrow></math>，其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A9;</mi></mrow></math> 是单位球。</p>
+</li>
+</ol>
+<hr>
+<h2>8. 答案与简解</h2>
+<details>
+<summary>点击展开（做完再看）</summary>
+<p><strong>1.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mn>2</mn><mn>3</mn></mfrac></mrow></math>。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><mo stretchy="false">&#x00028;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>z</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><mo stretchy="false">&#x00028;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mfrac><mn>1</mn><mn>3</mn></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>3</mn></mfrac><mo>&#x0002B;</mo><mfrac><mn>1</mn><mn>3</mn></mfrac><mo>&#x0003D;</mo><mfrac><mn>2</mn><mn>3</mn></mfrac></mrow></math></div>
+<p><strong>2.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mn>1</mn><mn>6</mn></mfrac></mrow></math>。见本课例 2。</p>
+<p><strong>3.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>18</mn><mi>&#x003C0;</mi></mrow></math>。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222D;</mo><mi>&#x003A9;</mi></msub><mi>z</mi><mspace width="0.167em" /><mi>d</mi><mi>V</mi><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mrow><mn>2</mn><mi>&#x003C0;</mi></mrow></msubsup><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>2</mn></msubsup><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>3</mn></msubsup><mi>z</mi><mo>&#x000B7;</mo><mi>r</mi><mspace width="0.167em" /><mi>d</mi><mi>z</mi><mspace width="0.167em" /><mi>d</mi><mi>r</mi><mspace width="0.167em" /><mi>d</mi><mi>&#x003B8;</mi></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0003D;</mo><mn>2</mn><mi>&#x003C0;</mi><mo>&#x000B7;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>2</mn></msubsup><mi>r</mi><mspace width="0.167em" /><mi>d</mi><mi>r</mi><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x000B7;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>3</mn></msubsup><mi>z</mi><mspace width="0.167em" /><mi>d</mi><mi>z</mi><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0003D;</mo><mn>2</mn><mi>&#x003C0;</mi><mo>&#x000B7;</mo><mn>2</mn><mo>&#x000B7;</mo><mfrac><mn>9</mn><mn>2</mn></mfrac><mo>&#x0003D;</mo><mn>18</mn><mi>&#x003C0;</mi></mrow></math></div>
+<p><strong>4.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>8</mn><mi>&#x003C0;</mi></mrow></math>。</p>
+<p>区域：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>r</mi><mn>2</mn></msup><mo>&#x02264;</mo><mi>z</mi><mo>&#x02264;</mo><mn>4</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x02264;</mo><mi>r</mi><mo>&#x02264;</mo><mn>2</mn></mrow></math>。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>V</mi><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mrow><mn>2</mn><mi>&#x003C0;</mi></mrow></msubsup><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>2</mn></msubsup><msubsup><mo>&#x0222B;</mo><mrow><msup><mi>r</mi><mn>2</mn></msup></mrow><mrow><mn>4</mn></mrow></msubsup><mi>r</mi><mspace width="0.167em" /><mi>d</mi><mi>z</mi><mspace width="0.167em" /><mi>d</mi><mi>r</mi><mspace width="0.167em" /><mi>d</mi><mi>&#x003B8;</mi><mo>&#x0003D;</mo><mn>2</mn><mi>&#x003C0;</mi><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>2</mn></msubsup><mi>r</mi><mo stretchy="false">&#x00028;</mo><mn>4</mn><mo>&#x02212;</mo><msup><mi>r</mi><mn>2</mn></msup><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>r</mi></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0003D;</mo><mn>2</mn><mi>&#x003C0;</mi><msubsup><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><mn>2</mn><msup><mi>r</mi><mn>2</mn></msup><mo>&#x02212;</mo><mfrac><mrow><msup><mi>r</mi><mn>4</mn></msup></mrow><mrow><mn>4</mn></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">]</mo></mrow><mn>0</mn><mn>2</mn></msubsup><mo>&#x0003D;</mo><mn>2</mn><mi>&#x003C0;</mi><mo stretchy="false">&#x00028;</mo><mn>8</mn><mo>&#x02212;</mo><mn>4</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>8</mn><mi>&#x003C0;</mi></mrow></math></div>
+<p><strong>5.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mn>4</mn><mi>&#x003C0;</mi></mrow><mrow><mn>3</mn></mrow></mfrac></mrow></math>。见本课球坐标例 1。</p>
+<p><strong>6.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mn>4</mn><mi>&#x003C0;</mi></mrow><mrow><mn>5</mn></mrow></mfrac></mrow></math>。见本课球坐标例 2。</p>
+<p><strong>7.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn></mrow></math>。</p>
+<p>单位球关于 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mi>z</mi></mrow></math> 平面对称，而 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math> 是关于 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math> 的奇函数，所以积分为 0。</p>
+</details>
+<hr>
+<h2>9. 下节预告</h2>
+<p><strong>第 28 课：曲线积分与格林公式</strong></p>
+<ul>
+<li>第一类曲线积分</li>
+<li>第二类曲线积分</li>
+<li>保守场与路径无关</li>
+<li>格林公式</li>
+</ul>
+<hr>
+<h2>自查清单</h2>
+<ul>
+<li>[ ] 知道三重积分表示质量或体积</li>
+<li>[ ] 会在长方体上化累次积分</li>
+<li>[ ] 会用柱坐标，记住 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>d</mi><mi>V</mi><mo>&#x0003D;</mo><mi>r</mi><mspace width="0.167em" /><mi>d</mi><mi>z</mi><mspace width="0.167em" /><mi>d</mi><mi>r</mi><mspace width="0.167em" /><mi>d</mi><mi>&#x003B8;</mi></mrow></math></li>
+<li>[ ] 会用球坐标，记住 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>d</mi><mi>V</mi><mo>&#x0003D;</mo><msup><mi>&#x003C1;</mi><mn>2</mn></msup><mi>sin</mi><mi>&#x003C6;</mi><mspace width="0.167em" /><mi>d</mi><mi>&#x003C1;</mi><mspace width="0.167em" /><mi>d</mi><mi>&#x003C6;</mi><mspace width="0.167em" /><mi>d</mi><mi>&#x003B8;</mi></mrow></math></li>
+<li>[ ] 会确定 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C6;</mi></mrow></math> 和 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003B8;</mi></mrow></math> 的范围</li>
+<li>[ ] 会用对称性简化计算</li>
+<li>[ ] 知道三重积分容易错在积分限</li>
+</ul>
+<footer>微积分讲义 · 数学公式使用 MathML 渲染，建议使用 Chrome / Edge / Firefox 打开</footer>
+</main>
+</body>
+</html>

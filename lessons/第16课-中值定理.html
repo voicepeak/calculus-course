@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>微积分进阶 · 第 16 课：中值定理</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --quote-bg: #f6f8fa;
+  --code-bg: #eff2f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --border: #30363d;
+    --accent: #4493f8;
+    --quote-bg: #161b22;
+    --code-bg: #1f242c;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; font-weight: 650; }
+h1 { font-size: 2rem; margin: 0 0 .8em; padding-bottom: .35em; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 2.2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.2rem; margin: 1.8em 0 .55em; }
+p { margin: .85em 0; }
+a { color: var(--accent); }
+blockquote {
+  margin: 1em 0;
+  padding: .6em 1em;
+  border-left: 4px solid var(--accent);
+  background: var(--quote-bg);
+  color: var(--muted);
+  border-radius: 4px;
+}
+blockquote p { margin: .25em 0; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: .96em;
+  overflow: hidden;
+}
+th, td { border: 1px solid var(--border); padding: .45em .7em; text-align: left; vertical-align: top; }
+th { background: var(--quote-bg); font-weight: 600; }
+details {
+  margin: 1.2em 0;
+  padding: .8em 1em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--quote-bg);
+}
+summary { cursor: pointer; font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+ul, ol { padding-left: 1.7em; }
+li { margin: .3em 0; }
+.math-block {
+  margin: 1.15em 0;
+  padding: .7em .9em;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--quote-bg);
+  border-radius: 6px;
+}
+math { font-size: 1.14em; line-height: 1.2; }
+math[display="inline"] { font-size: 1.05em; vertical-align: baseline; }
+.math-block math { font-size: 1.24em; }
+.math-fallback, .math-fallback-block {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .08em .3em;
+  border-radius: 3px;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .12em .35em;
+  border-radius: 3px;
+  font-size: .92em;
+}
+pre code { display: block; padding: .8em 1em; overflow-x: auto; }
+footer { margin-top: 4em; color: var(--muted); font-size: .85em; text-align: center; }
+@media print {
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  .math-block { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>微积分进阶 · 第 16 课：中值定理</h1>
+<blockquote>
+<p><strong>本课目标</strong>：理解罗尔定理、拉格朗日中值定理、柯西中值定理，会用它们证明简单的等式与不等式。</p>
+<p><strong>使用方法</strong>：先记条件，再记结论。做题时先问自己两个问题：在哪个区间上用？要不要构造辅助函数？</p>
+</blockquote>
+<hr>
+<h2>目录</h2>
+<ol>
+<li>从平均速度到瞬时速度</li>
+<li>费马引理</li>
+<li>罗尔定理</li>
+<li>拉格朗日中值定理</li>
+<li>柯西中值定理</li>
+<li>中值定理的典型应用</li>
+<li>易错点</li>
+<li>练习</li>
+<li>答案与简解</li>
+<li>下节预告</li>
+</ol>
+<hr>
+<h2>1. 从平均速度到瞬时速度</h2>
+<p>一辆车 2 小时开了 120 km，平均速度是</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mover><mi>v</mi><mo stretchy="true">&#x000AF;</mo></mover><mo>&#x0003D;</mo><mfrac><mrow><mn>120</mn></mrow><mrow><mn>2</mn></mrow></mfrac><mo>&#x0003D;</mo><mn>60</mn><mtext>&#x000A0;</mtext><mtext>km/h</mtext></mrow></math></div>
+<p>平均速度只说明整体情况，不能说明每一刻都开 60。但如果路程函数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>s</mi><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 连续、可导，那么一定存在某一时刻 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BE;</mi></mrow></math>，使这一瞬间的速度恰好等于平均速度：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>s</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>&#x003BE;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><mi>s</mi><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mi>s</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow><mrow><mn>2</mn><mo>&#x02212;</mo><mn>0</mn></mrow></mfrac><mo>&#x0003D;</mo><mn>60</mn></mrow></math></div>
+<p>这就是中值定理的直观含义：<strong>平均变化率，一定能在某一点被瞬时变化率取到</strong>。</p>
+<hr>
+<h2>2. 费马引理</h2>
+<p><strong>费马引理</strong>：如果函数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 在点 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>x</mi><mn>0</mn></msub></mrow></math> 的某邻域内有定义，在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>x</mi><mn>0</mn></msub></mrow></math> 处可导，并且 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>x</mi><mn>0</mn></msub></mrow></math> 是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi></mrow></math> 的局部极值点，那么</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><msub><mi>x</mi><mn>0</mn></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math></div>
+<p><strong>直观理解</strong>：极值点在山顶或谷底，切线如果是斜的，往左或往右走一点就会更高或更低，矛盾。所以切线只能水平。</p>
+<p><strong>注意</strong>：费马引理只对<strong>区间内部的极值点</strong>成立。端点处的极值，导数不一定为 0。</p>
+<p>例如 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>x</mi></mrow></math> 在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">]</mo></mrow></math> 上，最大值在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math> 取到，但 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn><mo>&#x02260;</mo><mn>0</mn></mrow></math>。</p>
+<hr>
+<h2>3. 罗尔定理</h2>
+<p><strong>罗尔定理</strong>：设函数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 满足</p>
+<ol>
+<li>在闭区间 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><mi>a</mi><mo>&#x0002C;</mo><mi>b</mi><mo stretchy="false">]</mo></mrow></math> 上连续；</li>
+<li>在开区间 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mi>a</mi><mo>&#x0002C;</mo><mi>b</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 内可导；</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>a</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>b</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。</li>
+</ol>
+<p>那么至少存在一点 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BE;</mi><mo>&#x02208;</mo><mo stretchy="false">&#x00028;</mo><mi>a</mi><mo>&#x0002C;</mo><mi>b</mi><mo stretchy="false">&#x00029;</mo></mrow></math>，使得</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>&#x003BE;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math></div>
+<p><strong>几何意义</strong>：曲线两端高度相同，中间一定有一点的切线是水平的。</p>
+<p><strong>例</strong>：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x02212;</mo><mn>2</mn><mi>x</mi></mrow></math> 在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><mn>0</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">]</mo></mrow></math> 上。</p>
+<p>验证条件：</p>
+<ul>
+<li>多项式，连续、可导；</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>4</mn><mo>&#x02212;</mo><mn>4</mn><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，两端相等。</li>
+</ul>
+<p>求导：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>2</mn><mi>x</mi><mo>&#x02212;</mo><mn>2</mn></mrow></math></div>
+<p>令 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，得</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>x</mi><mo>&#x0003D;</mo><mn>1</mn><mo>&#x02208;</mo><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>所以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BE;</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math>。</p>
+<p><strong>三个条件缺一不可</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>反例</th>
+<th>缺少的条件</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>x</mi></mrow></math> 在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">]</mo></mrow></math> 上</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>a</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02260;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>b</mi><mo stretchy="false">&#x00029;</mo></mrow></math></td>
+<td>没有水平切线</td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mi>x</mi><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow></mrow></math> 在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><mo>&#x02212;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">]</mo></mrow></math> 上</td>
+<td>在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math> 不可导</td>
+<td>没有水平切线</td>
+</tr>
+<tr>
+<td>分段函数在端点不连续</td>
+<td>不连续</td>
+<td>结论不成立</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>4. 拉格朗日中值定理</h2>
+<p><strong>拉格朗日中值定理</strong>：设函数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 满足</p>
+<ol>
+<li>在闭区间 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><mi>a</mi><mo>&#x0002C;</mo><mi>b</mi><mo stretchy="false">]</mo></mrow></math> 上连续；</li>
+<li>在开区间 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mi>a</mi><mo>&#x0002C;</mo><mi>b</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 内可导。</li>
+</ol>
+<p>那么至少存在一点 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BE;</mi><mo>&#x02208;</mo><mo stretchy="false">&#x00028;</mo><mi>a</mi><mo>&#x0002C;</mo><mi>b</mi><mo stretchy="false">&#x00029;</mo></mrow></math>，使得</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>b</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>a</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>&#x003BE;</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x00028;</mo><mi>b</mi><mo>&#x02212;</mo><mi>a</mi><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>或者写成</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>&#x003BE;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>b</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>a</mi><mo stretchy="false">&#x00029;</mo></mrow><mrow><mi>b</mi><mo>&#x02212;</mo><mi>a</mi></mrow></mfrac></mrow></math></div>
+<p><strong>几何意义</strong>：曲线上至少有一点的切线，与连接两端点的割线平行。</p>
+<p><strong>特例</strong>：如果 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>a</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>b</mi><mo stretchy="false">&#x00029;</mo></mrow></math>，公式变成 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>&#x003BE;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，就是罗尔定理。所以罗尔定理是拉格朗日中值定理的特殊情况。</p>
+<p><strong>例 1</strong>：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>x</mi><mn>3</mn></msup></mrow></math> 在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><mn>0</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">]</mo></mrow></math> 上。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow><mrow><mn>2</mn><mo>&#x02212;</mo><mn>0</mn></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>8</mn><mo>&#x02212;</mo><mn>0</mn></mrow><mrow><mn>2</mn></mrow></mfrac><mo>&#x0003D;</mo><mn>4</mn></mrow></math></div>
+<p>又</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>3</mn><msup><mi>x</mi><mn>2</mn></msup></mrow></math></div>
+<p>令 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>3</mn><msup><mi>&#x003BE;</mi><mn>2</mn></msup><mo>&#x0003D;</mo><mn>4</mn></mrow></math>，得</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x003BE;</mi><mo>&#x0003D;</mo><mfrac><mrow><mn>2</mn></mrow><mrow><msqrt><mn>3</mn></msqrt></mrow></mfrac><mo>&#x02248;</mo><mn>1.155</mn><mo>&#x02208;</mo><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p><strong>例 2</strong>：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>ln</mi><mi>x</mi></mrow></math> 在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><mn>1</mn><mo>&#x0002C;</mo><mi>e</mi><mo stretchy="false">]</mo></mrow></math> 上。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mi>ln</mi><mi>e</mi><mo>&#x02212;</mo><mi>ln</mi><mn>1</mn></mrow><mrow><mi>e</mi><mo>&#x02212;</mo><mn>1</mn></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>e</mi><mo>&#x02212;</mo><mn>1</mn></mrow></mfrac></mrow></math></div>
+<p>又 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>x</mi></mrow></mfrac></mrow></math>，所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mi>&#x003BE;</mi></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>e</mi><mo>&#x02212;</mo><mn>1</mn></mrow></mfrac><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>&#x003BE;</mi><mo>&#x0003D;</mo><mi>e</mi><mo>&#x02212;</mo><mn>1</mn><mo>&#x02248;</mo><mn>1.718</mn><mo>&#x02208;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mi>e</mi><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<hr>
+<h2>5. 柯西中值定理</h2>
+<p><strong>柯西中值定理</strong>：设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 满足</p>
+<ol>
+<li>在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><mi>a</mi><mo>&#x0002C;</mo><mi>b</mi><mo stretchy="false">]</mo></mrow></math> 上连续；</li>
+<li>在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mi>a</mi><mo>&#x0002C;</mo><mi>b</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 内可导；</li>
+<li>在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mi>a</mi><mo>&#x0002C;</mo><mi>b</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 内 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>g</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02260;</mo><mn>0</mn></mrow></math>。</li>
+</ol>
+<p>那么至少存在一点 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BE;</mi><mo>&#x02208;</mo><mo stretchy="false">&#x00028;</mo><mi>a</mi><mo>&#x0002C;</mo><mi>b</mi><mo stretchy="false">&#x00029;</mo></mrow></math>，使得</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>b</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>a</mi><mo stretchy="false">&#x00029;</mo></mrow><mrow><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>b</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>a</mi><mo stretchy="false">&#x00029;</mo></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>&#x003BE;</mi><mo stretchy="false">&#x00029;</mo></mrow><mrow><msup><mi>g</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>&#x003BE;</mi><mo stretchy="false">&#x00029;</mo></mrow></mfrac></mrow></math></div>
+<p>当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>x</mi></mrow></math> 时，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>b</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>a</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>b</mi><mo>&#x02212;</mo><mi>a</mi></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>g</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>&#x003BE;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn></mrow></math>，公式就退化成拉格朗日中值定理。</p>
+<p><strong>例</strong>：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>x</mi><mn>3</mn></msup></mrow></math>，区间 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">]</mo></mrow></math>。</p>
+<p>左边：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow><mrow><mi>g</mi><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mi>g</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>4</mn><mo>&#x02212;</mo><mn>1</mn></mrow><mrow><mn>8</mn><mo>&#x02212;</mo><mn>1</mn></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>3</mn></mrow><mrow><mn>7</mn></mrow></mfrac></mrow></math></div>
+<p>右边：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>&#x003BE;</mi><mo stretchy="false">&#x00029;</mo></mrow><mrow><msup><mi>g</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>&#x003BE;</mi><mo stretchy="false">&#x00029;</mo></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>2</mn><mi>&#x003BE;</mi></mrow><mrow><mn>3</mn><msup><mi>&#x003BE;</mi><mn>2</mn></msup></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>2</mn></mrow><mrow><mn>3</mn><mi>&#x003BE;</mi></mrow></mfrac></mrow></math></div>
+<p>令</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mn>2</mn></mrow><mrow><mn>3</mn><mi>&#x003BE;</mi></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>3</mn></mrow><mrow><mn>7</mn></mrow></mfrac><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>&#x003BE;</mi><mo>&#x0003D;</mo><mfrac><mrow><mn>14</mn></mrow><mrow><mn>9</mn></mrow></mfrac><mo>&#x02248;</mo><mn>1.556</mn><mo>&#x02208;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<hr>
+<h2>6. 中值定理的典型应用</h2>
+<h3>应用一：证明函数为常数</h3>
+<p><strong>结论</strong>：如果 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 在区间 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>I</mi></mrow></math> 上可导，且对任意 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x02208;</mo><mi>I</mi></mrow></math> 都有 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，那么 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>I</mi></mrow></math> 上恒为常数。</p>
+<p><strong>证明</strong>：任取 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>x</mi><mn>1</mn></msub><mo>&#x0003C;</mo><msub><mi>x</mi><mn>2</mn></msub><mo>&#x02208;</mo><mi>I</mi></mrow></math>。在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><msub><mi>x</mi><mn>1</mn></msub><mo>&#x0002C;</mo><msub><mi>x</mi><mn>2</mn></msub><mo stretchy="false">]</mo></mrow></math> 上用拉格朗日中值定理：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><msub><mi>x</mi><mn>2</mn></msub><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><msub><mi>x</mi><mn>1</mn></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>&#x003BE;</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x00028;</mo><msub><mi>x</mi><mn>2</mn></msub><mo>&#x02212;</mo><msub><mi>x</mi><mn>1</mn></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math></div>
+<p>所以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><msub><mi>x</mi><mn>2</mn></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><msub><mi>x</mi><mn>1</mn></msub><mo stretchy="false">&#x00029;</mo></mrow></math>。由于 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>x</mi><mn>1</mn></msub><mo>&#x0002C;</mo><msub><mi>x</mi><mn>2</mn></msub></mrow></math> 任意，函数值都相同。</p>
+<h3>应用二：证明不等式</h3>
+<p><strong>例 1</strong>：证明当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003E;</mo><mn>0</mn></mrow></math> 时，</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>sin</mi><mi>x</mi><mo>&#x0003C;</mo><mi>x</mi></mrow></math></div>
+<p><strong>证明</strong>：在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><mn>0</mn><mo>&#x0002C;</mo><mi>x</mi><mo stretchy="false">]</mo></mrow></math> 上对 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>sin</mi><mi>t</mi></mrow></math> 用拉格朗日中值定理：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>sin</mi><mi>x</mi><mo>&#x02212;</mo><mi>sin</mi><mn>0</mn><mo>&#x0003D;</mo><mi>cos</mi><mi>&#x003BE;</mi><mo>&#x000B7;</mo><mi>x</mi></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BE;</mi><mo>&#x02208;</mo><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+<ul>
+<li>如果 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x0003C;</mo><mi>x</mi><mo>&#x0003C;</mo><mn>2</mn><mi>&#x003C0;</mi></mrow></math>，则 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BE;</mi><mo>&#x02208;</mo><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>2</mn><mi>&#x003C0;</mi><mo stretchy="false">&#x00029;</mo></mrow></math>，且 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BE;</mi><mo>&#x02260;</mo><mn>0</mn></mrow></math>，所以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>cos</mi><mi>&#x003BE;</mi><mo>&#x0003C;</mo><mn>1</mn></mrow></math>，从而 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>sin</mi><mi>x</mi><mo>&#x0003C;</mo><mi>x</mi></mrow></math>；</li>
+<li>如果 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x02265;</mo><mn>2</mn><mi>&#x003C0;</mi></mrow></math>，则 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>sin</mi><mi>x</mi><mo>&#x02264;</mo><mn>1</mn><mo>&#x0003C;</mo><mi>x</mi></mrow></math>。</li>
+</ul>
+<p>总之，当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003E;</mo><mn>0</mn></mrow></math> 时，</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>sin</mi><mi>x</mi><mo>&#x0003C;</mo><mi>x</mi></mrow></math></div>
+<p><strong>例 2</strong>：证明对任意实数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi></mrow></math>，</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mi>sin</mi><mi>x</mi><mo>&#x02212;</mo><mi>sin</mi><mi>y</mi><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x02264;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mi>x</mi><mo>&#x02212;</mo><mi>y</mi><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow></mrow></math></div>
+<p><strong>证明</strong>：在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi></mrow></math> 之间用中值定理：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>sin</mi><mi>x</mi><mo>&#x02212;</mo><mi>sin</mi><mi>y</mi><mo>&#x0003D;</mo><mi>cos</mi><mi>&#x003BE;</mi><mspace width="0.167em" /><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x02212;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>取绝对值：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mi>sin</mi><mi>x</mi><mo>&#x02212;</mo><mi>sin</mi><mi>y</mi><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x0003D;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mi>cos</mi><mi>&#x003BE;</mi><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x000B7;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mi>x</mi><mo>&#x02212;</mo><mi>y</mi><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x02264;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mi>x</mi><mo>&#x02212;</mo><mi>y</mi><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow></mrow></math></div>
+<p><strong>例 3</strong>：证明当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003E;</mo><mn>0</mn></mrow></math> 时，</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>ln</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002B;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003C;</mo><mi>x</mi></mrow></math></div>
+<p><strong>证明</strong>：对 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>ln</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002B;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><mn>0</mn><mo>&#x0002C;</mo><mi>x</mi><mo stretchy="false">]</mo></mrow></math> 上用中值定理：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>ln</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002B;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mi>ln</mi><mn>1</mn><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>1</mn><mo>&#x0002B;</mo><mi>&#x003BE;</mi></mrow></mfrac><mo>&#x000B7;</mo><mi>x</mi></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BE;</mi><mo>&#x02208;</mo><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。因为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn><mo>&#x0002B;</mo><mi>&#x003BE;</mi><mo>&#x0003E;</mo><mn>1</mn></mrow></math>，所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mn>1</mn><mo>&#x0002B;</mo><mi>&#x003BE;</mi></mrow></mfrac><mo>&#x0003C;</mo><mn>1</mn><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>ln</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002B;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003C;</mo><mi>x</mi></mrow></math></div>
+<h3>应用三：证明恒等式</h3>
+<p><strong>例</strong>：证明当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003E;</mo><mn>0</mn></mrow></math> 时，</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>arctan</mi><mi>x</mi><mo>&#x0002B;</mo><mi>arctan</mi><mfrac><mrow><mn>1</mn></mrow><mrow><mi>x</mi></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mi>&#x003C0;</mi></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></math></div>
+<p><strong>证明</strong>：令</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>F</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>arctan</mi><mi>x</mi><mo>&#x0002B;</mo><mi>arctan</mi><mfrac><mrow><mn>1</mn></mrow><mrow><mi>x</mi></mrow></mfrac></mrow></math></div>
+<p>求导：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>F</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>1</mn><mo>&#x0002B;</mo><msup><mi>x</mi><mn>2</mn></msup></mrow></mfrac><mo>&#x0002B;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>1</mn><mo>&#x0002B;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow></mfrac></mrow></mfrac><mo>&#x000B7;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mo>&#x02212;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow></mrow></math></div>
+<p>化简第二项：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mn>1</mn><mo>&#x0002B;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow></mfrac></mrow></mfrac><mo>&#x000B7;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mo>&#x02212;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0003D;</mo><mo>&#x02212;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>F</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>1</mn><mo>&#x0002B;</mo><msup><mi>x</mi><mn>2</mn></msup></mrow></mfrac><mo>&#x02212;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>1</mn><mo>&#x0002B;</mo><msup><mi>x</mi><mn>2</mn></msup></mrow></mfrac><mo>&#x0003D;</mo><mn>0</mn></mrow></math></div>
+<p>由应用一，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>F</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003E;</mo><mn>0</mn></mrow></math> 上为常数。取 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>F</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>arctan</mi><mn>1</mn><mo>&#x0002B;</mo><mi>arctan</mi><mn>1</mn><mo>&#x0003D;</mo><mfrac><mrow><mi>&#x003C0;</mi></mrow><mrow><mn>4</mn></mrow></mfrac><mo>&#x0002B;</mo><mfrac><mrow><mi>&#x003C0;</mi></mrow><mrow><mn>4</mn></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mi>&#x003C0;</mi></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></math></div>
+<p>所以恒等式成立。</p>
+<hr>
+<h2>7. 易错点</h2>
+<ol>
+<li><strong>区间端点不能取 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BE;</mi></mrow></math></strong>。中值定理只保证 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BE;</mi><mo>&#x02208;</mo><mo stretchy="false">&#x00028;</mo><mi>a</mi><mo>&#x0002C;</mo><mi>b</mi><mo stretchy="false">&#x00029;</mo></mrow></math>，不保证在端点。</li>
+<li><strong>连续、可导的条件要逐条检查</strong>。尤其是分段函数在分界点处。</li>
+<li><strong>罗尔定理要先验证 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>a</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>b</mi><mo stretchy="false">&#x00029;</mo></mrow></math></strong>，不要一上来就求导令零。</li>
+<li><strong>柯西中值定理的分母不能为零</strong>。要确认 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>g</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02260;</mo><mn>0</mn></mrow></math>，并且 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>b</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02260;</mo><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>a</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。</li>
+<li><strong><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BE;</mi></mrow></math> 不一定唯一</strong>。定理只说“至少存在一个”，不需要求出所有。</li>
+<li><strong>中值定理是存在性定理</strong>，通常不能用来求具体数值，只能用来证明结论。</li>
+</ol>
+<hr>
+<h2>8. 练习</h2>
+<ol>
+<li>
+<p>验证 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x02212;</mo><mn>4</mn><mi>x</mi><mo>&#x0002B;</mo><mn>3</mn></mrow></math> 在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><mn>1</mn><mo>&#x0002C;</mo><mn>3</mn><mo stretchy="false">]</mo></mrow></math> 上满足罗尔定理，并求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BE;</mi></mrow></math>。</p>
+</li>
+<li>
+<p>验证 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msqrt><mrow><mi>x</mi></mrow></msqrt></mrow></math> 在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><mn>1</mn><mo>&#x0002C;</mo><mn>4</mn><mo stretchy="false">]</mo></mrow></math> 上满足拉格朗日中值定理，并求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BE;</mi></mrow></math>。</p>
+</li>
+<li>
+<p>证明：当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003E;</mo><mn>0</mn></mrow></math> 时，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>ln</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002B;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003C;</mo><mi>x</mi></mrow></math>。</p>
+</li>
+<li>
+<p>证明：对任意实数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mi>cos</mi><mi>x</mi><mo>&#x02212;</mo><mi>cos</mi><mi>y</mi><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x02264;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mi>x</mi><mo>&#x02212;</mo><mi>y</mi><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow></mrow></math>。</p>
+</li>
+<li>
+<p>证明：当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003E;</mo><mn>0</mn></mrow></math> 时，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>arctan</mi><mi>x</mi><mo>&#x0002B;</mo><mi>arctan</mi><mfrac><mrow><mn>1</mn></mrow><mrow><mi>x</mi></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mi>&#x003C0;</mi></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></math>。</p>
+</li>
+<li>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><mi>a</mi><mo>&#x0002C;</mo><mi>b</mi><mo stretchy="false">]</mo></mrow></math> 上连续，在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mi>a</mi><mo>&#x0002C;</mo><mi>b</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 内可导，且 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn></mrow></math>。证明 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>x</mi><mo>&#x0002B;</mo><mi>C</mi></mrow></math>（<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>C</mi></mrow></math> 为常数）。</p>
+</li>
+<li>
+<p>证明方程 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>x</mi><mn>3</mn></msup><mo>&#x02212;</mo><mn>3</mn><mi>x</mi><mo>&#x0002B;</mo><mn>1</mn><mo>&#x0003D;</mo><mn>0</mn></mrow></math> 至多有三个实根。</p>
+</li>
+</ol>
+<hr>
+<h2>9. 答案与简解</h2>
+<details>
+<summary>点击展开（做完再看）</summary>
+<p><strong>1.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BE;</mi><mo>&#x0003D;</mo><mn>2</mn></mrow></math></p>
+<p><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mn>3</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，满足罗尔定理。<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>2</mn><mi>x</mi><mo>&#x02212;</mo><mn>4</mn></mrow></math>，令 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，得 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mn>2</mn><mo>&#x02208;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>3</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+<p><strong>2.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BE;</mi><mo>&#x0003D;</mo><mfrac><mrow><mn>9</mn></mrow><mrow><mn>4</mn></mrow></mfrac></mrow></math></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><msqrt><mn>4</mn></msqrt><mo>&#x02212;</mo><msqrt><mn>1</mn></msqrt></mrow><mrow><mn>4</mn><mo>&#x02212;</mo><mn>1</mn></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>3</mn></mrow></mfrac></mrow></math></div>
+<p>又 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn><msqrt><mrow><mi>x</mi></mrow></msqrt></mrow></mfrac></mrow></math>，令</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn><msqrt><mrow><mi>&#x003BE;</mi></mrow></msqrt></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>3</mn></mrow></mfrac><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><msqrt><mrow><mi>&#x003BE;</mi></mrow></msqrt><mo>&#x0003D;</mo><mfrac><mrow><mn>3</mn></mrow><mrow><mn>2</mn></mrow></mfrac><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>&#x003BE;</mi><mo>&#x0003D;</mo><mfrac><mrow><mn>9</mn></mrow><mrow><mn>4</mn></mrow></mfrac><mo>&#x02208;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>4</mn><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p><strong>3.</strong> 见本课应用二例 3。</p>
+<p><strong>4.</strong> 在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi></mrow></math> 之间用中值定理：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>cos</mi><mi>x</mi><mo>&#x02212;</mo><mi>cos</mi><mi>y</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mi>sin</mi><mi>&#x003BE;</mi><mspace width="0.167em" /><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x02212;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>取绝对值：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mi>cos</mi><mi>x</mi><mo>&#x02212;</mo><mi>cos</mi><mi>y</mi><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x0003D;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mi>sin</mi><mi>&#x003BE;</mi><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x000B7;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mi>x</mi><mo>&#x02212;</mo><mi>y</mi><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x02264;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mi>x</mi><mo>&#x02212;</mo><mi>y</mi><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow></mrow></math></div>
+<p><strong>5.</strong> 见本课应用三。</p>
+<p><strong>6.</strong> 令 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mi>x</mi></mrow></math>，则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>g</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mn>1</mn><mo>&#x0003D;</mo><mn>0</mn></mrow></math></div>
+<p>由本课应用一，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 为常数，设为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>C</mi></mrow></math>，则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>x</mi><mo>&#x0002B;</mo><mi>C</mi></mrow></math></div>
+<p><strong>7.</strong> 反证。若方程有四个不同实根 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>x</mi><mn>1</mn></msub><mo>&#x0003C;</mo><msub><mi>x</mi><mn>2</mn></msub><mo>&#x0003C;</mo><msub><mi>x</mi><mn>3</mn></msub><mo>&#x0003C;</mo><msub><mi>x</mi><mn>4</mn></msub></mrow></math>，对 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>x</mi><mn>3</mn></msup><mo>&#x02212;</mo><mn>3</mn><mi>x</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></math> 在每个小区间 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><msub><mi>x</mi><mn>1</mn></msub><mo>&#x0002C;</mo><msub><mi>x</mi><mn>2</mn></msub><mo stretchy="false">]</mo></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><msub><mi>x</mi><mn>2</mn></msub><mo>&#x0002C;</mo><msub><mi>x</mi><mn>3</mn></msub><mo stretchy="false">]</mo></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><msub><mi>x</mi><mn>3</mn></msub><mo>&#x0002C;</mo><msub><mi>x</mi><mn>4</mn></msub><mo stretchy="false">]</mo></mrow></math> 上分别用罗尔定理，得到 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>3</mn><msup><mi>x</mi><mn>2</mn></msup><mo>&#x02212;</mo><mn>3</mn></mrow></math> 有三个不同实根。但</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>3</mn><msup><mi>x</mi><mn>2</mn></msup><mo>&#x02212;</mo><mn>3</mn><mo>&#x0003D;</mo><mn>0</mn></mrow></math></div>
+<p>只有两个实根 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mi>&#x000B1;</mi><mn>1</mn></mrow></math>，矛盾。所以方程至多有三个实根。</p>
+</details>
+<hr>
+<h2>10. 下节预告</h2>
+<p><strong>第 17 课：极限的严格定义与连续</strong></p>
+<ul>
+<li>用 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003B5;</mi></mrow></math>-<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003B4;</mi></mrow></math> 语言重新定义极限</li>
+<li>连续性的严格定义</li>
+<li>间断点的分类</li>
+<li>闭区间上连续函数的性质</li>
+</ul>
+<hr>
+<h2>自查清单</h2>
+<ul>
+<li>[ ] 能说出罗尔定理的三个条件</li>
+<li>[ ] 能写出拉格朗日中值定理的公式</li>
+<li>[ ] 会用中值定理证明简单不等式</li>
+<li>[ ] 会用“导数为零”证明函数为常数</li>
+<li>[ ] 知道 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BE;</mi></mrow></math> 在开区间内，且不一定唯一</li>
+</ul>
+<footer>微积分讲义 · 数学公式使用 MathML 渲染，建议使用 Chrome / Edge / Firefox 打开</footer>
+</main>
+</body>
+</html>

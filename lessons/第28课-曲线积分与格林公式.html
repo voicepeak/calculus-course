@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>微积分进阶 · 第 28 课：曲线积分与格林公式</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --quote-bg: #f6f8fa;
+  --code-bg: #eff2f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --border: #30363d;
+    --accent: #4493f8;
+    --quote-bg: #161b22;
+    --code-bg: #1f242c;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; font-weight: 650; }
+h1 { font-size: 2rem; margin: 0 0 .8em; padding-bottom: .35em; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 2.2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.2rem; margin: 1.8em 0 .55em; }
+p { margin: .85em 0; }
+a { color: var(--accent); }
+blockquote {
+  margin: 1em 0;
+  padding: .6em 1em;
+  border-left: 4px solid var(--accent);
+  background: var(--quote-bg);
+  color: var(--muted);
+  border-radius: 4px;
+}
+blockquote p { margin: .25em 0; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: .96em;
+  overflow: hidden;
+}
+th, td { border: 1px solid var(--border); padding: .45em .7em; text-align: left; vertical-align: top; }
+th { background: var(--quote-bg); font-weight: 600; }
+details {
+  margin: 1.2em 0;
+  padding: .8em 1em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--quote-bg);
+}
+summary { cursor: pointer; font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+ul, ol { padding-left: 1.7em; }
+li { margin: .3em 0; }
+.math-block {
+  margin: 1.15em 0;
+  padding: .7em .9em;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--quote-bg);
+  border-radius: 6px;
+}
+math { font-size: 1.14em; line-height: 1.2; }
+math[display="inline"] { font-size: 1.05em; vertical-align: baseline; }
+.math-block math { font-size: 1.24em; }
+.math-fallback, .math-fallback-block {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .08em .3em;
+  border-radius: 3px;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .12em .35em;
+  border-radius: 3px;
+  font-size: .92em;
+}
+pre code { display: block; padding: .8em 1em; overflow-x: auto; }
+footer { margin-top: 4em; color: var(--muted); font-size: .85em; text-align: center; }
+@media print {
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  .math-block { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>微积分进阶 · 第 28 课：曲线积分与格林公式</h1>
+<blockquote>
+<p><strong>本课目标</strong>：会计算第一类、第二类曲线积分，理解保守场与路径无关，掌握格林公式。</p>
+<p><strong>使用方法</strong>：第一类看弧长，第二类看方向。格林公式把闭曲线积分变成二重积分。</p>
+</blockquote>
+<hr>
+<h2>目录</h2>
+<ol>
+<li>第一类曲线积分</li>
+<li>第一类曲线积分的计算</li>
+<li>第二类曲线积分</li>
+<li>第二类曲线积分的计算</li>
+<li>保守场与路径无关</li>
+<li>格林公式</li>
+<li>格林公式的应用</li>
+<li>易错点</li>
+<li>练习</li>
+<li>答案与简解</li>
+<li>下节预告</li>
+</ol>
+<hr>
+<h2>1. 第一类曲线积分</h2>
+<p><strong>定义</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222B;</mo><mi>L</mi></msub><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>s</mi></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>L</mi></mrow></math> 是平面曲线，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>d</mi><mi>s</mi></mrow></math> 是弧长元素。</p>
+<p><strong>物理意义</strong>：如果 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 是曲线形物体的线密度，那么积分就是它的质量。</p>
+<p><strong>几何意义</strong>：当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn></mrow></math> 时，</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222B;</mo><mi>L</mi></msub><mn>1</mn><mspace width="0.167em" /><mi>d</mi><mi>s</mi><mo>&#x0003D;</mo><mtext>曲线&#x000A0;</mtext><mi>L</mi><mtext>&#x000A0;的长度</mtext></mrow></math></div>
+<p><strong>特点</strong>：第一类曲线积分与方向无关。从 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi></mrow></math> 到 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>B</mi></mrow></math> 和从 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>B</mi></mrow></math> 到 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi></mrow></math>，积分值相同。</p>
+<hr>
+<h2>2. 第一类曲线积分的计算</h2>
+<p>设曲线 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>L</mi></mrow></math> 由参数方程给出：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>x</mi><mo>&#x0003D;</mo><mi>x</mi><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mi>y</mi><mo>&#x0003D;</mo><mi>y</mi><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mi>a</mi><mo>&#x02264;</mo><mi>t</mi><mo>&#x02264;</mo><mi>b</mi></mrow></math></div>
+<p>则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>d</mi><mi>s</mi><mo>&#x0003D;</mo><msqrt><mrow><mo stretchy="false">&#x00028;</mo><msup><mi>x</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup><mo>&#x0002B;</mo><mo stretchy="false">&#x00028;</mo><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup></mrow></msqrt><mspace width="0.167em" /><mi>d</mi><mi>t</mi></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222B;</mo><mi>L</mi></msub><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>s</mi><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mi>a</mi><mi>b</mi></msubsup><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x00029;</mo><msqrt><mrow><mo stretchy="false">&#x00028;</mo><msup><mi>x</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup><mo>&#x0002B;</mo><mo stretchy="false">&#x00028;</mo><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup></mrow></msqrt><mspace width="0.167em" /><mi>d</mi><mi>t</mi></mrow></math></div>
+<p><strong>例 1</strong>：计算</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222B;</mo><mi>L</mi></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002B;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>s</mi></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>L</mi></mrow></math> 是从 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 到 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 的直线段。</p>
+<p>参数化：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>x</mi><mo>&#x0003D;</mo><mi>t</mi><mo>&#x0002C;</mo><mspace width="2em" /><mi>y</mi><mo>&#x0003D;</mo><mn>2</mn><mi>t</mi><mo>&#x0002C;</mo><mspace width="2em" /><mn>0</mn><mo>&#x02264;</mo><mi>t</mi><mo>&#x02264;</mo><mn>1</mn></mrow></math></div>
+<p>则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>x</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002C;</mo><mspace width="2em" /><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo>&#x0003D;</mo><mn>2</mn></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>d</mi><mi>s</mi><mo>&#x0003D;</mo><msqrt><mrow><mn>1</mn><mo>&#x0002B;</mo><mn>4</mn></mrow></msqrt><mspace width="0.167em" /><mi>d</mi><mi>t</mi><mo>&#x0003D;</mo><msqrt><mn>5</mn></msqrt><mspace width="0.167em" /><mi>d</mi><mi>t</mi></mrow></math></div>
+<p>代入：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222B;</mo><mi>L</mi></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002B;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>s</mi><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo>&#x0002B;</mo><mn>2</mn><mi>t</mi><mo stretchy="false">&#x00029;</mo><msqrt><mn>5</mn></msqrt><mspace width="0.167em" /><mi>d</mi><mi>t</mi><mo>&#x0003D;</mo><mn>3</mn><msqrt><mn>5</mn></msqrt><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><mi>t</mi><mspace width="0.167em" /><mi>d</mi><mi>t</mi><mo>&#x0003D;</mo><mfrac><mrow><mn>3</mn><msqrt><mn>5</mn></msqrt></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></math></div>
+<p><strong>例 2</strong>：计算</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222B;</mo><mi>L</mi></msub><msup><mi>x</mi><mn>2</mn></msup><mspace width="0.167em" /><mi>d</mi><mi>s</mi></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>L</mi></mrow></math> 是单位圆 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup><mo>&#x0003D;</mo><mn>1</mn></mrow></math>。</p>
+<p>参数化：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>x</mi><mo>&#x0003D;</mo><mi>cos</mi><mi>t</mi><mo>&#x0002C;</mo><mspace width="2em" /><mi>y</mi><mo>&#x0003D;</mo><mi>sin</mi><mi>t</mi><mo>&#x0002C;</mo><mspace width="2em" /><mn>0</mn><mo>&#x02264;</mo><mi>t</mi><mo>&#x02264;</mo><mn>2</mn><mi>&#x003C0;</mi></mrow></math></div>
+<p>则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>d</mi><mi>s</mi><mo>&#x0003D;</mo><msqrt><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mi>sin</mi><mi>t</mi><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup><mo>&#x0002B;</mo><mo stretchy="false">&#x00028;</mo><mi>cos</mi><mi>t</mi><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup></mrow></msqrt><mspace width="0.167em" /><mi>d</mi><mi>t</mi><mo>&#x0003D;</mo><mi>d</mi><mi>t</mi></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222B;</mo><mi>L</mi></msub><msup><mi>x</mi><mn>2</mn></msup><mspace width="0.167em" /><mi>d</mi><mi>s</mi><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mrow><mn>2</mn><mi>&#x003C0;</mi></mrow></msubsup><msup><mi>cos</mi><mn>2</mn></msup><mi>t</mi><mspace width="0.167em" /><mi>d</mi><mi>t</mi><mo>&#x0003D;</mo><mi>&#x003C0;</mi></mrow></math></div>
+<p><strong>常用技巧</strong>：</p>
+<ul>
+<li>直线段：直接用一个参数表示；</li>
+<li>圆：用 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>cos</mi><mi>t</mi></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>sin</mi><mi>t</mi></mrow></math>；</li>
+<li>抛物线 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup></mrow></math>：令 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mi>t</mi></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><msup><mi>t</mi><mn>2</mn></msup></mrow></math>；</li>
+<li>注意 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>d</mi><mi>s</mi></mrow></math> 的根号，不要漏掉。</li>
+</ul>
+<hr>
+<h2>3. 第二类曲线积分</h2>
+<p><strong>定义</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222B;</mo><mi>L</mi></msub><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mi>Q</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>y</mi></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>L</mi></mrow></math> 是有向曲线。</p>
+<p><strong>物理意义</strong>：如果 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover><mi>F</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo>&#x0002C;</mo><mi>Q</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 是力场，那么</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222B;</mo><mi>L</mi></msub><mi>P</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mi>Q</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mo>&#x0003D;</mo><msub><mo>&#x0222B;</mo><mi>L</mi></msub><mover><mi>F</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x000B7;</mo><mi>d</mi><mover><mi>r</mi><mo stretchy="true">&#x02192;</mo></mover></mrow></math></div>
+<p>是力沿曲线 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>L</mi></mrow></math> 所做的功。</p>
+<p><strong>特点</strong>：第二类曲线积分与方向有关。把方向反过来，积分变号：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222B;</mo><mrow><msup><mi>L</mi><mo>&#x02212;</mo></msup></mrow></msub><mi>P</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mi>Q</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><msub><mo>&#x0222B;</mo><mi>L</mi></msub><mi>P</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mi>Q</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi></mrow></math></div>
+<p><strong>与第一类的关系</strong>：设曲线单位切向量为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mover><mi>&#x003C4;</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mi>cos</mi><mi>&#x003B1;</mi><mo>&#x0002C;</mo><mi>cos</mi><mi>&#x003B2;</mi><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222B;</mo><mi>L</mi></msub><mi>P</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mi>Q</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mo>&#x0003D;</mo><msub><mo>&#x0222B;</mo><mi>L</mi></msub><mo stretchy="false">&#x00028;</mo><mi>P</mi><mi>cos</mi><mi>&#x003B1;</mi><mo>&#x0002B;</mo><mi>Q</mi><mi>cos</mi><mi>&#x003B2;</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>s</mi></mrow></math></div>
+<hr>
+<h2>4. 第二类曲线积分的计算</h2>
+<p>设曲线 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>L</mi></mrow></math> 的参数方程为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>x</mi><mo>&#x0003D;</mo><mi>x</mi><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mi>y</mi><mo>&#x0003D;</mo><mi>y</mi><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mi>a</mi><mo>&#x02264;</mo><mi>t</mi><mo>&#x02264;</mo><mi>b</mi></mrow></math></div>
+<p>起点对应 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>t</mi><mo>&#x0003D;</mo><mi>a</mi></mrow></math>，终点对应 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>t</mi><mo>&#x0003D;</mo><mi>b</mi></mrow></math>。则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><msup><mi>x</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>t</mi><mo>&#x0002C;</mo><mspace width="2em" /><mi>d</mi><mi>y</mi><mo>&#x0003D;</mo><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>t</mi></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222B;</mo><mi>L</mi></msub><mi>P</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mi>Q</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mi>a</mi><mi>b</mi></msubsup><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x00029;</mo><msup><mi>x</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><mi>Q</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x00029;</mo><msup><mi>y</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="true" fence="true" form="postfix">]</mo></mrow><mi>d</mi><mi>t</mi></mrow></math></div>
+<p><strong>例 1</strong>：计算</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222B;</mo><mi>L</mi></msub><mi>y</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>L</mi></mrow></math> 是从 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 到 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 的直线段 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>x</mi></mrow></math>。</p>
+<p>参数化：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>x</mi><mo>&#x0003D;</mo><mi>t</mi><mo>&#x0002C;</mo><mspace width="2em" /><mi>y</mi><mo>&#x0003D;</mo><mi>t</mi><mo>&#x0002C;</mo><mspace width="2em" /><mn>0</mn><mo>&#x02264;</mo><mi>t</mi><mo>&#x02264;</mo><mn>1</mn></mrow></math></div>
+<p>则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><mi>d</mi><mi>t</mi><mo>&#x0002C;</mo><mspace width="2em" /><mi>d</mi><mi>y</mi><mo>&#x0003D;</mo><mi>d</mi><mi>t</mi></mrow></math></div>
+<p>代入：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222B;</mo><mi>L</mi></msub><mi>y</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo>&#x0002B;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>t</mi><mo>&#x0003D;</mo><mn>2</mn><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><mi>t</mi><mspace width="0.167em" /><mi>d</mi><mi>t</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math></div>
+<p><strong>例 2</strong>：同样的积分，沿抛物线 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup></mrow></math> 从 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 到 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+<p>参数化：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>x</mi><mo>&#x0003D;</mo><mi>t</mi><mo>&#x0002C;</mo><mspace width="2em" /><mi>y</mi><mo>&#x0003D;</mo><msup><mi>t</mi><mn>2</mn></msup><mo>&#x0002C;</mo><mspace width="2em" /><mn>0</mn><mo>&#x02264;</mo><mi>t</mi><mo>&#x02264;</mo><mn>1</mn></mrow></math></div>
+<p>则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><mi>d</mi><mi>t</mi><mo>&#x0002C;</mo><mspace width="2em" /><mi>d</mi><mi>y</mi><mo>&#x0003D;</mo><mn>2</mn><mi>t</mi><mspace width="0.167em" /><mi>d</mi><mi>t</mi></mrow></math></div>
+<p>代入：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222B;</mo><mi>L</mi></msub><mi>y</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><msup><mi>t</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mi>t</mi><mo>&#x000B7;</mo><mn>2</mn><mi>t</mi><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mi>d</mi><mi>t</mi><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><mn>3</mn><msup><mi>t</mi><mn>2</mn></msup><mspace width="0.167em" /><mi>d</mi><mi>t</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math></div>
+<p>两个路径结果相同。这不是巧合，因为被积表达式是某个函数的全微分：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mo>&#x0003D;</mo><mi>d</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mi>y</mi><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<hr>
+<h2>5. 保守场与路径无关</h2>
+<p><strong>定义</strong>：如果存在函数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C6;</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo></mrow></math>，使得</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo>&#x0003D;</mo><mfrac><mrow><mo>&#x02202;</mo><mi>&#x003C6;</mi></mrow><mrow><mo>&#x02202;</mo><mi>x</mi></mrow></mfrac><mo>&#x0002C;</mo><mspace width="2em" /><mi>Q</mi><mo>&#x0003D;</mo><mfrac><mrow><mo>&#x02202;</mo><mi>&#x003C6;</mi></mrow><mrow><mo>&#x02202;</mo><mi>y</mi></mrow></mfrac></mrow></math></div>
+<p>则称 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover><mi>F</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo>&#x0002C;</mo><mi>Q</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 是<strong>保守场</strong>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C6;</mi></mrow></math> 称为<strong>势函数</strong>。</p>
+<p>此时</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mi>Q</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mo>&#x0003D;</mo><mi>d</mi><mi>&#x003C6;</mi></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222B;</mo><mi>L</mi></msub><mi>P</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mi>Q</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mo>&#x0003D;</mo><mi>&#x003C6;</mi><mo stretchy="false">&#x00028;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mi>&#x003C6;</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi></mrow></math> 是起点，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>B</mi></mrow></math> 是终点。积分只与起点、终点有关，与路径无关。</p>
+<p><strong>判别法</strong>：在<strong>单连通区域</strong>内，如果 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>Q</mi></mrow></math> 有连续偏导数，且</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mo>&#x02202;</mo><mi>P</mi></mrow><mrow><mo>&#x02202;</mo><mi>y</mi></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mo>&#x02202;</mo><mi>Q</mi></mrow><mrow><mo>&#x02202;</mo><mi>x</mi></mrow></mfrac></mrow></math></div>
+<p>则 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover><mi>F</mi><mo stretchy="true">&#x02192;</mo></mover></mrow></math> 是保守场。</p>
+<p><strong>“单连通”</strong>：区域没有“洞”。例如整个平面是单连通的，去掉原点的平面不是。</p>
+<p><strong>例 1</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mover><mi>F</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>2</mn><mi>x</mi><mi>y</mi><mo>&#x0002C;</mo><mtext>&#x000A0;</mtext><msup><mi>x</mi><mn>2</mn></msup><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>检查：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>P</mi><mi>y</mi></msub><mo>&#x0003D;</mo><mn>2</mn><mi>x</mi><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>Q</mi><mi>x</mi></msub><mo>&#x0003D;</mo><mn>2</mn><mi>x</mi></mrow></math></div>
+<p>所以在整个平面上是保守场。</p>
+<p>找势函数：由</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>&#x003C6;</mi><mi>x</mi></msub><mo>&#x0003D;</mo><mn>2</mn><mi>x</mi><mi>y</mi><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>&#x003C6;</mi><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup><mi>y</mi><mo>&#x0002B;</mo><mi>C</mi><mo stretchy="false">&#x00028;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>再由</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>&#x003C6;</mi><mi>y</mi></msub><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>C</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><msup><mi>C</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x003C6;</mi><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup><mi>y</mi></mrow></math></div>
+<p>从 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 到 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 的积分：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222B;</mo><mi>L</mi></msub><mn>2</mn><mi>x</mi><mi>y</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><msup><mi>x</mi><mn>2</mn></msup><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mo>&#x0003D;</mo><mi>&#x003C6;</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mi>&#x003C6;</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>2</mn><mo>&#x02212;</mo><mn>0</mn><mo>&#x0003D;</mo><mn>2</mn></mrow></math></div>
+<p><strong>例 2（重要反例）</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mover><mi>F</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0003D;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mo>&#x02212;</mo><mfrac><mrow><mi>y</mi></mrow><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup></mrow></mfrac><mo>&#x0002C;</mo><mtext>&#x000A0;</mtext><mfrac><mrow><mi>x</mi></mrow><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow></mrow></math></div>
+<p>在去掉原点的平面上，</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>P</mi><mi>y</mi></msub><mo>&#x0003D;</mo><mfrac><mrow><msup><mi>y</mi><mn>2</mn></msup><mo>&#x02212;</mo><msup><mi>x</mi><mn>2</mn></msup></mrow><mrow><mo stretchy="false">&#x00028;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup></mrow></mfrac><mo>&#x0003D;</mo><msub><mi>Q</mi><mi>x</mi></msub></mrow></math></div>
+<p>但沿单位圆逆时针一周：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222E;</mo><mi>L</mi></msub><mi>P</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mi>Q</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mrow><mn>2</mn><mi>&#x003C0;</mi></mrow></msubsup><mfrac><mrow><mo>&#x02212;</mo><mi>sin</mi><mi>t</mi><mo>&#x000B7;</mo><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mi>sin</mi><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><mi>cos</mi><mi>t</mi><mo>&#x000B7;</mo><mi>cos</mi><mi>t</mi></mrow><mrow><mn>1</mn></mrow></mfrac><mspace width="0.167em" /><mi>d</mi><mi>t</mi><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mrow><mn>2</mn><mi>&#x003C0;</mi></mrow></msubsup><mi>d</mi><mi>t</mi><mo>&#x0003D;</mo><mn>2</mn><mi>&#x003C0;</mi><mo>&#x02260;</mo><mn>0</mn></mrow></math></div>
+<p>闭曲线积分不为 0，所以它在去掉原点的平面上<strong>不是</strong>保守场。</p>
+<p><strong>原因</strong>：去掉原点的平面不是单连通的，判别法不能直接用。</p>
+<hr>
+<h2>6. 格林公式</h2>
+<p><strong>格林公式</strong>：设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>D</mi></mrow></math> 是由分段光滑简单闭曲线 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>L</mi></mrow></math> 围成的区域，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>L</mi></mrow></math> 取正向（逆时针），<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>Q</mi></mrow></math> 在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>D</mi></mrow></math> 上有连续偏导数，则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222E;</mo><mi>L</mi></msub><mi>P</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mi>Q</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mo>&#x0003D;</mo><msub><mo>&#x0222C;</mo><mi>D</mi></msub><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mrow><mo>&#x02202;</mo><mi>Q</mi></mrow><mrow><mo>&#x02202;</mo><mi>x</mi></mrow></mfrac><mo>&#x02212;</mo><mfrac><mrow><mo>&#x02202;</mo><mi>P</mi></mrow><mrow><mo>&#x02202;</mo><mi>y</mi></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mi>d</mi><mi>A</mi></mrow></math></div>
+<p><strong>记忆方法</strong>：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>Q</mi></mrow></math> 对 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math> 求导，减去 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi></mrow></math> 对 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi></mrow></math> 求导。</p>
+<p><strong>方向</strong>：沿 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>L</mi></mrow></math> 走时，区域 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>D</mi></mrow></math> 在左侧。逆时针为正。</p>
+<p><strong>例 1</strong>：计算</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222E;</mo><mi>L</mi></msub><mo stretchy="false">&#x00028;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x02212;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>y</mi></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>L</mi></mrow></math> 是单位圆，取逆时针方向。</p>
+<p>这里</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo>&#x0003D;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x02212;</mo><mi>y</mi><mo>&#x0002C;</mo><mspace width="2em" /><mi>Q</mi><mo>&#x0003D;</mo><mi>x</mi><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>Q</mi><mi>x</mi></msub><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>P</mi><mi>y</mi></msub><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>1</mn></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>Q</mi><mi>x</mi></msub><mo>&#x02212;</mo><msub><mi>P</mi><mi>y</mi></msub><mo>&#x0003D;</mo><mn>1</mn><mo>&#x02212;</mo><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>2</mn></mrow></math></div>
+<p>由格林公式：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222E;</mo><mi>L</mi></msub><mo stretchy="false">&#x00028;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x02212;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mo>&#x0003D;</mo><msub><mo>&#x0222C;</mo><mi>D</mi></msub><mn>2</mn><mspace width="0.167em" /><mi>d</mi><mi>A</mi><mo>&#x0003D;</mo><mn>2</mn><mo>&#x000B7;</mo><mi>&#x003C0;</mi><mo>&#x000B7;</mo><msup><mn>1</mn><mn>2</mn></msup><mo>&#x0003D;</mo><mn>2</mn><mi>&#x003C0;</mi></mrow></math></div>
+<p><strong>例 2</strong>：计算</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222E;</mo><mi>L</mi></msub><mo stretchy="false">&#x00028;</mo><mi>y</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x02212;</mo><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>L</mi></mrow></math> 是单位圆，取逆时针方向。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo>&#x0003D;</mo><mi>y</mi><mo>&#x0002C;</mo><mspace width="2em" /><mi>Q</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mi>x</mi></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>Q</mi><mi>x</mi></msub><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>1</mn><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>P</mi><mi>y</mi></msub><mo>&#x0003D;</mo><mn>1</mn></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>Q</mi><mi>x</mi></msub><mo>&#x02212;</mo><msub><mi>P</mi><mi>y</mi></msub><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>2</mn></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222E;</mo><mi>L</mi></msub><mo stretchy="false">&#x00028;</mo><mi>y</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x02212;</mo><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msub><mo>&#x0222C;</mo><mi>D</mi></msub><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>A</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>2</mn><mi>&#x003C0;</mi></mrow></math></div>
+<hr>
+<h2>7. 格林公式的应用</h2>
+<h3>用曲线积分求面积</h3>
+<p>取</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mi>y</mi><mo>&#x0002C;</mo><mspace width="2em" /><mi>Q</mi><mo>&#x0003D;</mo><mi>x</mi></mrow></math></div>
+<p>则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>Q</mi><mi>x</mi></msub><mo>&#x02212;</mo><msub><mi>P</mi><mi>y</mi></msub><mo>&#x0003D;</mo><mn>1</mn><mo>&#x02212;</mo><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>2</mn></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222C;</mo><mi>D</mi></msub><mn>2</mn><mspace width="0.167em" /><mi>d</mi><mi>A</mi><mo>&#x0003D;</mo><msub><mo>&#x0222E;</mo><mi>L</mi></msub><mo>&#x02212;</mo><mi>y</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi></mrow></math></div>
+<p>即</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>A</mi><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><msub><mo>&#x0222E;</mo><mi>L</mi></msub><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mo>&#x02212;</mo><mi>y</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></math></div>
+<p><strong>例 1</strong>：圆 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup><mo>&#x0003D;</mo><msup><mi>R</mi><mn>2</mn></msup></mrow></math>。</p>
+<p>参数化：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>x</mi><mo>&#x0003D;</mo><mi>R</mi><mi>cos</mi><mi>t</mi><mo>&#x0002C;</mo><mspace width="2em" /><mi>y</mi><mo>&#x0003D;</mo><mi>R</mi><mi>sin</mi><mi>t</mi><mo>&#x0002C;</mo><mspace width="2em" /><mn>0</mn><mo>&#x02264;</mo><mi>t</mi><mo>&#x02264;</mo><mn>2</mn><mi>&#x003C0;</mi></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>A</mi><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><msubsup><mo>&#x0222B;</mo><mn>0</mn><mrow><mn>2</mn><mi>&#x003C0;</mi></mrow></msubsup><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mi>R</mi><mi>cos</mi><mi>t</mi><mo>&#x000B7;</mo><mi>R</mi><mi>cos</mi><mi>t</mi><mo>&#x02212;</mo><mi>R</mi><mi>sin</mi><mi>t</mi><mo>&#x000B7;</mo><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mi>R</mi><mi>sin</mi><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mi>d</mi><mi>t</mi></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><msubsup><mo>&#x0222B;</mo><mn>0</mn><mrow><mn>2</mn><mi>&#x003C0;</mi></mrow></msubsup><msup><mi>R</mi><mn>2</mn></msup><mspace width="0.167em" /><mi>d</mi><mi>t</mi><mo>&#x0003D;</mo><mi>&#x003C0;</mi><msup><mi>R</mi><mn>2</mn></msup></mrow></math></div>
+<p><strong>例 2</strong>：椭圆</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow><mrow><msup><mi>a</mi><mn>2</mn></msup></mrow></mfrac><mo>&#x0002B;</mo><mfrac><mrow><msup><mi>y</mi><mn>2</mn></msup></mrow><mrow><msup><mi>b</mi><mn>2</mn></msup></mrow></mfrac><mo>&#x0003D;</mo><mn>1</mn></mrow></math></div>
+<p>参数化：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>x</mi><mo>&#x0003D;</mo><mi>a</mi><mi>cos</mi><mi>t</mi><mo>&#x0002C;</mo><mspace width="2em" /><mi>y</mi><mo>&#x0003D;</mo><mi>b</mi><mi>sin</mi><mi>t</mi></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>A</mi><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><msubsup><mo>&#x0222B;</mo><mn>0</mn><mrow><mn>2</mn><mi>&#x003C0;</mi></mrow></msubsup><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mi>a</mi><mi>cos</mi><mi>t</mi><mo>&#x000B7;</mo><mi>b</mi><mi>cos</mi><mi>t</mi><mo>&#x02212;</mo><mi>b</mi><mi>sin</mi><mi>t</mi><mo>&#x000B7;</mo><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mi>a</mi><mi>sin</mi><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mi>d</mi><mi>t</mi></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><msubsup><mo>&#x0222B;</mo><mn>0</mn><mrow><mn>2</mn><mi>&#x003C0;</mi></mrow></msubsup><mi>a</mi><mi>b</mi><mspace width="0.167em" /><mi>d</mi><mi>t</mi><mo>&#x0003D;</mo><mi>&#x003C0;</mi><mi>a</mi><mi>b</mi></mrow></math></div>
+<h3>判断路径无关</h3>
+<p>在单连通区域内，如果</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>P</mi><mi>y</mi></msub><mo>&#x0003D;</mo><msub><mi>Q</mi><mi>x</mi></msub></mrow></math></div>
+<p>则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222E;</mo><mi>L</mi></msub><mi>P</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mi>Q</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math></div>
+<p>对任意闭曲线成立，积分与路径无关。</p>
+<hr>
+<h2>8. 易错点</h2>
+<ol>
+<li><strong>第一类曲线积分与方向无关，第二类与方向有关</strong>。</li>
+<li><strong><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>d</mi><mi>s</mi></mrow></math> 的根号不要漏</strong>：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>d</mi><mi>s</mi><mo>&#x0003D;</mo><msqrt><mrow><msup><mi>x</mi><mrow><mi>&#x02032;</mi><mn>2</mn></mrow></msup><mo>&#x0002B;</mo><msup><mi>y</mi><mrow><mi>&#x02032;</mi><mn>2</mn></mrow></msup></mrow></msqrt><mspace width="0.167em" /><mi>d</mi><mi>t</mi></mrow></math>。</li>
+<li><strong>第二类曲线积分代入参数时，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>d</mi><mi>x</mi></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>d</mi><mi>y</mi></mrow></math> 都要换成 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>d</mi><mi>t</mi></mrow></math></strong>。</li>
+<li><strong>格林公式的方向</strong>必须是逆时针，否则要加负号。</li>
+<li><strong>格林公式要求区域单连通、偏导数连续</strong>。有洞的区域不能直接用。</li>
+<li><strong><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>P</mi><mi>y</mi></msub><mo>&#x0003D;</mo><msub><mi>Q</mi><mi>x</mi></msub></mrow></math> 只是保守场的判别条件</strong>，在非单连通区域不充分。</li>
+<li><strong>势函数求出来后，积分等于终点值减起点值</strong>，不要反过来。</li>
+<li><strong>闭曲线积分不为 0，说明不是保守场</strong>，不能用路径无关。</li>
+</ol>
+<hr>
+<h2>9. 练习</h2>
+<ol>
+<li>
+<p>计算 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>&#x0222B;</mo><mi>L</mi></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002B;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>s</mi></mrow></math>，其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>L</mi></mrow></math> 是从 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 到 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 的直线段。</p>
+</li>
+<li>
+<p>计算 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>&#x0222B;</mo><mi>L</mi></msub><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>s</mi></mrow></math>，其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>L</mi></mrow></math> 是单位圆从 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 到 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 的第一象限弧。</p>
+</li>
+<li>
+<p>计算 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>&#x0222B;</mo><mi>L</mi></msub><mi>y</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi></mrow></math>，其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>L</mi></mrow></math> 是从 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 到 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 的直线段。</p>
+</li>
+<li>
+<p>判断 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover><mi>F</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mi>y</mi><mo>&#x0002C;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 是否为保守场；若是，求势函数，并计算从 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 到 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 的积分。</p>
+</li>
+<li>
+<p>判断 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover><mi>F</mi><mo stretchy="true">&#x02192;</mo></mover><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mi>y</mi><mo>&#x0002C;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 是否为保守场；计算它沿单位圆逆时针一周的积分。</p>
+</li>
+<li>
+<p>用格林公式计算 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>&#x0222E;</mo><mi>L</mi></msub><mo stretchy="false">&#x00028;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x02212;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002B;</mo><msup><mi>y</mi><mn>2</mn></msup><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>y</mi></mrow></math>，其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>L</mi></mrow></math> 是单位圆逆时针。</p>
+</li>
+<li>
+<p>用曲线积分求椭圆 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow><mrow><msup><mi>a</mi><mn>2</mn></msup></mrow></mfrac><mo>&#x0002B;</mo><mfrac><mrow><msup><mi>y</mi><mn>2</mn></msup></mrow><mrow><msup><mi>b</mi><mn>2</mn></msup></mrow></mfrac><mo>&#x0003D;</mo><mn>1</mn></mrow></math> 的面积。</p>
+</li>
+<li>
+<p>用格林公式计算 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>&#x0222E;</mo><mi>L</mi></msub><mo stretchy="false">&#x00028;</mo><mi>y</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x02212;</mo><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mo stretchy="false">&#x00029;</mo></mrow></math>，其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>L</mi></mrow></math> 是单位圆逆时针。</p>
+</li>
+</ol>
+<hr>
+<h2>10. 答案与简解</h2>
+<details>
+<summary>点击展开（做完再看）</summary>
+<p><strong>1.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msqrt><mn>2</mn></msqrt></mrow></math>。</p>
+<p>参数化 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mi>t</mi></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>t</mi></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x02264;</mo><mi>t</mi><mo>&#x02264;</mo><mn>1</mn></mrow></math>，则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>d</mi><mi>s</mi><mo>&#x0003D;</mo><msqrt><mrow><mn>1</mn><mo>&#x0002B;</mo><mn>1</mn></mrow></msqrt><mspace width="0.167em" /><mi>d</mi><mi>t</mi><mo>&#x0003D;</mo><msqrt><mn>2</mn></msqrt><mspace width="0.167em" /><mi>d</mi><mi>t</mi></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222B;</mo><mi>L</mi></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002B;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>s</mi><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><mo stretchy="false">&#x00028;</mo><mn>2</mn><mi>t</mi><mo stretchy="false">&#x00029;</mo><msqrt><mn>2</mn></msqrt><mspace width="0.167em" /><mi>d</mi><mi>t</mi><mo>&#x0003D;</mo><msqrt><mn>2</mn></msqrt></mrow></math></div>
+<p><strong>2.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn></mrow></math>。</p>
+<p>参数化 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mi>cos</mi><mi>t</mi></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>sin</mi><mi>t</mi></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x02264;</mo><mi>t</mi><mo>&#x02264;</mo><mfrac><mrow><mi>&#x003C0;</mi></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></math>，则 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>d</mi><mi>s</mi><mo>&#x0003D;</mo><mi>d</mi><mi>t</mi></mrow></math>。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222B;</mo><mi>L</mi></msub><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>s</mi><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mrow><mfrac><mrow><mi>&#x003C0;</mi></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></msubsup><mi>cos</mi><mi>t</mi><mspace width="0.167em" /><mi>d</mi><mi>t</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math></div>
+<p><strong>3.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn></mrow></math>。</p>
+<p>参数化 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mn>2</mn><mi>t</mi></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>t</mi></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x02264;</mo><mi>t</mi><mo>&#x02264;</mo><mn>1</mn></mrow></math>，则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>d</mi><mi>x</mi><mo>&#x0003D;</mo><mn>2</mn><mspace width="0.167em" /><mi>d</mi><mi>t</mi><mo>&#x0002C;</mo><mspace width="2em" /><mi>d</mi><mi>y</mi><mo>&#x0003D;</mo><mi>d</mi><mi>t</mi></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222B;</mo><mi>L</mi></msub><mi>y</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo>&#x000B7;</mo><mn>2</mn><mo>&#x0002B;</mo><mn>2</mn><mi>t</mi><mo>&#x000B7;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>t</mi><mo>&#x0003D;</mo><mn>4</mn><msubsup><mo>&#x0222B;</mo><mn>0</mn><mn>1</mn></msubsup><mi>t</mi><mspace width="0.167em" /><mi>d</mi><mi>t</mi><mo>&#x0003D;</mo><mn>2</mn></mrow></math></div>
+<p><strong>4.</strong> 是保守场，势函数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C6;</mi><mo>&#x0003D;</mo><mi>x</mi><mi>y</mi></mrow></math>，积分值为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn></mrow></math>。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>P</mi><mi>y</mi></msub><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>Q</mi><mi>x</mi></msub><mo>&#x0003D;</mo><mn>1</mn></mrow></math></div>
+<p>所以是保守场。由</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>&#x003C6;</mi><mi>x</mi></msub><mo>&#x0003D;</mo><mi>y</mi><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>&#x003C6;</mi><mo>&#x0003D;</mo><mi>x</mi><mi>y</mi><mo>&#x0002B;</mo><mi>C</mi><mo stretchy="false">&#x00028;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>再由</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>&#x003C6;</mi><mi>y</mi></msub><mo>&#x0003D;</mo><mi>x</mi><mo>&#x0002B;</mo><msup><mi>C</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>x</mi><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><msup><mi>C</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x003C6;</mi><mo>&#x0003D;</mo><mi>x</mi><mi>y</mi></mrow></math></div>
+<p>积分：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x003C6;</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mi>&#x003C6;</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>2</mn></mrow></math></div>
+<p><strong>5.</strong> 不是保守场；沿单位圆逆时针一周的积分为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mi>&#x003C0;</mi></mrow></math>。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mi>y</mi><mo>&#x0002C;</mo><mspace width="2em" /><mi>Q</mi><mo>&#x0003D;</mo><mi>x</mi></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>P</mi><mi>y</mi></msub><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>1</mn><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>Q</mi><mi>x</mi></msub><mo>&#x0003D;</mo><mn>1</mn></mrow></math></div>
+<p>不相等，所以不是保守场。沿单位圆：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>&#x0222E;</mo><mi>L</mi></msub><mo>&#x02212;</mo><mi>y</mi><mspace width="0.167em" /><mi>d</mi><mi>x</mi><mo>&#x0002B;</mo><mi>x</mi><mspace width="0.167em" /><mi>d</mi><mi>y</mi><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mn>0</mn><mrow><mn>2</mn><mi>&#x003C0;</mi></mrow></msubsup><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mo>&#x02212;</mo><mi>sin</mi><mi>t</mi><mo>&#x000B7;</mo><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mi>sin</mi><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><mi>cos</mi><mi>t</mi><mo>&#x000B7;</mo><mi>cos</mi><mi>t</mi><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mi>d</mi><mi>t</mi><mo>&#x0003D;</mo><mn>2</mn><mi>&#x003C0;</mi></mrow></math></div>
+<p><strong>6.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mi>&#x003C0;</mi></mrow></math>。见本课格林公式例 1。</p>
+<p><strong>7.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C0;</mi><mi>a</mi><mi>b</mi></mrow></math>。见本课第 7 节例 2。</p>
+<p><strong>8.</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02212;</mo><mn>2</mn><mi>&#x003C0;</mi></mrow></math>。见本课格林公式例 2。</p>
+</details>
+<hr>
+<h2>11. 下节预告</h2>
+<p><strong>第 29 课：曲面积分与高斯、斯托克斯公式</strong></p>
+<ul>
+<li>第一类曲面积分</li>
+<li>第二类曲面积分与通量</li>
+<li>高斯公式</li>
+<li>斯托克斯公式</li>
+</ul>
+<hr>
+<h2>自查清单</h2>
+<ul>
+<li>[ ] 会计算第一类曲线积分</li>
+<li>[ ] 会计算第二类曲线积分</li>
+<li>[ ] 知道两类曲线积分的区别</li>
+<li>[ ] 会判断保守场并求势函数</li>
+<li>[ ] 记住格林公式的公式和方向</li>
+<li>[ ] 会用曲线积分求面积</li>
+<li>[ ] 知道非单连通区域的陷阱</li>
+</ul>
+<footer>微积分讲义 · 数学公式使用 MathML 渲染，建议使用 Chrome / Edge / Firefox 打开</footer>
+</main>
+</body>
+</html>

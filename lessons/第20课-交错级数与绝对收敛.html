@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>微积分进阶 · 第 20 课：交错级数与绝对收敛</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --quote-bg: #f6f8fa;
+  --code-bg: #eff2f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --border: #30363d;
+    --accent: #4493f8;
+    --quote-bg: #161b22;
+    --code-bg: #1f242c;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; font-weight: 650; }
+h1 { font-size: 2rem; margin: 0 0 .8em; padding-bottom: .35em; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 2.2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.2rem; margin: 1.8em 0 .55em; }
+p { margin: .85em 0; }
+a { color: var(--accent); }
+blockquote {
+  margin: 1em 0;
+  padding: .6em 1em;
+  border-left: 4px solid var(--accent);
+  background: var(--quote-bg);
+  color: var(--muted);
+  border-radius: 4px;
+}
+blockquote p { margin: .25em 0; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: .96em;
+  overflow: hidden;
+}
+th, td { border: 1px solid var(--border); padding: .45em .7em; text-align: left; vertical-align: top; }
+th { background: var(--quote-bg); font-weight: 600; }
+details {
+  margin: 1.2em 0;
+  padding: .8em 1em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--quote-bg);
+}
+summary { cursor: pointer; font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+ul, ol { padding-left: 1.7em; }
+li { margin: .3em 0; }
+.math-block {
+  margin: 1.15em 0;
+  padding: .7em .9em;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--quote-bg);
+  border-radius: 6px;
+}
+math { font-size: 1.14em; line-height: 1.2; }
+math[display="inline"] { font-size: 1.05em; vertical-align: baseline; }
+.math-block math { font-size: 1.24em; }
+.math-fallback, .math-fallback-block {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .08em .3em;
+  border-radius: 3px;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .12em .35em;
+  border-radius: 3px;
+  font-size: .92em;
+}
+pre code { display: block; padding: .8em 1em; overflow-x: auto; }
+footer { margin-top: 4em; color: var(--muted); font-size: .85em; text-align: center; }
+@media print {
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  .math-block { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>微积分进阶 · 第 20 课：交错级数与绝对收敛</h1>
+<blockquote>
+<p><strong>本课目标</strong>：掌握莱布尼茨判别法，分清绝对收敛与条件收敛，会用交错级数估计误差。</p>
+<p><strong>使用方法</strong>：先判断绝对值级数是否收敛。绝对收敛是最省心的情形；不绝对收敛时，再看交错结构。</p>
+</blockquote>
+<hr>
+<h2>目录</h2>
+<ol>
+<li>交错级数</li>
+<li>莱布尼茨判别法</li>
+<li>交错级数的误差估计</li>
+<li>绝对收敛</li>
+<li>条件收敛</li>
+<li>判别流程</li>
+<li>例题</li>
+<li>易错点</li>
+<li>练习</li>
+<li>答案与简解</li>
+<li>下节预告</li>
+</ol>
+<hr>
+<h2>1. 交错级数</h2>
+<p>各项符号正负交替的级数，称为<strong>交错级数</strong>。常见形式：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mrow><mi>n</mi><mo>&#x02212;</mo><mn>1</mn></mrow></msup><msub><mi>a</mi><mi>n</mi></msub><mo>&#x0003D;</mo><msub><mi>a</mi><mn>1</mn></msub><mo>&#x02212;</mo><msub><mi>a</mi><mn>2</mn></msub><mo>&#x0002B;</mo><msub><mi>a</mi><mn>3</mn></msub><mo>&#x02212;</mo><msub><mi>a</mi><mn>4</mn></msub><mo>&#x0002B;</mo><mo>&#x022EF;</mo></mrow></math></div>
+<p>或</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup><msub><mi>a</mi><mi>n</mi></msub><mo>&#x0003D;</mo><mo>&#x02212;</mo><msub><mi>a</mi><mn>1</mn></msub><mo>&#x0002B;</mo><msub><mi>a</mi><mn>2</mn></msub><mo>&#x02212;</mo><msub><mi>a</mi><mn>3</mn></msub><mo>&#x0002B;</mo><msub><mi>a</mi><mn>4</mn></msub><mo>&#x02212;</mo><mo>&#x022EF;</mo></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>a</mi><mi>n</mi></msub><mo>&#x0003E;</mo><mn>0</mn></mrow></math>。</p>
+<p>例如：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>1</mn><mo>&#x02212;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>&#x0002B;</mo><mfrac><mn>1</mn><mn>3</mn></mfrac><mo>&#x02212;</mo><mfrac><mn>1</mn><mn>4</mn></mfrac><mo>&#x0002B;</mo><mo>&#x022EF;</mo><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mrow><mi>n</mi><mo>&#x02212;</mo><mn>1</mn></mrow></msup></mrow><mrow><mi>n</mi></mrow></mfrac></mrow></math></div>
+<p>这是交错调和级数。</p>
+<hr>
+<h2>2. 莱布尼茨判别法</h2>
+<p><strong>莱布尼茨判别法</strong>：如果交错级数</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mrow><mi>n</mi><mo>&#x02212;</mo><mn>1</mn></mrow></msup><msub><mi>a</mi><mi>n</mi></msub></mrow></math></div>
+<p>满足</p>
+<ol>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>a</mi><mi>n</mi></msub><mo>&#x0003E;</mo><mn>0</mn></mrow></math>；</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>a</mi><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub><mo>&#x02264;</mo><msub><mi>a</mi><mi>n</mi></msub></mrow></math>（从某一项开始单调不增）；</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>lim</mo><mrow><mi>n</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></msub><msub><mi>a</mi><mi>n</mi></msub><mo>&#x0003D;</mo><mn>0</mn></mrow></math>；</li>
+</ol>
+<p>那么该级数收敛。</p>
+<p><strong>直观理解</strong>：正负项互相抵消，而且每次抵消的幅度越来越小，部分和在两个值之间来回摆动，最终稳定下来。</p>
+<p><strong>例 1</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mrow><mi>n</mi><mo>&#x02212;</mo><mn>1</mn></mrow></msup></mrow><mrow><mi>n</mi></mrow></mfrac><mo>&#x0003D;</mo><mn>1</mn><mo>&#x02212;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>&#x0002B;</mo><mfrac><mn>1</mn><mn>3</mn></mfrac><mo>&#x02212;</mo><mfrac><mn>1</mn><mn>4</mn></mfrac><mo>&#x0002B;</mo><mo>&#x022EF;</mo></mrow></math></div>
+<p>满足 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>a</mi><mi>n</mi></msub><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi></mrow></mfrac><mo>&#x0003E;</mo><mn>0</mn></mrow></math>，单调递减，且趋于 0，所以收敛。</p>
+<p>它的和是</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>ln</mi><mn>2</mn><mo>&#x02248;</mo><mn>0.6931</mn></mrow></math></div>
+<p><strong>例 2</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mrow><mi>n</mi><mo>&#x02212;</mo><mn>1</mn></mrow></msup></mrow><mrow><msqrt><mi>n</mi></msqrt></mrow></mfrac></mrow></math></div>
+<p><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>a</mi><mi>n</mi></msub><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msqrt><mi>n</mi></msqrt></mrow></mfrac><mo>&#x0003E;</mo><mn>0</mn></mrow></math>，单调递减，且趋于 0，所以收敛。</p>
+<p><strong>注意</strong>：莱布尼茨判别法是<strong>充分条件</strong>，不是必要条件。不满足它的交错级数也可能收敛，只是不能用它来判断。</p>
+<p><strong>反例提醒</strong>：如果只满足 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>a</mi><mi>n</mi></msub><mo>&#x02192;</mo><mn>0</mn></mrow></math>，但 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>a</mi><mi>n</mi></msub></mrow></math> 不单调，莱布尼茨判别法不能直接用。例如适当打乱正负项的顺序，可能改变收敛性。</p>
+<hr>
+<h2>3. 交错级数的误差估计</h2>
+<p>设</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>S</mi><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mrow><mi>n</mi><mo>&#x02212;</mo><mn>1</mn></mrow></msup><msub><mi>a</mi><mi>n</mi></msub></mrow></math></div>
+<p>满足莱布尼茨条件，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>S</mi><mi>N</mi></msub></mrow></math> 是前 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>N</mi></mrow></math> 项部分和。那么</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mi>S</mi><mo>&#x02212;</mo><msub><mi>S</mi><mi>N</mi></msub><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x02264;</mo><msub><mi>a</mi><mrow><mi>N</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub></mrow></math></div>
+<p>并且余项的符号与第一个被省略的项相同。</p>
+<p><strong>意义</strong>：用前 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>N</mi></mrow></math> 项近似整个级数的和，误差不超过下一项的绝对值。</p>
+<p><strong>例</strong>：用前 4 项近似</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>S</mi><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mrow><mi>n</mi><mo>&#x02212;</mo><mn>1</mn></mrow></msup></mrow><mrow><mi>n</mi></mrow></mfrac></mrow></math></div>
+<p>即</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>S</mi><mn>4</mn></msub><mo>&#x0003D;</mo><mn>1</mn><mo>&#x02212;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>&#x0002B;</mo><mfrac><mn>1</mn><mn>3</mn></mfrac><mo>&#x02212;</mo><mfrac><mn>1</mn><mn>4</mn></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>7</mn></mrow><mrow><mn>12</mn></mrow></mfrac><mo>&#x02248;</mo><mn>0.5833</mn></mrow></math></div>
+<p>误差不超过</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>a</mi><mn>5</mn></msub><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>5</mn></mfrac><mo>&#x0003D;</mo><mn>0.2</mn></mrow></math></div>
+<p>实际值 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>ln</mi><mn>2</mn><mo>&#x02248;</mo><mn>0.6931</mn></mrow></math>，误差约为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>0.6931</mn><mo>&#x02212;</mo><mn>0.5833</mn><mo>&#x0003D;</mo><mn>0.1098</mn><mo>&#x0003C;</mo><mn>0.2</mn></mrow></math></div>
+<p><strong>应用</strong>：如果要保证误差小于 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0.01</mn></mrow></math>，只需</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>a</mi><mrow><mi>N</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>N</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac><mo>&#x0003C;</mo><mn>0.01</mn><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>N</mi><mo>&#x0002B;</mo><mn>1</mn><mo>&#x0003E;</mo><mn>100</mn><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>N</mi><mo>&#x02265;</mo><mn>100</mn></mrow></math></div>
+<p>所以取前 100 项即可。</p>
+<hr>
+<h2>4. 绝对收敛</h2>
+<p><strong>定义</strong>：如果级数</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><msub><mi>a</mi><mi>n</mi></msub></mrow></math></div>
+<p>的绝对值级数</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><msub><mi>a</mi><mi>n</mi></msub><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow></mrow></math></div>
+<p>收敛，则称原级数<strong>绝对收敛</strong>。</p>
+<p><strong>定理</strong>：绝对收敛的级数一定收敛。</p>
+<p><strong>证明思路</strong>：设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><msub><mi>a</mi><mi>n</mi></msub><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow></mrow></math> 收敛。因为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>0</mn><mo>&#x02264;</mo><msub><mi>a</mi><mi>n</mi></msub><mo>&#x0002B;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><msub><mi>a</mi><mi>n</mi></msub><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x02264;</mo><mn>2</mn><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><msub><mi>a</mi><mi>n</mi></msub><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow></mrow></math></div>
+<p>由比较判别法，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><mo stretchy="false">&#x00028;</mo><msub><mi>a</mi><mi>n</mi></msub><mo>&#x0002B;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><msub><mi>a</mi><mi>n</mi></msub><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo stretchy="false">&#x00029;</mo></mrow></math> 收敛。于是</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x02211;</mo><msub><mi>a</mi><mi>n</mi></msub><mo>&#x0003D;</mo><mo>&#x02211;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><msub><mi>a</mi><mi>n</mi></msub><mo>&#x0002B;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><msub><mi>a</mi><mi>n</mi></msub><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x02212;</mo><mo>&#x02211;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><msub><mi>a</mi><mi>n</mi></msub><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow></mrow></math></div>
+<p>是两个收敛级数之差，所以也收敛。</p>
+<p><strong>例 1</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mrow><mi>n</mi><mo>&#x02212;</mo><mn>1</mn></mrow></msup></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow></mfrac></mrow></math></div>
+<p>绝对值级数</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow></mfrac></mrow></math></div>
+<p>是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi><mo>&#x0003D;</mo><mn>2</mn></mrow></math> 的 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi></mrow></math>-级数，收敛。所以原级数绝对收敛。</p>
+<p><strong>例 2</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup></mrow><mrow><mi>n</mi><mo>&#x00021;</mo></mrow></mfrac></mrow></math></div>
+<p>绝对值级数</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi><mo>&#x00021;</mo></mrow></mfrac></mrow></math></div>
+<p>收敛（比值判别法：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac><mo>&#x02192;</mo><mn>0</mn></mrow></math>）。所以原级数绝对收敛。</p>
+<p><strong>绝对收敛的好处</strong>：可以任意交换项的顺序而不改变和，也可以像普通和一样做加法、乘法。</p>
+<hr>
+<h2>5. 条件收敛</h2>
+<p><strong>定义</strong>：如果级数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><msub><mi>a</mi><mi>n</mi></msub></mrow></math> 收敛，但绝对值级数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><msub><mi>a</mi><mi>n</mi></msub><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow></mrow></math> 发散，则称原级数<strong>条件收敛</strong>。</p>
+<p><strong>例 1</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mrow><mi>n</mi><mo>&#x02212;</mo><mn>1</mn></mrow></msup></mrow><mrow><mi>n</mi></mrow></mfrac></mrow></math></div>
+<p>原级数收敛（莱布尼茨判别法），但</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi></mrow></mfrac></mrow></math></div>
+<p>是调和级数，发散。所以原级数条件收敛。</p>
+<p><strong>例 2</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mrow><mi>n</mi><mo>&#x02212;</mo><mn>1</mn></mrow></msup></mrow><mrow><msqrt><mi>n</mi></msqrt></mrow></mfrac></mrow></math></div>
+<p>原级数收敛，但</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mn>1</mn></mrow><mrow><msqrt><mi>n</mi></msqrt></mrow></mfrac></mrow></math></div>
+<p>是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow></math> 的 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi></mrow></math>-级数，发散。所以原级数条件收敛。</p>
+<p><strong>重要区别</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>原级数</th>
+<th>绝对值级数</th>
+<th>能否重排</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>绝对收敛</td>
+<td>收敛</td>
+<td>收敛</td>
+<td>可以任意重排，和不变</td>
+</tr>
+<tr>
+<td>条件收敛</td>
+<td>收敛</td>
+<td>发散</td>
+<td>不能随意重排，和可能改变</td>
+</tr>
+</tbody>
+</table>
+<p><strong>注意</strong>：条件收敛的级数虽然收敛，但“收敛得很勉强”，对项的顺序很敏感。</p>
+<hr>
+<h2>6. 判别流程</h2>
+<p>拿到一个级数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><msub><mi>a</mi><mi>n</mi></msub></mrow></math>，按以下顺序判断：</p>
+<p><strong>第一步：通项检验</strong></p>
+<p>如果 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>a</mi><mi>n</mi></msub></mrow></math> 不趋于 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn></mrow></math>，直接发散。</p>
+<p><strong>第二步：判断绝对值级数</strong></p>
+<p>对 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><msub><mi>a</mi><mi>n</mi></msub><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow></mrow></math> 使用正项级数的判别法：</p>
+<ul>
+<li>收敛 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x021D2;</mo></mrow></math> 原级数绝对收敛；</li>
+<li>发散 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x021D2;</mo></mrow></math> 进入第三步。</li>
+</ul>
+<p><strong>第三步：看是否交错</strong></p>
+<p>如果是交错级数，尝试莱布尼茨判别法：</p>
+<ul>
+<li>满足条件 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x021D2;</mo></mrow></math> 条件收敛（因为绝对值级数已发散）；</li>
+<li>不满足条件 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x021D2;</mo></mrow></math> 需要其他方法，不能直接下结论。</li>
+</ul>
+<p><strong>第四步：其他方法</strong></p>
+<p>非交错、非绝对收敛的级数，可能需要更精细的判别法，本课程不展开。</p>
+<hr>
+<h2>7. 例题</h2>
+<h3>例 1</h3>
+<p>判断</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup><mfrac><mrow><mi>n</mi></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac></mrow></math></div>
+<p><strong>绝对值级数</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mi>n</mi></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac></mrow></math></div>
+<p>通项约为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mi>n</mi></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi></mrow></mfrac></mrow></math>，与调和级数同敛散，发散。</p>
+<p><strong>原级数</strong>：令</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>a</mi><mi>n</mi></msub><mo>&#x0003D;</mo><mfrac><mrow><mi>n</mi></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac></mrow></math></div>
+<p>先看单调性。令</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><mi>x</mi></mrow><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac></mrow></math></div>
+<p>则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><mo stretchy="false">&#x00028;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mi>x</mi><mo>&#x000B7;</mo><mn>2</mn><mi>x</mi></mrow><mrow><mo stretchy="false">&#x00028;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn><mo>&#x02212;</mo><msup><mi>x</mi><mn>2</mn></msup></mrow><mrow><mo stretchy="false">&#x00028;</mo><msup><mi>x</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup></mrow></mfrac></mrow></math></div>
+<p>当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003E;</mo><mn>1</mn></mrow></math> 时，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003C;</mo><mn>0</mn></mrow></math>，所以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>a</mi><mi>n</mi></msub></mrow></math> 从 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>2</mn></mrow></math> 起单调递减。</p>
+<p>又</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>a</mi><mi>n</mi></msub><mo>&#x0003D;</mo><mfrac><mrow><mi>n</mi></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac><mo>&#x02192;</mo><mn>0</mn></mrow></math></div>
+<p>由莱布尼茨判别法，原级数收敛。</p>
+<p>结合绝对值级数发散，原级数<strong>条件收敛</strong>。</p>
+<h3>例 2</h3>
+<p>判断</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup><msup><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mrow><mi>n</mi></mrow><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mi>n</mi></msup></mrow></math></div>
+<p>先看通项：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mrow><mi>n</mi></mrow><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mi>n</mi></msup><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mn>1</mn><mo>&#x0002B;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mi>n</mi></msup></mrow></mfrac><mo>&#x02192;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>e</mi></mrow></mfrac><mo>&#x02260;</mo><mn>0</mn></mrow></math></div>
+<p>通项不趋于 0，所以级数<strong>发散</strong>。</p>
+<p><strong>教训</strong>：不要看到交错就直接用莱布尼茨判别法，先做通项检验。</p>
+<h3>例 3</h3>
+<p>判断</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mrow><mi>n</mi><mo>&#x02212;</mo><mn>1</mn></mrow></msup></mrow><mrow><mi>n</mi><mo>&#x00021;</mo></mrow></mfrac></mrow></math></div>
+<p>绝对值级数</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi><mo>&#x00021;</mo></mrow></mfrac></mrow></math></div>
+<p>用比值判别法：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x00021;</mo></mrow></mfrac></mrow><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi><mo>&#x00021;</mo></mrow></mfrac></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac><mo>&#x02192;</mo><mn>0</mn><mo>&#x0003C;</mo><mn>1</mn></mrow></math></div>
+<p>所以绝对值级数收敛，原级数<strong>绝对收敛</strong>。</p>
+<hr>
+<h2>8. 易错点</h2>
+<ol>
+<li><strong>莱布尼茨判别法必须先验证单调递减</strong>。只验证通项趋于 0 不够。</li>
+<li><strong>绝对收敛一定收敛，条件收敛只是收敛</strong>。两者不能混为一谈。</li>
+<li><strong>判断绝对收敛时，绝对值符号要加对</strong>。<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup></mrow></math> 的绝对值是 1，不是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></math>。</li>
+<li><strong>条件收敛的级数不能随意重排</strong>。重排后可能收敛到不同的值，甚至发散。</li>
+<li><strong>交错级数的误差估计只用下一项</strong>，不要再乘系数。</li>
+<li><strong>通项不趋于 0 时，无论是否交错都发散</strong>。先做通项检验。</li>
+<li><strong><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup><msub><mi>a</mi><mi>n</mi></msub></mrow></math> 和 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mrow><mi>n</mi><mo>&#x02212;</mo><mn>1</mn></mrow></msup><msub><mi>a</mi><mi>n</mi></msub></mrow></math> 只差一个负号</strong>，敛散性相同，和相差一个符号。</li>
+</ol>
+<hr>
+<h2>9. 练习</h2>
+<ol>
+<li>
+<p>判断 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></msubsup><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msup></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow></mfrac></mrow></math> 是绝对收敛、条件收敛还是发散。</p>
+</li>
+<li>
+<p>判断 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></msubsup><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msup></mrow><mrow><msqrt><mi>n</mi></msqrt></mrow></mfrac></mrow></math> 是绝对收敛、条件收敛还是发散。</p>
+</li>
+<li>
+<p>判断 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></msubsup><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup><mfrac><mrow><mi>n</mi></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac></mrow></math> 是绝对收敛、条件收敛还是发散。</p>
+</li>
+<li>
+<p>判断 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></msubsup><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup></mrow><mrow><mn>2</mn><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac></mrow></math> 是绝对收敛、条件收敛还是发散。</p>
+</li>
+<li>
+<p>判断 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></msubsup><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup><mfrac><mrow><mi>n</mi></mrow><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac></mrow></math> 是否收敛。</p>
+</li>
+<li>
+<p>判断 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></msubsup><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup></mrow><mrow><mi>n</mi><mo>&#x00021;</mo></mrow></mfrac></mrow></math> 是绝对收敛、条件收敛还是发散。</p>
+</li>
+<li>
+<p>用前 4 项近似 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></msubsup><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msup></mrow><mrow><mi>n</mi></mrow></mfrac></mrow></math>，给出误差上界；若要误差小于 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0.01</mn></mrow></math>，至少需要前多少项？</p>
+</li>
+</ol>
+<hr>
+<h2>10. 答案与简解</h2>
+<details>
+<summary>点击展开（做完再看）</summary>
+<p><strong>1.</strong> 绝对收敛。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msup></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow></mfrac></mrow></math></div>
+<p>收敛。</p>
+<p><strong>2.</strong> 条件收敛。</p>
+<p>原级数由莱布尼茨判别法收敛；但</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mn>1</mn></mrow><mrow><msqrt><mi>n</mi></msqrt></mrow></mfrac></mrow></math></div>
+<p>是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow></math> 的 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi></mrow></math>-级数，发散。</p>
+<p><strong>3.</strong> 条件收敛。见本课例 1。</p>
+<p><strong>4.</strong> 条件收敛。</p>
+<p>原级数满足莱布尼茨条件；但</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac></mrow></math></div>
+<p>与调和级数同敛散，发散。</p>
+<p><strong>5.</strong> 发散。</p>
+<p>通项</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup><mfrac><mrow><mi>n</mi></mrow><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac></mrow></math></div>
+<p>的绝对值为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mi>n</mi></mrow><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac><mo>&#x02192;</mo><mn>1</mn><mo>&#x02260;</mo><mn>0</mn></mrow></math>，所以通项不趋于 0。</p>
+<p><strong>6.</strong> 绝对收敛。见本课例 3。</p>
+<p><strong>7.</strong> 误差上界为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mn>1</mn><mn>5</mn></mfrac></mrow></math>；至少前 100 项。</p>
+<p>前 4 项：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>S</mi><mn>4</mn></msub><mo>&#x0003D;</mo><mn>1</mn><mo>&#x02212;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>&#x0002B;</mo><mfrac><mn>1</mn><mn>3</mn></mfrac><mo>&#x02212;</mo><mfrac><mn>1</mn><mn>4</mn></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>7</mn></mrow><mrow><mn>12</mn></mrow></mfrac></mrow></math></div>
+<p>误差不超过</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>a</mi><mn>5</mn></msub><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>5</mn></mfrac></mrow></math></div>
+<p>若要误差小于 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0.01</mn></mrow></math>，需要</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mi>N</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac><mo>&#x0003C;</mo><mn>0.01</mn><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>N</mi><mo>&#x0002B;</mo><mn>1</mn><mo>&#x0003E;</mo><mn>100</mn><mspace width="1em" /><mo>&#x021D2;</mo><mspace width="1em" /><mi>N</mi><mo>&#x02265;</mo><mn>100</mn></mrow></math></div>
+<p>所以至少取前 100 项。</p>
+</details>
+<hr>
+<h2>11. 下节预告</h2>
+<p><strong>第 21 课：幂级数与泰勒级数</strong></p>
+<ul>
+<li>幂级数的收敛半径与收敛区间</li>
+<li>端点处的敛散性</li>
+<li>逐项求导与逐项积分</li>
+<li>泰勒级数与常用展开</li>
+</ul>
+<hr>
+<h2>自查清单</h2>
+<ul>
+<li>[ ] 能复述莱布尼茨判别法的三个条件</li>
+<li>[ ] 会用下一项估计交错级数的误差</li>
+<li>[ ] 能区分绝对收敛与条件收敛</li>
+<li>[ ] 知道绝对收敛一定收敛</li>
+<li>[ ] 判断级数时先做通项检验</li>
+<li>[ ] 知道条件收敛的级数不能随意重排</li>
+</ul>
+<footer>微积分讲义 · 数学公式使用 MathML 渲染，建议使用 Chrome / Edge / Firefox 打开</footer>
+</main>
+</body>
+</html>

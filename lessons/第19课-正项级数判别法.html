@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>微积分进阶 · 第 19 课：正项级数判别法</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --quote-bg: #f6f8fa;
+  --code-bg: #eff2f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --border: #30363d;
+    --accent: #4493f8;
+    --quote-bg: #161b22;
+    --code-bg: #1f242c;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; font-weight: 650; }
+h1 { font-size: 2rem; margin: 0 0 .8em; padding-bottom: .35em; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 2.2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.2rem; margin: 1.8em 0 .55em; }
+p { margin: .85em 0; }
+a { color: var(--accent); }
+blockquote {
+  margin: 1em 0;
+  padding: .6em 1em;
+  border-left: 4px solid var(--accent);
+  background: var(--quote-bg);
+  color: var(--muted);
+  border-radius: 4px;
+}
+blockquote p { margin: .25em 0; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: .96em;
+  overflow: hidden;
+}
+th, td { border: 1px solid var(--border); padding: .45em .7em; text-align: left; vertical-align: top; }
+th { background: var(--quote-bg); font-weight: 600; }
+details {
+  margin: 1.2em 0;
+  padding: .8em 1em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--quote-bg);
+}
+summary { cursor: pointer; font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+ul, ol { padding-left: 1.7em; }
+li { margin: .3em 0; }
+.math-block {
+  margin: 1.15em 0;
+  padding: .7em .9em;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--quote-bg);
+  border-radius: 6px;
+}
+math { font-size: 1.14em; line-height: 1.2; }
+math[display="inline"] { font-size: 1.05em; vertical-align: baseline; }
+.math-block math { font-size: 1.24em; }
+.math-fallback, .math-fallback-block {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .08em .3em;
+  border-radius: 3px;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .12em .35em;
+  border-radius: 3px;
+  font-size: .92em;
+}
+pre code { display: block; padding: .8em 1em; overflow-x: auto; }
+footer { margin-top: 4em; color: var(--muted); font-size: .85em; text-align: center; }
+@media print {
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  .math-block { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>微积分进阶 · 第 19 课：正项级数判别法</h1>
+<blockquote>
+<p><strong>本课目标</strong>：掌握比较判别法、极限比较法、比值判别法、根值判别法与积分判别法，能判断常见正项级数的敛散性。</p>
+<p><strong>使用方法</strong>：先看通项的结构，再选判别法。不要一上来就套比值法，很多题用比较法更快。</p>
+</blockquote>
+<hr>
+<h2>目录</h2>
+<ol>
+<li>正项级数的基本性质</li>
+<li>比较判别法</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi></mrow></math>-级数</li>
+<li>极限比较法</li>
+<li>比值判别法</li>
+<li>根值判别法</li>
+<li>积分判别法</li>
+<li>判别法怎么选</li>
+<li>易错点</li>
+<li>练习</li>
+<li>答案与简解</li>
+<li>下节预告</li>
+</ol>
+<hr>
+<h2>1. 正项级数的基本性质</h2>
+<p>如果级数</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><msub><mi>a</mi><mi>n</mi></msub></mrow></math></div>
+<p>的每一项都满足 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>a</mi><mi>n</mi></msub><mo>&#x02265;</mo><mn>0</mn></mrow></math>，就称为<strong>正项级数</strong>。</p>
+<p><strong>关键性质</strong>：正项级数的部分和</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>S</mi><mi>N</mi></msub><mo>&#x0003D;</mo><msub><mi>a</mi><mn>1</mn></msub><mo>&#x0002B;</mo><msub><mi>a</mi><mn>2</mn></msub><mo>&#x0002B;</mo><mo>&#x022EF;</mo><mo>&#x0002B;</mo><msub><mi>a</mi><mi>N</mi></msub></mrow></math></div>
+<p>是单调不减的：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>S</mi><mn>1</mn></msub><mo>&#x02264;</mo><msub><mi>S</mi><mn>2</mn></msub><mo>&#x02264;</mo><msub><mi>S</mi><mn>3</mn></msub><mo>&#x02264;</mo><mo>&#x022EF;</mo></mrow></math></div>
+<p><strong>因此</strong>：正项级数只有两种命运：</p>
+<ul>
+<li>部分和有上界 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x021D2;</mo></mrow></math> 收敛；</li>
+<li>部分和无上界 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x021D2;</mo></mrow></math> 发散到 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x0002B;</mo><mo>&#x0221E;</mo></mrow></math>。</li>
+</ul>
+<p>这个性质是后面所有判别法的基础。</p>
+<hr>
+<h2>2. 比较判别法</h2>
+<p><strong>比较判别法</strong>：设从某一项开始，</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>0</mn><mo>&#x02264;</mo><msub><mi>a</mi><mi>n</mi></msub><mo>&#x02264;</mo><msub><mi>b</mi><mi>n</mi></msub></mrow></math></div>
+<p>则：</p>
+<ul>
+<li>如果 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><msub><mi>b</mi><mi>n</mi></msub></mrow></math> 收敛，那么 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><msub><mi>a</mi><mi>n</mi></msub></mrow></math> 也收敛；</li>
+<li>如果 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><msub><mi>a</mi><mi>n</mi></msub></mrow></math> 发散，那么 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><msub><mi>b</mi><mi>n</mi></msub></mrow></math> 也发散。</li>
+</ul>
+<p><strong>记忆方法</strong>：小的收敛，大的也收敛；大的发散，小的也发散。</p>
+<p><strong>例 1</strong>：判断</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac></mrow></math></div>
+<p>因为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac><mo>&#x0003C;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow></mfrac></mrow></math></div>
+<p>而 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow></mfrac></mrow></math> 收敛（下一节会说明），所以原级数收敛。</p>
+<p><strong>例 2</strong>：判断</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mn>2</mn><mi>n</mi></msup><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac></mrow></math></div>
+<p>因为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mn>2</mn><mi>n</mi></msup><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac><mo>&#x0003C;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mn>2</mn><mi>n</mi></msup></mrow></mfrac></mrow></math></div>
+<p>而几何级数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></msubsup><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mn>2</mn><mi>n</mi></msup></mrow></mfrac></mrow></math> 收敛，所以原级数收敛。</p>
+<p><strong>例 3</strong>：判断</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>2</mn></mrow></mfrac></mrow></math></div>
+<p>因为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>2</mn></mrow></mfrac><mo>&#x0003E;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>3</mn></mrow></mfrac><mo>&#x0003E;</mo><mo>&#x022EF;</mo></mrow></math></div>
+<p>更简单地，与调和级数比较：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>2</mn></mrow></mfrac><mo>&#x0003E;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>3</mn><mi>n</mi></mrow></mfrac><mspace width="1em" /><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo>&#x02265;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>而 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>3</mn><mi>n</mi></mrow></mfrac></mrow></math> 发散（调和级数的常数倍），所以原级数发散。</p>
+<hr>
+<h2>3. <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi></mrow></math>-级数</h2>
+<p>形如</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>n</mi><mi>p</mi></msup></mrow></mfrac></mrow></math></div>
+<p>的级数称为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi></mrow></math>-级数。</p>
+<p><strong>结论</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>n</mi><mi>p</mi></msup></mrow></mfrac><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007B;</mo><mtable><mtr><mtd columnalign="left"><mtext>收敛</mtext><mo>&#x0002C;</mo></mtd><mtd columnalign="left"><mi>p</mi><mo>&#x0003E;</mo><mn>1</mn><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><mtext>发散</mtext><mo>&#x0002C;</mo></mtd><mtd columnalign="left"><mi>p</mi><mo>&#x02264;</mo><mn>1</mn></mtd></mtr></mtable></mrow></mrow></math></div>
+<p><strong>常见特例</strong>：</p>
+<ul>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math>：调和级数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi></mrow></mfrac></mrow></math>，发散；</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi><mo>&#x0003D;</mo><mn>2</mn></mrow></math>：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow></mfrac></mrow></math>，收敛；</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow></math>：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msqrt><mi>n</mi></msqrt></mrow></mfrac></mrow></math>，发散。</li>
+</ul>
+<p><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi></mrow></math>-级数是比较法最重要的“标尺”。看到分母是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math> 的幂，先想 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi></mrow></math>-级数。</p>
+<hr>
+<h2>4. 极限比较法</h2>
+<p>直接比较有时不方便，可以比较通项的“主部”。</p>
+<p><strong>极限比较法</strong>：设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>a</mi><mi>n</mi></msub><mo>&#x0003E;</mo><mn>0</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>b</mi><mi>n</mi></msub><mo>&#x0003E;</mo><mn>0</mn></mrow></math>，且</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>n</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></munder><mfrac><mrow><msub><mi>a</mi><mi>n</mi></msub></mrow><mrow><msub><mi>b</mi><mi>n</mi></msub></mrow></mfrac><mo>&#x0003D;</mo><mi>c</mi></mrow></math></div>
+<ul>
+<li>如果 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x0003C;</mo><mi>c</mi><mo>&#x0003C;</mo><mo>&#x0002B;</mo><mo>&#x0221E;</mo></mrow></math>，则 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><msub><mi>a</mi><mi>n</mi></msub></mrow></math> 与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><msub><mi>b</mi><mi>n</mi></msub></mrow></math> 同敛散；</li>
+<li>如果 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>c</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，且 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><msub><mi>b</mi><mi>n</mi></msub></mrow></math> 收敛，则 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><msub><mi>a</mi><mi>n</mi></msub></mrow></math> 收敛；</li>
+<li>如果 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>c</mi><mo>&#x0003D;</mo><mo>&#x0002B;</mo><mo>&#x0221E;</mo></mrow></math>，且 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><msub><mi>b</mi><mi>n</mi></msub></mrow></math> 发散，则 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><msub><mi>a</mi><mi>n</mi></msub></mrow></math> 发散。</li>
+</ul>
+<p><strong>使用步骤</strong>：</p>
+<ol>
+<li>找出 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>a</mi><mi>n</mi></msub></mrow></math> 中增长最快的项；</li>
+<li>构造参考级数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>b</mi><mi>n</mi></msub></mrow></math>；</li>
+<li>求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><msub><mi>a</mi><mi>n</mi></msub></mrow><mrow><msub><mi>b</mi><mi>n</mi></msub></mrow></mfrac></mrow></math> 的极限；</li>
+<li>根据极限值下结论。</li>
+</ol>
+<p><strong>例 1</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mn>2</mn><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow><mrow><msup><mi>n</mi><mn>3</mn></msup><mo>&#x0002B;</mo><mn>3</mn><mi>n</mi></mrow></mfrac></mrow></math></div>
+<p>当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math> 很大时，分子约为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mi>n</mi></mrow></math>，分母约为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>n</mi><mn>3</mn></msup></mrow></math>，所以通项约为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mn>2</mn><mi>n</mi></mrow><mrow><msup><mi>n</mi><mn>3</mn></msup></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>2</mn></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow></mfrac></mrow></math></div>
+<p>取 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>b</mi><mi>n</mi></msub><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow></mfrac></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>n</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></munder><mfrac><mrow><mfrac><mrow><mn>2</mn><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow><mrow><msup><mi>n</mi><mn>3</mn></msup><mo>&#x0002B;</mo><mn>3</mn><mi>n</mi></mrow></mfrac></mrow><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow></mfrac></mrow></mfrac><mo>&#x0003D;</mo><munder><mo>lim</mo><mrow><mi>n</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></munder><mfrac><mrow><mn>2</mn><msup><mi>n</mi><mn>3</mn></msup><mo>&#x0002B;</mo><msup><mi>n</mi><mn>2</mn></msup></mrow><mrow><msup><mi>n</mi><mn>3</mn></msup><mo>&#x0002B;</mo><mn>3</mn><mi>n</mi></mrow></mfrac><mo>&#x0003D;</mo><mn>2</mn></mrow></math></div>
+<p>因为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow></mfrac></mrow></math> 收敛，所以原级数收敛。</p>
+<p><strong>例 2</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>2</mn></mrow></mfrac></mrow></math></div>
+<p>通项约为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mi>n</mi></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi></mrow></mfrac></mrow></math></div>
+<p>取 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>b</mi><mi>n</mi></msub><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi></mrow></mfrac></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>n</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></munder><mfrac><mrow><mfrac><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>2</mn></mrow></mfrac></mrow><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi></mrow></mfrac></mrow></mfrac><mo>&#x0003D;</mo><munder><mo>lim</mo><mrow><mi>n</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></munder><mfrac><mrow><msup><mi>n</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mi>n</mi></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>2</mn></mrow></mfrac><mo>&#x0003D;</mo><mn>1</mn></mrow></math></div>
+<p>因为调和级数发散，所以原级数发散。</p>
+<p><strong>例 3</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><mi>cos</mi><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow></mrow></math></div>
+<p>当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x02192;</mo><mn>0</mn></mrow></math> 时，</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>1</mn><mo>&#x02212;</mo><mi>cos</mi><mi>x</mi><mi>&#x0007E;</mi><mfrac><mrow><msup><mi>x</mi><mn>2</mn></msup></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>1</mn><mo>&#x02212;</mo><mi>cos</mi><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi></mrow></mfrac><mi>&#x0007E;</mi><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn><msup><mi>n</mi><mn>2</mn></msup></mrow></mfrac></mrow></math></div>
+<p>取 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>b</mi><mi>n</mi></msub><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow></mfrac></mrow></math>，极限为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow></math>。因为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow></mfrac></mrow></math> 收敛，所以原级数收敛。</p>
+<hr>
+<h2>5. 比值判别法</h2>
+<p><strong>比值判别法</strong>：设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>a</mi><mi>n</mi></msub><mo>&#x0003E;</mo><mn>0</mn></mrow></math>，且</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>n</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></munder><mfrac><mrow><msub><mi>a</mi><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub></mrow><mrow><msub><mi>a</mi><mi>n</mi></msub></mrow></mfrac><mo>&#x0003D;</mo><mi>&#x003C1;</mi></mrow></math></div>
+<p>则：</p>
+<ul>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C1;</mi><mo>&#x0003C;</mo><mn>1</mn></mrow></math>：级数收敛；</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C1;</mi><mo>&#x0003E;</mo><mn>1</mn></mrow></math> 或 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C1;</mi><mo>&#x0003D;</mo><mo>&#x0002B;</mo><mo>&#x0221E;</mo></mrow></math>：级数发散；</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C1;</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math>：判别法失效，需要换方法。</li>
+</ul>
+<p><strong>适用场景</strong>：通项中含阶乘、指数、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math> 次方，前后项容易相除。</p>
+<p><strong>例 1</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mi>n</mi></mrow><mrow><msup><mn>2</mn><mi>n</mi></msup></mrow></mfrac></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><msub><mi>a</mi><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub></mrow><mrow><msub><mi>a</mi><mi>n</mi></msub></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mfrac><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow><mrow><msup><mn>2</mn><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msup></mrow></mfrac></mrow><mrow><mfrac><mrow><mi>n</mi></mrow><mrow><msup><mn>2</mn><mi>n</mi></msup></mrow></mfrac></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow><mrow><mn>2</mn><mi>n</mi></mrow></mfrac><mo>&#x02192;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>&#x0003C;</mo><mn>1</mn></mrow></math></div>
+<p>所以级数收敛。</p>
+<p><strong>例 2</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><msup><mn>2</mn><mi>n</mi></msup></mrow><mrow><mi>n</mi><mo>&#x00021;</mo></mrow></mfrac></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><msub><mi>a</mi><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub></mrow><mrow><msub><mi>a</mi><mi>n</mi></msub></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mfrac><mrow><msup><mn>2</mn><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msup></mrow><mrow><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x00021;</mo></mrow></mfrac></mrow><mrow><mfrac><mrow><msup><mn>2</mn><mi>n</mi></msup></mrow><mrow><mi>n</mi><mo>&#x00021;</mo></mrow></mfrac></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>2</mn></mrow><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac><mo>&#x02192;</mo><mn>0</mn><mo>&#x0003C;</mo><mn>1</mn></mrow></math></div>
+<p>所以级数收敛。</p>
+<p><strong>例 3</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mi>n</mi><mo>&#x00021;</mo></mrow><mrow><msup><mn>10</mn><mi>n</mi></msup></mrow></mfrac></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><msub><mi>a</mi><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub></mrow><mrow><msub><mi>a</mi><mi>n</mi></msub></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x00021;</mo></mrow><mrow><msup><mn>10</mn><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msup></mrow></mfrac><mo>&#x000B7;</mo><mfrac><mrow><msup><mn>10</mn><mi>n</mi></msup></mrow><mrow><mi>n</mi><mo>&#x00021;</mo></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow><mrow><mn>10</mn></mrow></mfrac><mo>&#x02192;</mo><mo>&#x0002B;</mo><mo>&#x0221E;</mo></mrow></math></div>
+<p>所以级数发散。</p>
+<p><strong>例 4</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi></mrow></mfrac></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><msub><mi>a</mi><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub></mrow><mrow><msub><mi>a</mi><mi>n</mi></msub></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mi>n</mi></mrow><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac><mo>&#x02192;</mo><mn>1</mn></mrow></math></div>
+<p>比值判别法失效。但这个级数实际是发散的，需要用 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi></mrow></math>-级数或积分判别法。</p>
+<hr>
+<h2>6. 根值判别法</h2>
+<p><strong>根值判别法</strong>：设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>a</mi><mi>n</mi></msub><mo>&#x0003E;</mo><mn>0</mn></mrow></math>，且</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>n</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></munder><mroot><mrow><msub><mi>a</mi><mi>n</mi></msub></mrow><mi>n</mi></mroot><mo>&#x0003D;</mo><mi>&#x003C1;</mi></mrow></math></div>
+<p>则：</p>
+<ul>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C1;</mi><mo>&#x0003C;</mo><mn>1</mn></mrow></math>：级数收敛；</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C1;</mi><mo>&#x0003E;</mo><mn>1</mn></mrow></math> 或 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C1;</mi><mo>&#x0003D;</mo><mo>&#x0002B;</mo><mo>&#x0221E;</mo></mrow></math>：级数发散；</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C1;</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math>：判别法失效。</li>
+</ul>
+<p><strong>适用场景</strong>：通项整体是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math> 次方，或者可以写成 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x022EF;</mo><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup></mrow></math>。</p>
+<p><strong>例 1</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><msup><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mrow><mi>n</mi></mrow><mrow><mn>2</mn><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mi>n</mi></msup></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mroot><mrow><msub><mi>a</mi><mi>n</mi></msub></mrow><mi>n</mi></mroot><mo>&#x0003D;</mo><mfrac><mrow><mi>n</mi></mrow><mrow><mn>2</mn><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac><mo>&#x02192;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>&#x0003C;</mo><mn>1</mn></mrow></math></div>
+<p>所以级数收敛。</p>
+<p><strong>例 2</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><msup><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mrow><mi>n</mi></mrow><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow></msup></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mroot><mrow><msub><mi>a</mi><mi>n</mi></msub></mrow><mi>n</mi></mroot><mo>&#x0003D;</mo><msup><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mrow><mi>n</mi></mrow><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mi>n</mi></msup><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mn>1</mn><mo>&#x0002B;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mi>n</mi></msup></mrow></mfrac><mo>&#x02192;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>e</mi></mrow></mfrac><mo>&#x0003C;</mo><mn>1</mn></mrow></math></div>
+<p>所以级数收敛。</p>
+<hr>
+<h2>7. 积分判别法</h2>
+<p><strong>积分判别法</strong>：设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><mn>1</mn><mo>&#x0002C;</mo><mo>&#x0002B;</mo><mo>&#x0221E;</mo><mo stretchy="false">&#x00029;</mo></mrow></math> 上连续、正、单调递减，且</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>a</mi><mi>n</mi></msub><mo>&#x0003D;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><msub><mi>a</mi><mi>n</mi></msub><mspace width="1em" /><mtext>与</mtext><mspace width="1em" /><msubsup><mo>&#x0222B;</mo><mn>1</mn><mrow><mo>&#x0002B;</mo><mo>&#x0221E;</mo></mrow></msubsup><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>d</mi><mi>x</mi></mrow></math></div>
+<p>同敛散。</p>
+<p><strong>几何意义</strong>：级数是离散的矩形面积，积分是连续曲线下的面积，两者只差有限项。</p>
+<p><strong>例 1</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>2</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi><mi>ln</mi><mi>n</mi></mrow></mfrac></mrow></math></div>
+<p>取</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>x</mi><mi>ln</mi><mi>x</mi></mrow></mfrac></mrow></math></div>
+<p>在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">[</mo><mn>2</mn><mo>&#x0002C;</mo><mo>&#x0002B;</mo><mo>&#x0221E;</mo><mo stretchy="false">&#x00029;</mo></mrow></math> 上连续、正、递减。计算积分：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mn>2</mn><mrow><mo>&#x0002B;</mo><mo>&#x0221E;</mo></mrow></msubsup><mfrac><mrow><mi>d</mi><mi>x</mi></mrow><mrow><mi>x</mi><mi>ln</mi><mi>x</mi></mrow></mfrac><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mn>2</mn><mrow><mo>&#x0002B;</mo><mo>&#x0221E;</mo></mrow></msubsup><mfrac><mrow><mi>d</mi><mo stretchy="false">&#x00028;</mo><mi>ln</mi><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow><mrow><mi>ln</mi><mi>x</mi></mrow></mfrac><mo>&#x0003D;</mo><msubsup><mrow><mo stretchy="true" fence="true" form="prefix" /><mi>ln</mi><mo stretchy="false">&#x00028;</mo><mi>ln</mi><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mn>2</mn><mrow><mo>&#x0002B;</mo><mo>&#x0221E;</mo></mrow></msubsup><mo>&#x0003D;</mo><mo>&#x0002B;</mo><mo>&#x0221E;</mo></mrow></math></div>
+<p>积分发散，所以原级数发散。</p>
+<p><strong>例 2</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munderover><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>2</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></munderover><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi><mo stretchy="false">&#x00028;</mo><mi>ln</mi><mi>n</mi><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup></mrow></mfrac></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msubsup><mo>&#x0222B;</mo><mn>2</mn><mrow><mo>&#x0002B;</mo><mo>&#x0221E;</mo></mrow></msubsup><mfrac><mrow><mi>d</mi><mi>x</mi></mrow><mrow><mi>x</mi><mo stretchy="false">&#x00028;</mo><mi>ln</mi><mi>x</mi><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup></mrow></mfrac><mo>&#x0003D;</mo><msubsup><mrow><mo stretchy="true" fence="true" form="prefix" /><mo>&#x02212;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>ln</mi><mi>x</mi></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mn>2</mn><mrow><mo>&#x0002B;</mo><mo>&#x0221E;</mo></mrow></msubsup><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>ln</mi><mn>2</mn></mrow></mfrac></mrow></math></div>
+<p>积分收敛，所以原级数收敛。</p>
+<p><strong>对比</strong>：分母中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>ln</mi><mi>n</mi></mrow></math> 的幂次，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn></mrow></math> 次时发散，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn></mrow></math> 次时收敛。这个结论很像 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi></mrow></math>-级数，但标尺换成了 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>ln</mi><mi>n</mi></mrow></math>。</p>
+<hr>
+<h2>8. 判别法怎么选</h2>
+<p>拿到一个正项级数，按下面的顺序检查：</p>
+<p><strong>第一步：通项检验</strong></p>
+<p>如果 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>a</mi><mi>n</mi></msub></mrow></math> 不趋于 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn></mrow></math>，直接发散，结束。</p>
+<p><strong>第二步：看结构</strong></p>
+<table>
+<thead>
+<tr>
+<th>通项特征</th>
+<th>优先方法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>分母是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math> 的多项式</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi></mrow></math>-级数或比较法</td>
+</tr>
+<tr>
+<td>分子分母都是多项式</td>
+<td>极限比较法（比较最高次）</td>
+</tr>
+<tr>
+<td>含阶乘、指数</td>
+<td>比值判别法</td>
+</tr>
+<tr>
+<td>整体是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math> 次方</td>
+<td>根值判别法</td>
+</tr>
+<tr>
+<td>含 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>ln</mi><mi>n</mi></mrow></math></td>
+<td>积分判别法或比较法</td>
+</tr>
+<tr>
+<td>几何级数</td>
+<td>直接求和</td>
+</tr>
+</tbody>
+</table>
+<p><strong>第三步：多个方法都行时，选计算量最小的。</strong></p>
+<hr>
+<h2>9. 易错点</h2>
+<ol>
+<li><strong>比较法的方向不能反</strong>。要证明收敛，用“小于一个收敛级数”；要证明发散，用“大于一个发散级数”。</li>
+<li><strong>比值/根值判别法在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C1;</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math> 时失效</strong>，不能下结论，必须换方法。</li>
+<li><strong>极限比较法的极限必须是正有限数</strong>，才能断言同敛散；<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn></mrow></math> 和 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x0002B;</mo><mo>&#x0221E;</mo></mrow></math> 要按规则单独处理。</li>
+<li><strong><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi></mrow></math>-级数的 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi></mrow></math> 是分母中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math> 的指数</strong>，不要和分子次数混淆。</li>
+<li><strong>积分判别法要求单调递减</strong>，不能只看连续和正。</li>
+<li><strong>级数前面有限项不影响敛散性</strong>。例如从 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>2</mn></mrow></math> 开始、从 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>100</mn></mrow></math> 开始，结论一样。</li>
+<li><strong>不要把比值判别法用在通项不趋于 0 的级数上</strong>。先做通项检验，能省很多事。</li>
+</ol>
+<hr>
+<h2>10. 练习</h2>
+<ol>
+<li>
+<p>判断 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></msubsup><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>3</mn></mrow></mfrac></mrow></math> 的敛散性。</p>
+</li>
+<li>
+<p>判断 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></msubsup><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac></mrow></math> 的敛散性。</p>
+</li>
+<li>
+<p>判断 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></msubsup><mfrac><mrow><mn>3</mn><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow><mrow><msup><mi>n</mi><mn>3</mn></msup><mo>&#x0002B;</mo><mn>2</mn></mrow></mfrac></mrow></math> 的敛散性。</p>
+</li>
+<li>
+<p>判断 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></msubsup><mfrac><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow><mrow><msup><mn>3</mn><mi>n</mi></msup></mrow></mfrac></mrow></math> 的敛散性。</p>
+</li>
+<li>
+<p>判断 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></msubsup><mfrac><mrow><mi>n</mi><mo>&#x00021;</mo></mrow><mrow><msup><mi>n</mi><mi>n</mi></msup></mrow></mfrac></mrow></math> 的敛散性。</p>
+</li>
+<li>
+<p>判断 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>2</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></msubsup><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi><mi>ln</mi><mi>n</mi></mrow></mfrac></mrow></math> 的敛散性。</p>
+</li>
+<li>
+<p>判断 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></msubsup><msup><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mrow><mi>n</mi></mrow><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow></msup></mrow></math> 的敛散性。</p>
+</li>
+<li>
+<p>判断 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mo>&#x02211;</mo><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mrow><mo>&#x0221E;</mo></mrow></msubsup><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>sin</mi><mn>2</mn></msup><mi>n</mi></mrow></mfrac></mrow></math> 的敛散性。</p>
+</li>
+</ol>
+<hr>
+<h2>11. 答案与简解</h2>
+<details>
+<summary>点击展开（做完再看）</summary>
+<p><strong>1.</strong> 收敛。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>3</mn></mrow></mfrac><mo>&#x0003C;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow></mfrac></mrow></math></div>
+<p>而 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow></mfrac></mrow></math> 收敛。</p>
+<p><strong>2.</strong> 发散。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac><mo>&#x0003E;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>3</mn><mi>n</mi></mrow></mfrac><mspace width="1em" /><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo>&#x02265;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>而 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>3</mn><mi>n</mi></mrow></mfrac></mrow></math> 发散。</p>
+<p><strong>3.</strong> 收敛。</p>
+<p>通项约为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mn>3</mn><mi>n</mi></mrow><mrow><msup><mi>n</mi><mn>3</mn></msup></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>3</mn></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow></mfrac></mrow></math>。取 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>b</mi><mi>n</mi></msub><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow></mfrac></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><munder><mo>lim</mo><mrow><mi>n</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></munder><mfrac><mrow><mfrac><mrow><mn>3</mn><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow><mrow><msup><mi>n</mi><mn>3</mn></msup><mo>&#x0002B;</mo><mn>2</mn></mrow></mfrac></mrow><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow></mfrac></mrow></mfrac><mo>&#x0003D;</mo><munder><mo>lim</mo><mrow><mi>n</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></munder><mfrac><mrow><mn>3</mn><msup><mi>n</mi><mn>3</mn></msup><mo>&#x0002B;</mo><msup><mi>n</mi><mn>2</mn></msup></mrow><mrow><msup><mi>n</mi><mn>3</mn></msup><mo>&#x0002B;</mo><mn>2</mn></mrow></mfrac><mo>&#x0003D;</mo><mn>3</mn></mrow></math></div>
+<p>所以与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow></mfrac></mrow></math> 同敛散，收敛。</p>
+<p><strong>4.</strong> 收敛。用比值判别法：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><msub><mi>a</mi><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub></mrow><mrow><msub><mi>a</mi><mi>n</mi></msub></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup></mrow><mrow><msup><mn>3</mn><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msup></mrow></mfrac><mo>&#x000B7;</mo><mfrac><mrow><msup><mn>3</mn><mi>n</mi></msup></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup></mrow><mrow><mn>3</mn><msup><mi>n</mi><mn>2</mn></msup></mrow></mfrac><mo>&#x02192;</mo><mfrac><mn>1</mn><mn>3</mn></mfrac><mo>&#x0003C;</mo><mn>1</mn></mrow></math></div>
+<p><strong>5.</strong> 收敛。用比值判别法：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><msub><mi>a</mi><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub></mrow><mrow><msub><mi>a</mi><mi>n</mi></msub></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x00021;</mo></mrow><mrow><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msup></mrow></mfrac><mo>&#x000B7;</mo><mfrac><mrow><msup><mi>n</mi><mi>n</mi></msup></mrow><mrow><mi>n</mi><mo>&#x00021;</mo></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><msup><mi>n</mi><mi>n</mi></msup></mrow><mrow><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mi>n</mi></msup></mrow></mfrac><mo>&#x0003D;</mo><msup><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mrow><mi>n</mi></mrow><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mi>n</mi></msup><mo>&#x02192;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>e</mi></mrow></mfrac><mo>&#x0003C;</mo><mn>1</mn></mrow></math></div>
+<p><strong>6.</strong> 发散。见本课积分判别法例 1。</p>
+<p><strong>7.</strong> 收敛。用根值判别法：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mroot><mrow><msub><mi>a</mi><mi>n</mi></msub></mrow><mi>n</mi></mroot><mo>&#x0003D;</mo><msup><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mrow><mi>n</mi></mrow><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mi>n</mi></msup><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mn>1</mn><mo>&#x0002B;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mi>n</mi></msup></mrow></mfrac><mo>&#x02192;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>e</mi></mrow></mfrac><mo>&#x0003C;</mo><mn>1</mn></mrow></math></div>
+<p><strong>8.</strong> 收敛。</p>
+<p>因为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>n</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>sin</mi><mn>2</mn></msup><mi>n</mi><mo>&#x02265;</mo><msup><mi>n</mi><mn>2</mn></msup></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mi>sin</mi><mn>2</mn></msup><mi>n</mi></mrow></mfrac><mo>&#x02264;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow></mfrac></mrow></math></div>
+<p>而 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02211;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow></mfrac></mrow></math> 收敛。</p>
+</details>
+<hr>
+<h2>12. 下节预告</h2>
+<p><strong>第 20 课：交错级数与绝对收敛</strong></p>
+<ul>
+<li>交错级数与莱布尼茨判别法</li>
+<li>绝对收敛与条件收敛</li>
+<li>交错级数的误差估计</li>
+<li>判别流程总结</li>
+</ul>
+<hr>
+<h2>自查清单</h2>
+<ul>
+<li>[ ] 记住 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi></mrow></math>-级数的敛散性</li>
+<li>[ ] 能用比较法判断简单级数</li>
+<li>[ ] 会用极限比较法找参考级数</li>
+<li>[ ] 会在含阶乘、指数时用比值法</li>
+<li>[ ] 会在整体 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math> 次方时用根值法</li>
+<li>[ ] 知道比值/根值法在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C1;</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math> 时失效</li>
+<li>[ ] 会用积分判别法处理含 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>ln</mi><mi>n</mi></mrow></math> 的级数</li>
+</ul>
+<footer>微积分讲义 · 数学公式使用 MathML 渲染，建议使用 Chrome / Edge / Firefox 打开</footer>
+</main>
+</body>
+</html>
