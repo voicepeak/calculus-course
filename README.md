@@ -4,14 +4,19 @@
 
 当前包含第 01–30 课。这个仓库只负责**微积分工具**；无人机/具身智能还需要线性代数、概率统计、最优化、控制与估计等，详见 [ROADMAP.md](ROADMAP.md)。
 
-两种阅读方式：
+三种阅读方式：
 
+- **图解读本（在线）**：[GitHub Pages](https://voicepeak.github.io/calculus-course/)；每个术语配动画与精读笔记。
 - **在线直接看**：点 `md/` 下的 Markdown 文件，GitHub 会渲染数学公式。
 - **本地排版版**：`lessons/` 下的 HTML，公式为 MathML，离线可看。
 
 ## 在线看
 
 从 [第 01 课 极限](md/第01课-极限.md) 开始。
+
+## 图解读本（在线）
+
+[图解读本](https://voicepeak.github.io/calculus-course/) 把微积分与大学物理的 208 个术语做成一页式动画手册：关键小节旁配图，点击图版可放大并查看公式。页面源文件在 [`docs/`](docs/)，由本地 KaTeX 渲染公式。
 
 ## 学习路线（无人机 / 具身智能）
 
