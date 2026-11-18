@@ -1,0 +1,2160 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>数理读本 · 图解版</title>
+<meta name="description" content="高等数学与大学物理的极简读本：定义、公式、例题与证明。">
+<link rel="stylesheet" href="vendor/katex/katex.min.css">
+<link rel="stylesheet" href="css/reader.css">
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="brand" href="#top">
+      <span class="brand-cn">数理读本</span>
+      <span class="brand-en">A READER IN MATHEMATICS &amp; PHYSICS</span>
+    </a>
+    <div class="mast-tools">
+      <label class="search">
+        <span class="visually-hidden">检索</span>
+        <input id="search" type="search" placeholder="检索术语、概念…" autocomplete="off" spellcheck="false">
+      </label>
+      <span class="search-count" id="search-count" aria-live="polite"></span>
+      <a class="index-link" href="#term-index">术语索引</a>
+    </div>
+  </div>
+</header>
+
+<details class="toc-mobile">
+  <summary>目录 · 15 章</summary>
+  <nav id="toc-mobile-nav"></nav>
+</details>
+
+<div class="page" id="top">
+  <aside class="toc" id="toc">
+    <p class="toc-title">目录</p>
+    <nav id="toc-nav"></nav>
+    <p class="toc-note">15 章 · 38 篇笔记<br>208 个术语</p>
+  </aside>
+
+  <main class="book">
+    <section class="preface">
+      <div class="preface-id">
+        <p class="preface-kicker">第一版 · 二〇二六年</p>
+        <h1>数理读本</h1>
+        <p class="preface-sub">高等数学与大学物理<br>精读笔记</p>
+        <p class="preface-meta">15 章 · 38 篇笔记<br>208 个术语 · 208 组动画</p>
+      </div>
+      <div class="preface-body">
+        <p>这不是一部术语词典。每一个概念都要先回到它的定义，再看它的几何或物理图像，最后用一道题或一段证明把它落实。名词只是路标，推理才是道路。</p>
+        <p>全书共十五章，相关术语按主题合为一篇。动画图版穿插在对应小节里：读到哪里，图就跟到哪里；点击图版可以放大，并查看关键公式。正文则给出严格定义、推导与例题。书末附完整术语索引，顶部检索框可以按术语、概念或公式中的字样查找。</p>
+        <p>读法建议：不要跳过定义中的量词与条件。极限的 \(\varepsilon\)-\(N\) 语言、导数的差商、积分与求和的关系、场的局部性质，都是后续所有内容的地基。例题请先自己做一遍，再看解答。</p>
+        <p class="preface-legend">记号：\(\mathbb{R}\) 为实数集，\(\mathbb{N}\) 为正整数集；向量用粗体 \(\mathbf{F}\) 表示；\(\nabla\) 为梯度算子；\(\mathrm{d}\) 表示外微分或全微分。</p>
+      </div>
+    </section>
+
+    <section class="chapter" id="ch-limits" data-num="01" data-title="极限与连续">
+      <header class="chapter-head">
+        <span class="chapter-num">01</span>
+        <div>
+          <h2>极限与连续</h2>
+          <p class="chapter-en">LIMITS AND CONTINUITY</p>
+        </div>
+        <p class="chapter-count">2 篇</p>
+      </header>
+
+      <article class="entry" id="e-limits" data-toc="极限：从无限逼近到 ε-δ" data-terms="数列极限|函数极限|左极限·右极限|无穷小|无穷大|等价无穷小|高阶·同阶无穷小">
+        <p class="entry-meta">§ 1.1</p>
+        <h3 class="entry-title">极限：从无限逼近到 \(\varepsilon\)-\(\delta\)</h3>
+        <p class="entry-en">Limits, made rigorous</p>
+
+        <div class="prose">
+          <p>极限描述的是“越来越接近”这件事。直观上，数列 \(a_n\) 当 \(n\) 无限增大时贴近 \(a\)，函数 \(f(x)\) 当 \(x\) 靠近 \(x_0\) 时贴近 \(A\)。但数学不能停在“贴近”这两个字上，必须把“任意小”“足够大”“足够近”量化。这就是极限定义的全部任务。</p>
+
+          <h4>数列极限</h4>
+          <p>设 \(\{a_n\}\) 为实数列，\(a\in\mathbb{R}\)。若对任意给定的 \(\varepsilon>0\)，都存在正整数 \(N\)，使得当 \(n>N\) 时恒有</p>
+          <div class="formula">\[ |a_n-a|&lt;\varepsilon, \]</div>
+          <p>则称数列收敛于 \(a\)，记作 \(\lim_{n\to\infty}a_n=a\)。这里的关键是量词顺序：\(\varepsilon\) 是“挑战”，\(N\) 是“回应”；\(N\) 可以依赖 \(\varepsilon\)，但必须先接受任意的 \(\varepsilon\)。如果改成“存在 \(\varepsilon>0\) 对任意 \(N\) 都……”，条件就弱到几乎无意义了。</p>
+
+          <p>不收敛的数列称为发散。特别地，若对任意 \(M>0\) 都存在 \(N\)，使得 \(n>N\) 时 \(a_n>M\)，则称 \(a_n\) 趋于正无穷，记为 \(\lim_{n\to\infty}a_n=+\infty\)。注意 \(+\infty\) 不是实数，这个记号描述的是一种发散的趋势。</p>
+
+          <div class="example">
+            <p class="label">例题 1.1</p>
+            <p class="ask">用定义证明 \(\displaystyle\lim_{n\to\infty}\frac{n+1}{2n+3}=\frac12\)。</p>
+            <p class="sol-label">解</p>
+            <p>先作差并化简：</p>
+            \[ \left|\frac{n+1}{2n+3}-\frac12\right|=\left|\frac{2n+2-(2n+3)}{2(2n+3)}\right|=\frac{1}{2(2n+3)}&lt;\frac{1}{4n}. \]
+            <p>任给 \(\varepsilon>0\)，要使上式小于 \(\varepsilon\)，只需 \(n>\dfrac{1}{4\varepsilon}\)。取 \(N=\left\lceil\dfrac{1}{4\varepsilon}\right\rceil\)，则当 \(n>N\) 时，</p>
+            \[ \left|\frac{n+1}{2n+3}-\frac12\right|&lt;\frac{1}{4n}&lt;\varepsilon. \]
+            <p>按定义，极限为 \(\dfrac12\)。</p>
+          </div>
+
+          <h4>函数极限与单侧极限</h4>
+          <p>设 \(f\) 在 \(x_0\) 的某个去心邻域内有定义。若对任意 \(\varepsilon>0\)，存在 \(\delta>0\)，使得当 \(0&lt;|x-x_0|&lt;\delta\) 时，</p>
+          <div class="formula">\[ |f(x)-A|&lt;\varepsilon, \]</div>
+          <p>则称 \(x\to x_0\) 时 \(f(x)\) 的极限为 \(A\)。注意条件 \(0&lt;|x-x_0|\) 把 \(x_0\) 本身排除在外：极限只关心 \(x_0\) 附近的行为，与 \(f(x_0)\) 是否存在、等于几无关。</p>
+
+          <p>把去心邻域换成左半邻域 \(x_0-\delta&lt;x&lt;x_0\) 或右半邻域 \(x_0&lt;x&lt;x_0+\delta\)，就得到左极限 \(f(x_0^-)\) 与右极限 \(f(x_0^+)\)。三者有基本关系：</p>
+          <div class="formula">\[ \lim_{x\to x_0}f(x)=A \quad\Longleftrightarrow\quad f(x_0^-)=f(x_0^+)=A. \]</div>
+          <p>例如 \(f(x)=\dfrac{|x|}{x}\) 在 \(x=0\) 处左极限为 \(-1\)，右极限为 \(1\)，故双侧极限不存在。再如 \(f(x)=\arctan\dfrac1x\) 在 \(0\) 两侧分别趋于 \(-\frac\pi2\) 与 \(\frac\pi2\)，同样说明单侧极限必须分开考察。</p>
+
+          <h4>无穷小、无穷大与阶</h4>
+          <p>若 \(\lim_{x\to x_0}\alpha(x)=0\)，则称 \(\alpha\) 是 \(x\to x_0\) 时的无穷小。无穷小不是“很小的数”，而是一个趋于零的变量；常数 \(0\) 是唯一的无穷小常数。</p>
+          <p>若两个无穷小 \(\alpha,\beta\) 满足 \(\lim\dfrac{\alpha}{\beta}=1\)，则称它们等价，记作 \(\alpha\sim\beta\)；若 \(\lim\dfrac{\alpha}{\beta}=0\)，则称 \(\alpha\) 是比 \(\beta\) 高阶的无穷小，记作 \(\alpha=o(\beta)\)。常用的等价无穷小（\(x\to0\)）有</p>
+          <div class="formula">\[ \sin x\sim x,\qquad \tan x\sim x,\qquad 1-\cos x\sim \frac{x^2}{2},\qquad \ln(1+x)\sim x,\qquad e^x-1\sim x. \]</div>
+          <p>等价无穷小只能用于乘除，不能随意用于加减；这是初学者最常见的事故来源。例如 \(\sin x-x\) 不能写成 \(x-x=0\)，正确结果是 \(\sin x-x\sim-\dfrac{x^3}{6}\)。</p>
+
+          <div class="example">
+            <p class="label">例题 1.2</p>
+            <p class="ask">求 \(\displaystyle\lim_{x\to0}\frac{1-\cos x}{x\sin x}\)。</p>
+            <p class="sol-label">解</p>
+            <p>当 \(x\to0\) 时，\(1-\cos x\sim\dfrac{x^2}{2}\)，\(\sin x\sim x\)，因此分母 \(x\sin x\sim x^2\)。于是</p>
+            \[ \frac{1-\cos x}{x\sin x}\sim\frac{x^2/2}{x^2}=\frac12, \]
+            <p>故极限为 \(\dfrac12\)。也可以直接用倍角公式 \(1-\cos x=2\sin^2\frac x2\) 验证。</p>
+          </div>
+
+          <div class="proof">
+            <p class="label">证明</p>
+            <p>证明 \(\displaystyle\lim_{x\to0}\frac{\sin x}{x}=1\)。在单位圆中，设圆心角为 \(x\in(0,\frac\pi2)\)。比较三角形、扇形与直角三角形面积，得</p>
+            \[ \sin x &lt; x &lt; \tan x. \]
+            <p>三边同除以 \(\sin x>0\)，得到</p>
+            \[ 1&lt;\frac{x}{\sin x}&lt;\frac{1}{\cos x}. \]
+            <p>当 \(x\to0^+\) 时 \(\cos x\to1\)，由夹逼定理，\(\dfrac{x}{\sin x}\to1\)。由于 \(\dfrac{\sin x}{x}\) 是偶函数，左极限也等于 \(1\)，故双侧极限为 \(1\)。\(\square\)</p>
+          </div>
+
+          <div class="remark">
+            <p><span class="label">要点</span>极限的“存在”只涉及局部行为；\(\varepsilon\)-\(N\) 与 \(\varepsilon\)-\(\delta\) 的核心是量词顺序；无穷小的比较是做极限计算的第一工具，但要提防加减法中的等价替换。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" id="e-continuity" data-toc="连续、间断与介值定理" data-terms="连续|间断点|介值定理|零点定理">
+        <p class="entry-meta">§ 1.2</p>
+        <h3 class="entry-title">连续、间断与介值定理</h3>
+        <p class="entry-en">Continuity, discontinuities, and the intermediate value theorem</p>
+
+        <div class="prose">
+          <p>极限只描述“趋近”时的行为，连续则进一步要求这个极限恰好等于函数值本身。因此连续是把局部极限信息“钉”在一点上的概念。</p>
+
+          <h4>连续的定义</h4>
+          <p>设函数 \(f\) 在 \(x_0\) 的某邻域内有定义。若</p>
+          <div class="formula">\[ \lim_{x\to x_0}f(x)=f(x_0), \]</div>
+          <p>则称 \(f\) 在 \(x_0\) 处连续。把它拆开，等价于三件事同时成立：\(f(x_0)\) 有定义；\(\lim_{x\to x_0}f(x)\) 存在；两者相等。用 \(\varepsilon\)-\(\delta\) 语言写，就是：对任意 \(\varepsilon>0\)，存在 \(\delta>0\)，当 \(|x-x_0|&lt;\delta\) 时，\(|f(x)-f(x_0)|&lt;\varepsilon\)。注意这里不再排除 \(x=x_0\)。</p>
+          <p>若 \(f\) 在区间 \(I\) 上每一点都连续，则称 \(f\) 在 \(I\) 上连续。多项式、指数函数、对数函数、三角函数在其定义区间上都连续；连续函数的和、差、积、商（分母不为零）以及复合仍连续。这些结论构成了后续求极限时可以直接代入的基础。</p>
+
+          <h4>间断点的分类</h4>
+          <p>若 \(f\) 在 \(x_0\) 处不连续，则称 \(x_0\) 为间断点。按左右极限的情况分为两类：</p>
+          <ul>
+            <li><strong>第一类间断点</strong>：左右极限都存在。若二者相等但不等于 \(f(x_0)\)（或 \(f(x_0)\) 未定义），称为<strong>可去间断点</strong>；若二者不等，称为<strong>跳跃间断点</strong>。</li>
+            <li><strong>第二类间断点</strong>：左右极限至少有一个不存在。例如 \(f(x)=1/x\) 在 \(0\) 处的无穷间断，\(f(x)=\sin(1/x)\) 在 \(0\) 处的振荡间断。</li>
+          </ul>
+          <p>例如 \(f(x)=\dfrac{x^2-1}{x-1}\) 在 \(x=1\) 处无定义，但 \(\lim_{x\to1}f(x)=2\)，故 \(x=1\) 是可去间断点；补充定义 \(f(1)=2\) 后便连续。\(f(x)=\dfrac{|x|}{x}\) 在 \(0\) 处左右极限为 \(-1\) 与 \(1\)，是跳跃间断点。</p>
+
+          <h4>介值定理与零点定理</h4>
+          <p>闭区间上的连续函数有一个非常强的性质：它不能“跳过”任何中间值。</p>
+          <p><strong>介值定理.</strong> 设 \(f\) 在 \([a,b]\) 上连续，\(k\) 是介于 \(f(a)\) 与 \(f(b)\) 之间的任意实数，则存在 \(c\in[a,b]\)，使得 \(f(c)=k\)。特别地，若 \(f(a)f(b)&lt;0\)，则存在 \(c\in(a,b)\) 使 \(f(c)=0\)，这就是<strong>零点定理</strong>。</p>
+
+          <div class="proof">
+            <p class="label">证明（介值定理）</p>
+            <p>不妨设 \(f(a)&lt;k&lt;f(b)\)。令</p>
+            \[ S=\{x\in[a,b]: f(x)\le k\}. \]
+            <p>因为 \(a\in S\)，所以 \(S\) 非空且有上界 \(b\)。由实数完备性，\(c=\sup S\) 存在且 \(c\in[a,b]\)。下面证明 \(f(c)=k\)。</p>
+            <p>若 \(f(c)&lt;k\)，由连续性，存在 \(c\) 右侧的小邻域使其中所有 \(x\) 仍满足 \(f(x)&lt;k\)，这与 \(c\) 是上界矛盾。若 \(f(c)>k\)，由连续性，存在 \(c\) 左侧的小邻域使其中所有 \(x\) 满足 \(f(x)>k\)，于是这些 \(x\) 都不属于 \(S\)，这与 \(c\) 是 \(S\) 的上确界（任意接近 \(c\) 都有 \(S\) 中的点）矛盾。故只能 \(f(c)=k\)。\(\square\)</p>
+          </div>
+
+          <div class="example">
+            <p class="label">例题 1.3</p>
+            <p class="ask">证明方程 \(x^3-x-1=0\) 在区间 \((1,2)\) 内有且仅有一个实根。</p>
+            <p class="sol-label">解</p>
+            <p>令 \(f(x)=x^3-x-1\)。\(f\) 在 \([1,2]\) 上连续，且</p>
+            \[ f(1)=1-1-1=-1&lt;0,\qquad f(2)=8-2-1=5>0. \]
+            <p>由零点定理，存在 \(c\in(1,2)\) 使 \(f(c)=0\)。又 \(f'(x)=3x^2-1\)，当 \(x\in(1,2)\) 时 \(f'(x)>0\)，故 \(f\) 在 \([1,2]\) 上严格单调递增，零点至多一个。因此根唯一。</p>
+            <p>若用二分法继续逼近：\(f(1.5)=0.875>0\)，根在 \((1,1.5)\)；\(f(1.25)=-0.297&lt;0\)，根在 \((1.25,1.5)\)。区间长度每次减半，依次迭代即可得到任意精度的近似值。</p>
+          </div>
+
+          <div class="remark">
+            <p><span class="label">要点</span>连续性的本质是“极限值等于函数值”；间断点按左右极限分类；介值定理依赖闭区间上连续与实数完备性，而不是函数的单调性。单调性用于保证唯一性，连续性用于保证存在性。</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="chapter" id="ch-derivative" data-num="02" data-title="导数与微分">
+      <header class="chapter-head">
+        <span class="chapter-num">02</span>
+        <div>
+          <h2>导数与微分</h2>
+          <p class="chapter-en">DERIVATIVES AND DIFFERENTIALS</p>
+        </div>
+        <p class="chapter-count">3 篇</p>
+      </header>
+
+      <article class="entry" id="e-derivative" data-toc="导数与微分：切线、速度与线性化" data-terms="导数|可导|微分|高阶导数|隐函数求导|参数方程求导|弧微分">
+        <p class="entry-meta">§ 2.1</p>
+        <h3 class="entry-title">导数与微分：切线、速度与线性化</h3>
+        <p class="entry-en">Derivative, differential, and local linearization</p>
+
+        <div class="prose">
+          <p>导数回答的是“瞬时变化率”问题：位置对时间的导数给出速度，曲线在一点的导数给出切线斜率，函数在一点的导数给出最好的线性近似。微分则是把这种线性近似写成可以计算的对象。</p>
+
+          <h4>导数与可导</h4>
+          <p>设 \(f\) 在 \(x_0\) 的某邻域内有定义。若极限</p>
+          <div class="formula">\[ f'(x_0)=\lim_{h\to0}\frac{f(x_0+h)-f(x_0)}{h} \]</div>
+          <p>存在，则称 \(f\) 在 \(x_0\) 处可导，该极限称为导数。若只让 \(h\to0^-\) 或 \(h\to0^+\)，得到左导数 \(f'_-(x_0)\) 与右导数 \(f'_+(x_0)\)；可导当且仅当左右导数都存在且相等。</p>
+          <p>几何上，差商是过 \((x_0,f(x_0))\) 与 \((x_0+h,f(x_0+h))\) 的割线斜率，取极限后成为切线斜率。物理上，若 \(s(t)\) 是位置，则 \(s'(t)\) 是瞬时速度，\(s''(t)\) 是加速度。导数在一点存在，说明曲线在该点附近可以用一条直线很好地逼近。</p>
+
+          <div class="proof">
+            <p class="label">证明</p>
+            <p>可导必连续。设 \(f\) 在 \(x_0\) 可导，则</p>
+            \[ f(x_0+h)-f(x_0)=\frac{f(x_0+h)-f(x_0)}{h}\cdot h \longrightarrow f'(x_0)\cdot0=0. \]
+            <p>于是 \(\lim_{h\to0}f(x_0+h)=f(x_0)\)，即 \(f\) 在 \(x_0\) 连续。\(\square\)</p>
+            <p>逆命题不成立。\(f(x)=|x|\) 在 \(0\) 处连续，但左导数为 \(-1\)、右导数为 \(1\)，故不可导。几何上，尖点处没有唯一的切线。</p>
+          </div>
+
+          <h4>微分与线性近似</h4>
+          <p>若函数增量可以写成</p>
+          <div class="formula">\[ \Delta y=f(x_0+\Delta x)-f(x_0)=A\,\Delta x+o(\Delta x)\qquad(\Delta x\to0), \]</div>
+          <p>其中 \(A\) 与 \(\Delta x\) 无关，则称 \(f\) 在 \(x_0\) 可微，线性主部 \(A\Delta x\) 称为微分，记作 \(\mathrm{d}y\)。可以证明：可微与可导等价，且 \(A=f'(x_0)\)，因此</p>
+          <div class="formula">\[ \mathrm{d}y=f'(x_0)\,\mathrm{d}x. \]</div>
+          <p>微分的意义是用切线代替曲线：\(f(x_0+\Delta x)\approx f(x_0)+f'(x_0)\Delta x\)。例如，\(\sqrt{1.02}\approx\sqrt1+\dfrac{1}{2\sqrt1}\cdot0.02=1.01\)。误差是比 \(\Delta x\) 更高阶的无穷小。</p>
+
+          <h4>高阶导数与求导法则</h4>
+          <p>对导数再求导，得到二阶导数 \(f''\)，依此类推。高阶导数常用于描述加速度、曲率与泰勒展开。常用的求导法则包括乘积法则 \((uv)'=u'v+uv'\)、商法则以及链式法则</p>
+          <div class="formula">\[ \frac{\mathrm d}{\mathrm dx}f(g(x))=f'(g(x))\,g'(x). \]</div>
+          <p>链式法则是所有复合函数求导的核心，也是隐函数求导、参数方程求导与多元链式法则的原型。</p>
+
+          <h4>隐函数与参数方程求导</h4>
+          <p>若 \(y\) 由方程 \(F(x,y)=0\) 隐式确定，两边对 \(x\) 求导并把 \(y\) 看作 \(x\) 的函数，可得</p>
+          <div class="formula">\[ \frac{\mathrm dy}{\mathrm dx}=-\frac{F_x}{F_y},\qquad F_y\ne0. \]</div>
+          <p>例如 \(x^2+y^2=1\) 两边求导得 \(2x+2yy'=0\)，故 \(y'=-x/y\)。在 \(y=0\) 处该公式失效，因为曲线在那里有竖直切线，不能局部写成 \(y=f(x)\)。</p>
+          <p>若曲线由参数方程 \(x=x(t),\,y=y(t)\) 给出，且 \(x'(t)\ne0\)，则</p>
+          <div class="formula">\[ \frac{\mathrm dy}{\mathrm dx}=\frac{y'(t)}{x'(t)}. \]</div>
+          <p>例如摆线 \(x=a(t-\sin t),\,y=a(1-\cos t)\)，有</p>
+          \[ \frac{\mathrm dy}{\mathrm dx}=\frac{a\sin t}{a(1-\cos t)}=\cot\frac t2. \]
+
+          <h4>弧微分</h4>
+          <p>曲线上一小段的长度可以用直角三角形近似：水平增量 \(\mathrm dx\)，竖直增量 \(\mathrm dy\)，于是弧微分</p>
+          <div class="formula">\[ \mathrm ds=\sqrt{\mathrm dx^2+\mathrm dy^2}. \]</div>
+          <p>若曲线为 \(y=f(x)\)，则 \(\mathrm ds=\sqrt{1+f'(x)^2}\,\mathrm dx\)，弧长为 \(s=\int_a^b\sqrt{1+f'(x)^2}\,\mathrm dx\)。对参数曲线则为 \(s=\int_{t_1}^{t_2}\sqrt{x'(t)^2+y'(t)^2}\,\mathrm dt\)。</p>
+
+          <div class="example">
+            <p class="label">例题 2.1</p>
+            <p class="ask">求摆线 \(x=a(t-\sin t),\,y=a(1-\cos t)\) 在一拱 \(t\in[0,2\pi]\) 上的弧长，其中 \(a>0\)。</p>
+            <p class="sol-label">解</p>
+            <p>先算导数：\(x'=a(1-\cos t)\)，\(y'=a\sin t\)。于是</p>
+            \[ \mathrm ds=a\sqrt{(1-\cos t)^2+\sin^2t}\,\mathrm dt
+              =a\sqrt{2-2\cos t}\,\mathrm dt
+              =2a\sin\frac t2\,\mathrm dt. \]
+            <p>在 \(t\in[0,2\pi]\) 上 \(\sin\frac t2\ge0\)，所以</p>
+            \[ s=\int_0^{2\pi}2a\sin\frac t2\,\mathrm dt
+              =\left[-4a\cos\frac t2\right]_0^{2\pi}=8a. \]
+            <p>摆线一拱的长度与参数 \(a\) 成正比，比例正好是 \(8\)。</p>
+          </div>
+
+          <div class="remark">
+            <p><span class="label">要点</span>导数给出瞬时变化率与切线斜率；可导蕴含连续，反之不然；微分是用切线做局部线性近似；隐函数与参数方程求导都是链式法则的具体形式。弧微分是弧长、曲率与曲线积分的共同起点。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" id="e-mvt-taylor" data-toc="中值定理与泰勒公式" data-terms="罗尔定理|拉格朗日中值定理|柯西中值定理|泰勒公式|麦克劳林公式|洛必达法则">
+        <p class="entry-meta">§ 2.2</p>
+        <h3 class="entry-title">中值定理与泰勒公式：局部与整体的桥梁</h3>
+        <p class="entry-en">Mean value theorems and Taylor expansion</p>
+
+        <div class="prose">
+          <p>中值定理把“区间上的平均变化”与“某一点的瞬时导数”联系起来，是导数应用的理论核心。泰勒公式则是中值定理的高阶版本，用一点处的各阶导数重建整段函数。</p>
+
+          <h4>罗尔定理</h4>
+          <p><strong>罗尔定理.</strong> 设 \(f\) 在 \([a,b]\) 上连续，在 \((a,b)\) 内可导，且 \(f(a)=f(b)\)，则存在 \(c\in(a,b)\)，使得 \(f'(c)=0\)。</p>
+          <p>证明要用到费马引理：若 \(f\) 在内部点 \(c\) 取得极值且可导，则 \(f'(c)=0\)。因为 \(f\) 在闭区间上连续，必有最大值与最小值。若最大值为 \(f(a)\)、最小值也是 \(f(a)\)，则 \(f\) 为常数，任意 \(c\) 处导数为零；否则至少有一个极值点落在内部，由费马引理得证。</p>
+
+          <h4>拉格朗日中值定理</h4>
+          <p><strong>拉格朗日中值定理.</strong> 设 \(f\) 在 \([a,b]\) 上连续，在 \((a,b)\) 内可导，则存在 \(c\in(a,b)\)，使得</p>
+          <div class="formula">\[ f'(c)=\frac{f(b)-f(a)}{b-a}. \]</div>
+
+          <div class="proof">
+            <p class="label">证明</p>
+            <p>构造辅助函数</p>
+            \[ F(x)=f(x)-f(a)-\frac{f(b)-f(a)}{b-a}(x-a). \]
+            <p>则 \(F(a)=F(b)=0\)，且 \(F\) 满足罗尔定理条件。于是存在 \(c\in(a,b)\) 使 \(F'(c)=0\)，即</p>
+            \[ f'(c)=\frac{f(b)-f(a)}{b-a}. \]
+            <p>\(\square\)</p>
+          </div>
+
+          <p>推论：若在区间上 \(f'(x)\equiv0\)，则 \(f\) 为常数；若 \(f'\ge0\)，则 \(f\) 单调不减。另有一个常用估计：对任意 \(x,y\)，存在介于二者之间的 \(\xi\)，使</p>
+          \[ f(x)-f(y)=f'(\xi)(x-y), \]
+          <p>于是 \(|f(x)-f(y)|\le M|x-y|\)，其中 \(M=\sup|f'|\)。例如对 \(f=\sin x\)，由 \(|f'|\le1\) 得 \(|\sin x-\sin y|\le|x-y|\)。</p>
+
+          <h4>柯西中值定理与洛必达法则</h4>
+          <p><strong>柯西中值定理.</strong> 设 \(f,g\) 在 \([a,b]\) 上连续，在 \((a,b)\) 内可导，且 \(g'(x)\ne0\)，则存在 \(c\in(a,b)\)，使</p>
+          <div class="formula">\[ \frac{f(b)-f(a)}{g(b)-g(a)}=\frac{f'(c)}{g'(c)}. \]</div>
+          <p>它是拉格朗日定理的推广（取 \(g(x)=x\) 即可）。把柯西中值定理用于 \(a=x_0\)、\(b=x\) 的极限过程，就得到洛必达法则：当 \(\lim f=\lim g=0\) 或二者同时趋于无穷，且 \(\lim f'/g'\) 存在时，</p>
+          \[ \lim_{x\to x_0}\frac{f(x)}{g(x)}=\lim_{x\to x_0}\frac{f'(x)}{g'(x)}. \]
+          <p>例如</p>
+          \[ \lim_{x\to0}\frac{e^x-1-x}{x^2}
+             =\lim_{x\to0}\frac{e^x-1}{2x}
+             =\lim_{x\to0}\frac{e^x}{2}=\frac12. \]
+          <p>使用前必须确认是未定式，并且导数之比的极限存在；否则法则失效。</p>
+
+          <h4>泰勒公式</h4>
+          <p>若 \(f\) 在 \(x_0\) 处有 \(n\) 阶导数，则在 \(x_0\) 附近</p>
+          <div class="formula">\[ f(x)=\sum_{k=0}^{n}\frac{f^{(k)}(x_0)}{k!}(x-x_0)^k+o\bigl((x-x_0)^n\bigr). \]</div>
+          <p>这就是带皮亚诺余项的泰勒公式。若进一步假设 \(f\) 在区间上有 \(n+1\) 阶导数，则余项可以写成拉格朗日形式</p>
+          \[ R_n(x)=\frac{f^{(n+1)}(\xi)}{(n+1)!}(x-x_0)^{n+1}, \]
+          <p>其中 \(\xi\) 介于 \(x_0\) 与 \(x\) 之间。取 \(x_0=0\) 时称为麦克劳林公式。</p>
+
+          <div class="example">
+            <p class="label">例题 2.2</p>
+            <p class="ask">利用泰勒展开计算 \(\displaystyle\lim_{x\to0}\frac{\cos x-1+\frac{x^2}{2}}{x^4}\)。</p>
+            <p class="sol-label">解</p>
+            <p>由麦克劳林公式</p>
+            \[ \cos x=1-\frac{x^2}{2}+\frac{x^4}{24}+o(x^4), \]
+            <p>代入得</p>
+            \[ \cos x-1+\frac{x^2}{2}=\frac{x^4}{24}+o(x^4). \]
+            <p>因此极限为 \(\dfrac1{24}\)。若用洛必达法则需要连续求导四次，泰勒展开更直接。</p>
+          </div>
+
+          <div class="remark">
+            <p><span class="label">要点</span>罗尔是基础，拉格朗日由罗尔加辅助函数推出，泰勒是拉格朗日的高阶推广；洛必达法则是柯西中值定理的极限形式。做题时先判断定理条件，再用结论，不要只背公式。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" id="e-shape-curvature" data-toc="函数性态与曲率" data-terms="极值·驻点|凹凸性·拐点|渐近线|曲率·曲率半径">
+        <p class="entry-meta">§ 2.3</p>
+        <h3 class="entry-title">函数性态与曲率：从单调性到弯曲程度</h3>
+        <p class="entry-en">Shape of graphs and curvature</p>
+
+        <div class="prose">
+          <p>导数与二阶导数能把一个函数的图像拆解清楚：哪里上升、哪里下降、哪里取极值、哪里改变弯曲方向。曲率进一步量化“弯得有多急”，它决定了曲线与直线、圆的关系。</p>
+
+          <h4>极值、驻点与单调性</h4>
+          <p>若存在 \(x_0\) 的邻域，使得邻域内所有 \(x\) 都满足 \(f(x)\le f(x_0)\)（或 \(f(x)\ge f(x_0)\)），则称 \(x_0\) 是极大值点（或极小值点）。费马引理指出：若 \(f\) 在 \(x_0\) 可导且取极值，则 \(f'(x_0)=0\)。导数为零的点称为驻点，但驻点不一定是极值点，例如 \(f(x)=x^3\) 在 \(0\) 处。</p>
+          <p>第一导数判别法：若 \(f'\) 在 \(x_0\) 左侧为正、右侧为负，则 \(x_0\) 取极大值；左负右正则取极小值。第二导数判别法：若 \(f'(x_0)=0\) 且 \(f''(x_0)&lt;0\)，则取极大值；若 \(f''(x_0)>0\)，则取极小值。</p>
+
+          <h4>凹凸性与拐点</h4>
+          <p>若在区间上 \(f''(x)>0\)，函数图像向上弯（凸向上），切线斜率递增；若 \(f''(x)&lt;0\)，图像向下弯。凹凸性改变的点称为拐点。判断拐点要看 \(f''\) 是否变号，而不是仅仅看 \(f''=0\)。例如 \(f(x)=x^4\) 在 \(0\) 处 \(f''(0)=0\)，但二阶导数恒非负，图像始终向上弯，所以 \(0\) 不是拐点。</p>
+
+          <h4>渐近线</h4>
+          <p>若 \(\lim_{x\to\infty}f(x)=L\)，则 \(y=L\) 是水平渐近线；若 \(\lim_{x\to x_0}f(x)=\infty\)，则 \(x=x_0\) 是竖直渐近线；若</p>
+          \[ a=\lim_{x\to\infty}\frac{f(x)}{x},\qquad b=\lim_{x\to\infty}\bigl(f(x)-ax\bigr) \]
+          <p>都存在且 \(a\ne0\)，则 \(y=ax+b\) 是斜渐近线。例如 \(f(x)=\dfrac{x^2+1}{x}\) 有竖直渐近线 \(x=0\)，且 \(f(x)=x+\dfrac1x\)，故 \(y=x\) 是斜渐近线。</p>
+
+          <div class="example">
+            <p class="label">例题 2.3</p>
+            <p class="ask">分析 \(f(x)=x^3-3x\) 的单调性、极值、凹凸性与拐点，并求其曲率在 \(x=1\) 处的值。</p>
+            <p class="sol-label">解</p>
+            <p>导数 \(f'(x)=3x^2-3=3(x-1)(x+1)\)，驻点为 \(x=\pm1\)。当 \(x&lt;-1\) 时 \(f'>0\)，当 \(-1&lt;x&lt;1\) 时 \(f'&lt;0\)，当 \(x>1\) 时 \(f'>0\)。因此 \(x=-1\) 取极大值 \(f(-1)=2\)，\(x=1\) 取极小值 \(f(1)=-2\)。</p>
+            <p>二阶导数 \(f''(x)=6x\)，当 \(x&lt;0\) 时 \(f''&lt;0\)，当 \(x>0\) 时 \(f''>0\)，所以 \(x=0\) 是拐点，坐标为 \((0,0)\)。</p>
+            <p>曲率公式为 \(\kappa=\dfrac{|f''|}{(1+f'^2)^{3/2}}\)。在 \(x=1\) 处 \(f'(1)=0\)，\(f''(1)=6\)，故 \(\kappa=6\)，曲率半径 \(R=1/\kappa=1/6\)。在极小值点处曲线弯得最急。</p>
+          </div>
+
+          <h4>曲率与曲率半径</h4>
+          <p>设曲线由 \(y=f(x)\) 给出。切线与 \(x\) 轴的夹角记为 \(\theta\)，则 \(\tan\theta=f'(x)\)。曲率定义为切线转角对弧长的变化率</p>
+          <div class="formula">\[ \kappa=\left|\frac{\mathrm d\theta}{\mathrm ds}\right|. \]</div>
+          <p>由 \(\mathrm ds=\sqrt{1+f'^2}\,\mathrm dx\)，且</p>
+          \[ \frac{\mathrm d\theta}{\mathrm dx}=\frac{f''}{1+f'^2}, \]
+          <p>得到</p>
+          <div class="formula">\[ \kappa=\frac{|f''|}{\bigl(1+f'^2\bigr)^{3/2}},\qquad R=\frac1\kappa. \]</div>
+          <p>曲率半径 \(R\) 的几何意义是：在曲线该点处，有一个与曲线贴合得最好的圆，称为密切圆，其半径为 \(R\)。直线 \(\kappa=0\)，半径为 \(r\) 的圆处处曲率为 \(1/r\)。</p>
+
+          <div class="example">
+            <p class="label">例题 2.4</p>
+            <p class="ask">求曲线 \(y=e^x\) 在 \(x=0\) 处的曲率与曲率半径。</p>
+            <p class="sol-label">解</p>
+            <p>在 \(x=0\) 处，\(y'=e^0=1\)，\(y''=e^0=1\)。代入公式得</p>
+            \[ \kappa=\frac{1}{(1+1^2)^{3/2}}=\frac{1}{2\sqrt2},\qquad R=2\sqrt2. \]
+            <p>曲线在原点附近向上弯，密切圆半径约为 \(2.828\)。</p>
+          </div>
+
+          <div class="remark">
+            <p><span class="label">要点</span>极值看 \(f'\) 的变号，拐点看 \(f''\) 的变号；曲率衡量切线方向的转动速度，是弧长意义下的弯曲程度。曲率公式在物理中对应法向加速度 \(a_n=v^2\kappa\)。</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="chapter" id="ch-integral" data-num="03" data-title="积分">
+      <header class="chapter-head">
+        <span class="chapter-num">03</span>
+        <div>
+          <h2>积分</h2>
+          <p class="chapter-en">INTEGRALS</p>
+        </div>
+        <p class="chapter-count">2 篇</p>
+      </header>
+
+      <article class="entry" id="e-ftc" data-toc="定积分与微积分基本定理" data-terms="定积分|原函数|不定积分|变上限积分">
+        <p class="entry-meta">§ 3.1</p>
+        <h3 class="entry-title">定积分与微积分基本定理</h3>
+        <p class="entry-en">The definite integral and the fundamental theorem of calculus</p>
+
+        <div class="prose">
+          <p>积分最初来自面积问题：把曲边梯形切成无数细条，再把这些细条的面积加起来。这个“分割、近似、求和、取极限”的过程被黎曼和精确化，得到定积分的定义。</p>
+
+          <h4>定积分的定义</h4>
+          <p>设 \(f\) 在 \([a,b]\) 上有界。把区间分成 \(n\) 段 \(a=x_0&lt;x_1&lt;\cdots&lt;x_n=b\)，在第 \(i\) 段内任取 \(\xi_i\in[x_{i-1},x_i]\)，作黎曼和</p>
+          \[ \sum_{i=1}^n f(\xi_i)\Delta x_i,\qquad \Delta x_i=x_i-x_{i-1}. \]
+          <p>若当最大段长 \(\max\Delta x_i\to0\) 时，黎曼和趋于一个与分割、取点都无关的实数 \(I\)，则称 \(f\) 在 \([a,b]\) 上可积，\(I\) 为定积分，记作</p>
+          <div class="formula">\[ I=\int_a^b f(x)\,\mathrm dx. \]</div>
+          <p>闭区间上的连续函数一定可积；有界且只有有限个第一类间断点的函数也可积。定积分是一个数，与积分变量 \(x\) 的记号无关。</p>
+
+          <div class="example">
+            <p class="label">例题 3.1</p>
+            <p class="ask">用定义计算 \(\displaystyle\int_0^1 x^2\,\mathrm dx\)。</p>
+            <p class="sol-label">解</p>
+            <p>把 \([0,1]\) 等分为 \(n\) 份，取右端点 \(\xi_i=i/n\)。则</p>
+            \[ \sum_{i=1}^n\left(\frac in\right)^2\cdot\frac1n
+               =\frac1{n^3}\sum_{i=1}^n i^2
+               =\frac1{n^3}\cdot\frac{n(n+1)(2n+1)}6. \]
+            <p>令 \(n\to\infty\)，上式趋于 \(\dfrac{2}{6}=\dfrac13\)，故 \(\int_0^1x^2\,\mathrm dx=\dfrac13\)。</p>
+          </div>
+
+          <h4>原函数与不定积分</h4>
+          <p>若 \(F'(x)=f(x)\)，则称 \(F\) 是 \(f\) 的一个原函数。若 \(F\) 是原函数，则 \(F+C\) 也是原函数；反过来，任意两个原函数之差为常数。因此 \(f\) 的全体原函数可以写成 \(F(x)+C\)，称为不定积分，记作</p>
+          \[ \int f(x)\,\mathrm dx=F(x)+C. \]
+          <p>原函数的存在性由微积分基本定理保证：连续函数必有原函数。</p>
+
+          <h4>变上限积分与基本定理</h4>
+          <p>设 \(f\) 在 \([a,b]\) 上连续，定义变上限积分</p>
+          \[ \Phi(x)=\int_a^x f(t)\,\mathrm dt,\qquad x\in[a,b]. \]
+          <p><strong>基本定理.</strong> \(\Phi\) 在 \([a,b]\) 上可导，且 \(\Phi'(x)=f(x)\)。因此 \(\Phi\) 是 \(f\) 的一个原函数，并且对任意原函数 \(F\)，</p>
+          <div class="formula">\[ \int_a^b f(x)\,\mathrm dx=F(b)-F(a). \]</div>
+          <p>这就是牛顿—莱布尼茨公式，它把求积分转化为求原函数，是微积分中最核心的公式。</p>
+
+          <div class="proof">
+            <p class="label">证明</p>
+            <p>考察增量</p>
+            \[ \Phi(x+h)-\Phi(x)=\int_x^{x+h}f(t)\,\mathrm dt. \]
+            <p>由积分中值定理，存在 \(\xi\) 介于 \(x\) 与 \(x+h\) 之间，使得该积分等于 \(f(\xi)h\)。于是</p>
+            \[ \frac{\Phi(x+h)-\Phi(x)}h=f(\xi). \]
+            <p>当 \(h\to0\) 时 \(\xi\to x\)，由 \(f\) 的连续性，右端趋于 \(f(x)\)。故 \(\Phi'(x)=f(x)\)。\(\square\)</p>
+          </div>
+
+          <p>基本定理还给出一个常用技巧：变上限积分可以对上限求导，例如</p>
+          \[ \frac{\mathrm d}{\mathrm dx}\int_0^{x^2}\sin t\,\mathrm dt=2x\sin(x^2), \]
+          <p>这里同时用了链式法则。若上限为 \(u(x)\)、下限为 \(v(x)\)，则</p>
+          \[ \frac{\mathrm d}{\mathrm dx}\int_{v(x)}^{u(x)}f(t)\,\mathrm dt=f(u(x))u'(x)-f(v(x))v'(x). \]
+
+          <div class="remark">
+            <p><span class="label">要点</span>定积分是黎曼和的极限；原函数是导数的逆运算；变上限积分把积分变成函数，其导数就是被积函数。牛顿—莱布尼茨公式是计算定积分的总开关。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" id="e-integral-techniques" data-toc="积分技巧、反常积分与旋转体" data-terms="换元积分法|分部积分法|反常积分|旋转体体积">
+        <p class="entry-meta">§ 3.2</p>
+        <h3 class="entry-title">积分技巧、反常积分与旋转体</h3>
+        <p class="entry-en">Techniques of integration, improper integrals, and solids of revolution</p>
+
+        <div class="prose">
+          <p>基本定理解决了“怎么算”，但真正面对一个积分时，还需要把它化成已知形式。换元与分部是两种最基本的变形；反常积分把积分区间或函数值推广到无界情形；旋转体体积则是定积分最直观的几何应用之一。</p>
+
+          <h4>换元积分法</h4>
+          <p>若 \(u=g(x)\) 可导，且 \(f\) 连续，则</p>
+          <div class="formula">\[ \int f(g(x))g'(x)\,\mathrm dx=\int f(u)\,\mathrm du. \]</div>
+          <p>定积分换元时还要同时换上下限：</p>
+          \[ \int_a^b f(g(x))g'(x)\,\mathrm dx=\int_{g(a)}^{g(b)}f(u)\,\mathrm du. \]
+          <p>例如 \(\int 2x e^{x^2}\,\mathrm dx=\int e^u\,\mathrm du=e^u+C=e^{x^2}+C\)。换元的关键是识别“内层函数及其导数”这一对结构。</p>
+
+          <h4>分部积分法</h4>
+          <p>由乘积求导法则 \((uv)'=u'v+uv'\) 两边积分，得到</p>
+          <div class="formula">\[ \int u\,\mathrm dv=uv-\int v\,\mathrm du. \]</div>
+          <p>它适用于被积函数是“两类函数相乘”的情形，例如多项式乘指数、对数或三角函数。例：</p>
+          \[ \int x e^x\,\mathrm dx=xe^x-\int e^x\,\mathrm dx=e^x(x-1)+C. \]
+          <p>再如 \(\int\ln x\,\mathrm dx=x\ln x-x+C\)，取 \(u=\ln x\)、\(\mathrm dv=\mathrm dx\) 即可。</p>
+
+          <h4>反常积分</h4>
+          <p>若积分区间无界，或被积函数在端点附近无界，则用极限定义积分。例如</p>
+          \[ \int_1^\infty\frac{\mathrm dx}{x^p}=\lim_{b\to\infty}\int_1^b\frac{\mathrm dx}{x^p}. \]
+          <p>当 \(p\ne1\) 时，右端为 \(\dfrac{1-b^{1-p}}{p-1}\)。当 \(p>1\) 时 \(b^{1-p}\to0\)，积分收敛于 \(\dfrac1{p-1}\)；当 \(p&lt;1\) 时发散；当 \(p=1\) 时积分为 \(\ln b\to\infty\)，也发散。这就是常用的 \(p\)-积分判别。</p>
+          <p>又如 \(\int_0^\infty e^{-x}\,\mathrm dx=\lim_{b\to\infty}(1-e^{-b})=1\)。收敛的反常积分是一个有限数，不能与“积分区域无限”混为一谈。</p>
+
+          <h4>旋转体体积</h4>
+          <p>把曲线 \(y=f(x)\ge0\) 与 \(x\) 轴之间的区域绕 \(x\) 轴旋转，截面是半径 \(f(x)\) 的圆盘，故体积为</p>
+          <div class="formula">\[ V=\int_a^b\pi f(x)^2\,\mathrm dx. \]</div>
+
+          <div class="example">
+            <p class="label">例题 3.2</p>
+            <p class="ask">求曲线 \(y=\sqrt x\) 在 \(0\le x\le4\) 上与 \(x\) 轴围成的区域绕 \(x\) 轴旋转所得旋转体的体积。</p>
+            <p class="sol-label">解</p>
+            <p>由圆盘法，</p>
+            \[ V=\int_0^4\pi(\sqrt x)^2\,\mathrm dx=\pi\int_0^4x\,\mathrm dx=\pi\cdot\frac{4^2}{2}=8\pi. \]
+            <p>几何上，截面圆的半径随 \(x\) 增大，所得旋转体是旋转抛物面。注意它的体积为 \(8\pi\)，小于同底同高的圆锥体积 \(\dfrac{16\pi}{3}\)。</p>
+          </div>
+
+          <div class="remark">
+            <p><span class="label">要点</span>换元处理复合结构，分部处理乘积结构；反常积分必须先取极限再判断敛散；旋转体体积用截面面积积分。计算前先看结构，再选方法，比盲目套公式更重要。</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="chapter" id="ch-multivar" data-num="04" data-title="多元微积分与场">
+      <header class="chapter-head">
+        <span class="chapter-num">04</span>
+        <div>
+          <h2>多元微积分与场</h2>
+          <p class="chapter-en">MULTIVARIABLE CALCULUS AND FIELDS</p>
+        </div>
+        <p class="chapter-count">4 篇</p>
+      </header>
+
+      <article class="entry" id="e-multivar-diff" data-toc="偏导、全微分、方向导数与梯度" data-terms="多元函数|偏导数|全微分|方向导数|梯度">
+        <p class="entry-meta">§ 4.1</p>
+        <h3 class="entry-title">偏导、全微分、方向导数与梯度</h3>
+        <p class="entry-en">Partial derivatives, differentials, directional derivatives, and gradients</p>
+
+        <div class="prose">
+          <p>多元函数把“一个输入决定一个输出”推广为“多个输入决定一个输出”。以二元函数 \(z=f(x,y)\) 为例，图像是一张曲面。研究它的局部变化，可以从“沿坐标轴方向的变化”开始，再推广到任意方向，最后把所有方向的信息压缩成一个向量——梯度。</p>
+
+          <h4>偏导数</h4>
+          <p>在点 \((x_0,y_0)\) 处，固定 \(y=y_0\)，只让 \(x\) 变化，得到的导数称为对 \(x\) 的偏导数：</p>
+          <div class="formula">\[ f_x(x_0,y_0)=\lim_{h\to0}\frac{f(x_0+h,y_0)-f(x_0,y_0)}h. \]</div>
+          <p>类似定义 \(f_y\)。偏导数就是沿坐标轴方向的切线斜率。例如 \(f(x,y)=x^2y+\sin(xy)\)，有</p>
+          \[ f_x=2xy+y\cos(xy),\qquad f_y=x^2+x\cos(xy). \]
+          <p>二阶偏导数 \(f_{xx},f_{xy},f_{yx},f_{yy}\) 也按照同样的方式定义。当二阶混合偏导数连续时，求导次序可以交换，即 \(f_{xy}=f_{yx}\)。</p>
+
+          <h4>全微分</h4>
+          <p>若函数增量可以写成</p>
+          \[ \Delta f=f_x\Delta x+f_y\Delta y+o\bigl(\sqrt{\Delta x^2+\Delta y^2}\bigr), \]
+          <p>则称 \(f\) 在 \((x_0,y_0)\) 可微，线性主部称为全微分：</p>
+          <div class="formula">\[ \mathrm df=f_x\,\mathrm dx+f_y\,\mathrm dy. \]</div>
+          <p>几何上，全微分对应的是一张切平面：\(z=f(x_0,y_0)+f_x(x-x_0)+f_y(y-y_0)\)。在一点附近，曲面被这张平面线性替代。若偏导数在邻域内连续，则函数可微；但偏导数存在本身不足以保证可微，这一点与一元情形不同。</p>
+
+          <h4>方向导数与梯度</h4>
+          <p>给定单位方向 \(\mathbf u=(u_1,u_2)\)，函数沿该方向的方向导数为</p>
+          \[ \frac{\partial f}{\partial\mathbf u}=\lim_{t\to0}\frac{f(x_0+tu_1,y_0+tu_2)-f(x_0,y_0)}t. \]
+          <p>若 \(f\) 可微，则</p>
+          <div class="formula">\[ \frac{\partial f}{\partial\mathbf u}=\nabla f\cdot\mathbf u,\qquad \nabla f=(f_x,f_y). \]</div>
+          <p>向量 \(\nabla f\) 称为梯度。由柯西—施瓦茨不等式，</p>
+          \[ \frac{\partial f}{\partial\mathbf u}=\nabla f\cdot\mathbf u\le|\nabla f|, \]
+          <p>等号当且仅当 \(\mathbf u\) 与 \(\nabla f\) 同向时成立。因此梯度指向函数增长最快的方向，其长度就是最大方向导数。梯度还垂直于等值线 \(f(x,y)=c\)，这一点来自隐函数求导：沿等值线的方向 \(\mathbf v\) 满足 \(f_xv_1+f_yv_2=0\)，即 \(\nabla f\perp\mathbf v\)。</p>
+
+          <div class="example">
+            <p class="label">例题 4.1</p>
+            <p class="ask">设 \(f(x,y)=x^2+y^2\)，求在点 \((1,1)\) 处沿方向 \(\mathbf u=\frac1{\sqrt2}(1,1)\) 的方向导数，并指出增长最快的方向。</p>
+            <p class="sol-label">解</p>
+            <p>梯度为 \(\nabla f=(2x,2y)\)，在 \((1,1)\) 处为 \((2,2)\)。于是</p>
+            \[ \frac{\partial f}{\partial\mathbf u}=(2,2)\cdot\frac1{\sqrt2}(1,1)=\frac4{\sqrt2}=2\sqrt2. \]
+            <p>增长最快的方向是 \(\nabla f=(2,2)\) 的方向，即 \((1,1)\) 方向；最大变化率为 \(|\nabla f|=2\sqrt2\)。等值线 \(x^2+y^2=c\) 是圆，梯度沿半径向外，确实与圆垂直。</p>
+          </div>
+
+          <div class="remark">
+            <p><span class="label">要点</span>偏导数是沿坐标轴的变化率；全微分给出切平面；方向导数是梯度在该方向的投影；梯度指向最速上升方向。多元情形中，“偏导数存在”弱于“可微”，这一点务必与一元情形区分。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" id="e-multivar-tools" data-toc="链式法则、隐函数与拉格朗日乘数" data-terms="雅可比矩阵|链式法则|隐函数定理|条件极值|拉格朗日乘数法">
+        <p class="entry-meta">§ 4.2</p>
+        <h3 class="entry-title">链式法则、隐函数与拉格朗日乘数</h3>
+        <p class="entry-en">The chain rule, implicit functions, and Lagrange multipliers</p>
+
+        <div class="prose">
+          <p>多元函数的复合关系比一元复杂：一个变量可能同时影响多个中间变量，再通过这些中间变量影响最终结果。链式法则用矩阵把这种依赖关系组织起来，隐函数定理与拉格朗日乘数法则分别处理“方程确定函数”和“约束下求极值”两类问题。</p>
+
+          <h4>链式法则与雅可比矩阵</h4>
+          <p>设 \(z=f(x,y)\)，而 \(x=x(t),\,y=y(t)\)，则</p>
+          <div class="formula">\[ \frac{\mathrm dz}{\mathrm dt}=f_x\frac{\mathrm dx}{\mathrm dt}+f_y\frac{\mathrm dy}{\mathrm dt}. \]</div>
+          <p>更一般地，若 \(\mathbf g:\mathbb R^n\to\mathbb R^m\)，则复合函数的导数由矩阵乘法给出，其矩阵称为雅可比矩阵：</p>
+          \[ J_{\mathbf g}(\mathbf x)=\begin{pmatrix}
+          \dfrac{\partial g_1}{\partial x_1}&\cdots&\dfrac{\partial g_1}{\partial x_n}\\
+          \vdots&\ddots&\vdots\\
+          \dfrac{\partial g_m}{\partial x_1}&\cdots&\dfrac{\partial g_m}{\partial x_n}
+          \end{pmatrix}. \]
+          <p>当 \(m=n\) 时，其行列式 \(\det J\) 描述体积元的局部伸缩率。重积分换元公式中的 \(|J|\) 正是这个伸缩率。</p>
+
+          <div class="example">
+            <p class="label">例题 4.2</p>
+            <p class="ask">设 \(z=x^2y\)，\(x=\cos t\)，\(y=\sin t\)，求 \(\dfrac{\mathrm dz}{\mathrm dt}\)。</p>
+            <p class="sol-label">解</p>
+            <p>\(f_x=2xy\)，\(f_y=x^2\)，且 \(x'=-\sin t\)，\(y'=\cos t\)。因此</p>
+            \[ \frac{\mathrm dz}{\mathrm dt}=2xy(-\sin t)+x^2\cos t
+              =-2\cos t\sin^2t+\cos^3t. \]
+            <p>也可以先代入 \(z=\cos^2t\sin t\) 再直接求导，结果相同。</p>
+          </div>
+
+          <h4>隐函数定理</h4>
+          <p>方程 \(F(x,y)=0\) 可能在某点附近确定一个函数 \(y=y(x)\)。若 \(F\) 连续可微且 \(F_y(x_0,y_0)\ne0\)，则存在 \(x_0\) 的邻域，使得在其中唯一确定一个可微函数 \(y(x)\)，满足 \(y(x_0)=y_0\)，并且</p>
+          <div class="formula">\[ y'(x)=-\frac{F_x(x,y)}{F_y(x,y)}. \]</div>
+          <p>例如 \(F(x,y)=x^2+y^2-1=0\)，在 \(y\ne0\) 处 \(y'=-x/y\)。当 \(y=0\) 时 \(F_y=0\)，隐函数定理失效，曲线在该点有竖直切线，不能写成 \(y=y(x)\)。这说明了条件 \(F_y\ne0\) 并不是技术性的装饰。</p>
+
+          <h4>条件极值与拉格朗日乘数法</h4>
+          <p>求 \(f(x,y)\) 在约束 \(g(x,y)=c\) 下的极值，可以引入参数 \(\lambda\)，令</p>
+          <div class="formula">\[ \nabla f=\lambda\nabla g. \]</div>
+          <p>直观解释：在最优点，沿约束曲线的任何可行方向都不能使 \(f\) 增加，因此 \(f\) 的梯度必须与约束曲线的法向平行。由于 \(\nabla g\) 正是约束曲线的法向，所以得到上述条件。</p>
+
+          <div class="example">
+            <p class="label">例题 4.3</p>
+            <p class="ask">在 \(x+y=1\) 的条件下，求 \(f(x,y)=xy\) 的最大值。</p>
+            <p class="sol-label">解</p>
+            <p>令 \(g=x+y\)。则 \(\nabla f=(y,x)\)，\(\nabla g=(1,1)\)。拉格朗日条件给出</p>
+            \[ y=\lambda,\qquad x=\lambda\quad\Longrightarrow\quad x=y. \]
+            <p>结合约束 \(x+y=1\)，得 \(x=y=\frac12\)，此时 \(f=\frac14\)。由于约束线段是闭的有界集，连续函数必有最大值与最小值；在端点 \(f=0\)，所以内部唯一的驻点给出最大值 \(\frac14\)。</p>
+          </div>
+
+          <div class="remark">
+            <p><span class="label">要点</span>链式法则是矩阵乘法；雅可比矩阵的绝对值是体积伸缩率；隐函数存在需要 \(F_y\ne0\)；拉格朗日条件 \(\nabla f=\lambda\nabla g\) 的几何含义是“目标函数梯度与约束法向平行”。解出驻点后还要比较边界与端点。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" id="e-multiple-integrals" data-toc="重积分与坐标变换" data-terms="二重积分·三重积分|极坐标·柱坐标·球坐标">
+        <p class="entry-meta">§ 4.3</p>
+        <h3 class="entry-title">重积分与坐标变换</h3>
+        <p class="entry-en">Multiple integrals and coordinate transformations</p>
+
+        <div class="prose">
+          <p>重积分是“在平面区域上求和”与“在空间中求和”的统一说法。它的定义与定积分完全平行：分割区域、取样本点、求和、取极限。真正的计算依赖换元，而换元的关键是雅可比因子。</p>
+
+          <h4>二重积分与三重积分</h4>
+          <p>设 \(D\subset\mathbb R^2\) 为有界闭区域，\(f\) 在 \(D\) 上有界。把 \(D\) 分成小区域 \(\Delta A_i\)，在每块中取点 \((x_i,y_i)\)，若黎曼和</p>
+          \[ \sum_i f(x_i,y_i)\Delta A_i \]
+          <p>当分割的最大直径趋于零时极限存在，则记为 \(\iint_D f\,\mathrm dA\)。几何上，当 \(f\ge0\) 时它是曲面 \(z=f(x,y)\) 下的体积。三重积分类似，记为 \(\iiint_\Omega f\,\mathrm dV\)。</p>
+          <p>若区域是矩形 \(D=[a,b]\times[c,d]\)，且 \(f\) 连续，则可化为累次积分：</p>
+          \[ \iint_D f(x,y)\,\mathrm dA=\int_a^b\left(\int_c^d f(x,y)\,\mathrm dy\right)\mathrm dx. \]
+          <p>对一般区域，先画图确定内层积分的上下限，是计算的第一步。</p>
+
+          <h4>极坐标、柱坐标与球坐标</h4>
+          <p>当区域具有圆对称或球对称时，换到极坐标能极大简化积分。令</p>
+          \[ x=r\cos\theta,\qquad y=r\sin\theta, \]
+          <p>则面积元变为</p>
+          <div class="formula">\[ \mathrm dA=r\,\mathrm dr\,\mathrm d\theta. \]</div>
+          <p>这个 \(r\) 就是极坐标变换的雅可比因子。三维中，柱坐标 \((r,\theta,z)\) 的体积元为 \(\mathrm dV=r\,\mathrm dr\,\mathrm d\theta\,\mathrm dz\)；球坐标 \((r,\theta,\phi)\) 的体积元为</p>
+          \[ \mathrm dV=r^2\sin\phi\,\mathrm dr\,\mathrm d\theta\,\mathrm d\phi, \]
+          <p>其中 \(\phi\) 是极角，\(\theta\) 是方位角。</p>
+
+          <div class="example">
+            <p class="label">例题 4.4</p>
+            <p class="ask">计算 \(\displaystyle\iint_D(x^2+y^2)\,\mathrm dA\)，其中 \(D\) 是单位圆盘 \(x^2+y^2\le1\)。</p>
+            <p class="sol-label">解</p>
+            <p>用极坐标，\(x^2+y^2=r^2\)，\(\mathrm dA=r\,\mathrm dr\,\mathrm d\theta\)，区域为 \(0\le r\le1,\,0\le\theta\le2\pi\)。于是</p>
+            \[ \iint_D(x^2+y^2)\,\mathrm dA
+              =\int_0^{2\pi}\int_0^1 r^2\cdot r\,\mathrm dr\,\mathrm d\theta
+              =2\pi\cdot\frac14=\frac\pi2. \]
+          </div>
+
+          <div class="example">
+            <p class="label">例题 4.5</p>
+            <p class="ask">用球坐标求半径为 \(R\) 的球的体积。</p>
+            <p class="sol-label">解</p>
+            <p>球体为 \(0\le r\le R,\,0\le\phi\le\pi,\,0\le\theta\le2\pi\)。于是</p>
+            \[ V=\int_0^{2\pi}\int_0^\pi\int_0^R r^2\sin\phi\,\mathrm dr\,\mathrm d\phi\,\mathrm d\theta
+              =\frac{R^3}{3}\cdot2\cdot2\pi=\frac43\pi R^3. \]
+            <p>注意体积元中的 \(r^2\sin\phi\) 不能遗漏；它是球坐标换元的雅可比因子。</p>
+          </div>
+
+          <div class="remark">
+            <p><span class="label">要点</span>重积分是求和极限；累次积分把重积分化为多次一元积分；换元必须乘上雅可比因子：极坐标乘 \(r\)，球坐标乘 \(r^2\sin\phi\)。选择坐标系的依据是区域与函数的对称性。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" id="e-field-calculus" data-toc="散度、旋度与保守场" data-terms="通量|环量|散度|旋度|无源场|无旋场|保守场|势函数">
+        <p class="entry-meta">§ 4.4</p>
+        <h3 class="entry-title">散度、旋度与保守场</h3>
+        <p class="entry-en">Divergence, curl, and conservative fields</p>
+
+        <div class="prose">
+          <p>向量场给空间每一点指定一个向量，例如速度场、电场、磁场。研究向量场，核心是两类局部问题：这一点是“源”还是“汇”？这一点附近的流体是否在打转？前者由散度描述，后者由旋度描述。</p>
+
+          <h4>散度：源与汇</h4>
+          <p>设 \(\mathbf F=(P,Q,R)\) 为可微向量场，定义散度</p>
+          <div class="formula">\[ \operatorname{div}\mathbf F=\nabla\cdot\mathbf F=\frac{\partial P}{\partial x}+\frac{\partial Q}{\partial y}+\frac{\partial R}{\partial z}. \]</div>
+          <p>把 \(\mathbf F\) 看作流体的速度场：在一点附近取一个很小的闭合曲面，若净流出量为正，则该点是源，散度为正；净流入则为汇，散度为负；若流入等于流出，则散度为零。\(\operatorname{div}\mathbf F=0\) 的场称为无源场。</p>
+          <p>例如 \(\mathbf F=(x^2,xy,z)\)，则 \(\operatorname{div}\mathbf F=2x+x+1=3x+1\)。在 \(x>-\frac13\) 的区域为源，在 \(x&lt;-\frac13\) 的区域为汇。</p>
+
+          <h4>旋度：局部旋转</h4>
+          <p>旋度定义为</p>
+          <div class="formula">\[ \operatorname{curl}\mathbf F=\nabla\times\mathbf F=
+          \begin{vmatrix}
+          \mathbf i&\mathbf j&\mathbf k\\
+          \dfrac{\partial}{\partial x}&\dfrac{\partial}{\partial y}&\dfrac{\partial}{\partial z}\\
+          P&Q&R
+          \end{vmatrix}. \]</div>
+          <p>它的方向是局部旋转轴，长度是旋转强度。例如 \(\mathbf F=(-y,x,0)\)，则</p>
+          \[ \operatorname{curl}\mathbf F=(0,0,2), \]
+          <p>场绕 \(z\) 轴逆时针旋转，旋度指向 \(+z\) 方向。\(\operatorname{curl}\mathbf F=\mathbf 0\) 的场称为无旋场。</p>
+
+          <h4>通量与环量</h4>
+          <p>散度与旋度是局部量，它们的积分形式分别是通量与环量。向量场穿过曲面 \(S\) 的通量为</p>
+          \[ \Phi=\iint_S\mathbf F\cdot\mathbf n\,\mathrm dS, \]
+          <p>向量场沿闭合曲线 \(C\) 的环量为</p>
+          \[ \Gamma=\oint_C\mathbf F\cdot\mathrm d\mathbf r. \]
+          <p>通量衡量“穿过的总量”，环量衡量“沿回路被推动的总效果”。下一节的三大定理正是把局部量与整体量连接起来的桥梁。</p>
+
+          <h4>保守场与势函数</h4>
+          <p>若存在标量函数 \(\varphi\)，使得 \(\mathbf F=\nabla\varphi\)，则称 \(\mathbf F\) 为保守场，\(\varphi\) 为势函数。此时</p>
+          \[ \int_A^B\mathbf F\cdot\mathrm d\mathbf r=\varphi(B)-\varphi(A), \]
+          <p>路径积分只依赖起点和终点，沿任意闭合路径的环量为零。反过来，在单连通区域上，若 \(\operatorname{curl}\mathbf F=\mathbf0\)，则 \(\mathbf F\) 保守。证明思路是：先验证线积分与路径无关，再沿固定起点定义 \(\varphi(\mathbf x)=\int_{A}^{\mathbf x}\mathbf F\cdot\mathrm d\mathbf r\)，最后证明 \(\nabla\varphi=\mathbf F\)。</p>
+          <p>两个基本恒等式值得记住：</p>
+          <div class="formula">\[ \operatorname{div}(\operatorname{curl}\mathbf F)=0,\qquad \operatorname{curl}(\nabla\varphi)=\mathbf0. \]</div>
+          <p>它们都来自混合偏导数相等。前者说明“任何旋度场都是无源场”，后者说明“任何梯度场都是无旋场”。</p>
+
+          <div class="example">
+            <p class="label">例题 4.6</p>
+            <p class="ask">判断 \(\mathbf F=(2xy,\ x^2+3y^2)\) 是否为保守场；若是，求势函数。</p>
+            <p class="sol-label">解</p>
+            <p>在平面上，旋度条件化为 \(Q_x=P_y\)。这里 \(P=2xy\)，\(Q=x^2+3y^2\)，有</p>
+            \[ P_y=2x=Q_x, \]
+            <p>且平面是单连通的，故为保守场。设 \(\varphi_x=2xy\)，对 \(x\) 积分得 \(\varphi=x^2y+h(y)\)。再由 \(\varphi_y=x^2+h'(y)=x^2+3y^2\)，得 \(h'(y)=3y^2\)，故 \(h=y^3+C\)。因此</p>
+            \[ \varphi(x,y)=x^2y+y^3+C. \]
+            <p>验证 \(\nabla\varphi=(2xy,\ x^2+3y^2)=\mathbf F\)。</p>
+          </div>
+
+          <div class="remark">
+            <p><span class="label">要点</span>散度是源的强度，旋度是局部旋转；无源即散度为零，无旋即旋度为零；保守场等价于存在势函数；在单连通区域上，无旋与保守等价。物理中的静电场是保守场，磁场是无源场，这些性质分别对应 \(\operatorname{curl}\mathbf E=0\) 与 \(\operatorname{div}\mathbf B=0\)。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" id="e-line-surface-theorems" data-toc="曲线曲面积分与三大定理" data-terms="第一类曲线积分|第二类曲线积分|第一类曲面积分|第二类曲面积分|格林公式|高斯公式|斯托克斯公式">
+        <p class="entry-meta">§ 4.5</p>
+        <h3 class="entry-title">曲线、曲面积分与三大定理</h3>
+        <p class="entry-en">Line and surface integrals, with Green, Gauss, and Stokes theorems</p>
+
+        <div class="prose">
+          <p>曲线积分与曲面积分把积分从“平直区域”推广到“曲线与曲面”。它们有两种类型：对“长度/面积”积分，以及对“向量场穿过或沿着的效果”积分。格林、高斯、斯托克斯三大定理则把边界上的积分与内部的变化率联系起来。</p>
+
+          <h4>两类曲线积分</h4>
+          <p>第一类曲线积分对弧长积分：若曲线 \(C\) 由 \(\mathbf r(t)\) 参数化，\(a\le t\le b\)，则</p>
+          \[ \int_C f\,\mathrm ds=\int_a^b f(\mathbf r(t))|\mathbf r'(t)|\,\mathrm dt. \]
+          <p>例如单位圆上 \(\int_C(x^2+y^2)\,\mathrm ds=\int_0^{2\pi}1\cdot1\,\mathrm dt=2\pi\)。</p>
+          <p>第二类曲线积分对坐标积分，等价于向量场沿曲线的功：</p>
+          \[ \int_C\mathbf F\cdot\mathrm d\mathbf r=\int_a^b\mathbf F(\mathbf r(t))\cdot\mathbf r'(t)\,\mathrm dt. \]
+          <p>例如 \(\mathbf F=(-y,x)\)，沿单位圆逆时针一周，</p>
+          \[ \oint_C\mathbf F\cdot\mathrm d\mathbf r=\int_0^{2\pi}(-\sin t,\cos t)\cdot(-\sin t,\cos t)\,\mathrm dt=2\pi. \]
+
+          <h4>两类曲面积分</h4>
+          <p>第一类曲面积分对面积积分：</p>
+          \[ \iint_S f\,\mathrm dS=\iint_D f(\mathbf r(u,v))|\mathbf r_u\times\mathbf r_v|\,\mathrm du\,\mathrm dv. \]
+          <p>第二类曲面积分对通量积分：</p>
+          \[ \iint_S\mathbf F\cdot\mathbf n\,\mathrm dS=\iint_D\mathbf F(\mathbf r(u,v))\cdot(\mathbf r_u\times\mathbf r_v)\,\mathrm du\,\mathrm dv. \]
+          <p>例如 \(\mathbf F=(x,y,z)\) 穿出单位球面，法向与位置向量同向，\(\mathbf F\cdot\mathbf n=1\)，故通量为球面积 \(4\pi\)。两类积分的区别在于是否带有方向：面积没有方向，通量有正反之分。</p>
+
+          <h4>格林公式</h4>
+          <p>设 \(D\) 是平面有界闭区域，边界 \(\partial D\) 取正向（逆时针），则</p>
+          <div class="formula">\[ \oint_{\partial D}P\,\mathrm dx+Q\,\mathrm dy=\iint_D\left(\frac{\partial Q}{\partial x}-\frac{\partial P}{\partial y}\right)\mathrm dA. \]</div>
+          <p>证明思路：先用小矩形拼接区域。对每个矩形，边界积分与内部偏导差的积分相等；相邻矩形的公共边方向相反，积分相互抵消，剩下的正是外边界。取极限即得一般区域。</p>
+          <p>一个漂亮的应用是面积公式：取 \(P=-y/2,\ Q=x/2\)，则 \(Q_x-P_y=1\)，于是</p>
+          \[ A=\frac12\oint_{\partial D}(x\,\mathrm dy-y\,\mathrm dx). \]
+          <p>对椭圆 \(x=a\cos t,\ y=b\sin t\)，一个周期内 \(x\,\mathrm dy-y\,\mathrm dx=ab\,\mathrm dt\)，故面积 \(A=\pi ab\)。</p>
+
+          <h4>高斯公式（散度定理）</h4>
+          <p>设 \(\Omega\) 是空间有界闭区域，边界 \(S=\partial\Omega\) 取外法向，则</p>
+          <div class="formula">\[ \iint_S\mathbf F\cdot\mathbf n\,\mathrm dS=\iiint_\Omega\operatorname{div}\mathbf F\,\mathrm dV. \]</div>
+          <p>它说明：穿过边界的净通量等于内部各点“源的强度”之和。对 \(\mathbf F=(x,y,z)\) 和单位球，\(\operatorname{div}\mathbf F=3\)，球的体积为 \(4\pi/3\)，故通量为 \(3\cdot4\pi/3=4\pi\)，与直接计算一致。</p>
+
+          <h4>斯托克斯公式</h4>
+          <p>设 \(S\) 是空间曲面，边界 \(\partial S\) 与 \(S\) 的法向成右手关系，则</p>
+          <div class="formula">\[ \oint_{\partial S}\mathbf F\cdot\mathrm d\mathbf r=\iint_S(\operatorname{curl}\mathbf F)\cdot\mathbf n\,\mathrm dS. \]</div>
+          <p>对 \(\mathbf F=(-y,x,0)\) 与 \(xy\) 平面上的单位圆盘，\(\operatorname{curl}\mathbf F=(0,0,2)\)，故右端为 \(2\cdot\pi=2\pi\)，与沿边界的环量一致。</p>
+
+          <div class="example">
+            <p class="label">例题 4.7</p>
+            <p class="ask">用格林公式计算 \(\displaystyle\oint_C x\,\mathrm dy\)，其中 \(C\) 是单位圆，取逆时针方向。</p>
+            <p class="sol-label">解</p>
+            <p>令 \(P=0\)，\(Q=x\)。则 \(Q_x-P_y=1\)，由格林公式，</p>
+            \[ \oint_C x\,\mathrm dy=\iint_D 1\,\mathrm dA=\pi. \]
+            <p>直接参数化 \(x=\cos t,\ y=\sin t\) 也可得到 \(\int_0^{2\pi}\cos^2t\,\mathrm dt=\pi\)。格林公式把线积分直接转化为区域面积，避免了参数化。</p>
+          </div>
+          <p>三大定理并不是三个孤立公式。若把向量场写成微分形式 \(\omega\)，它们都可以写成</p>
+          <div class="formula">\[ \int_{\partial M}\omega=\int_M\mathrm d\omega. \]</div>
+          <p>格林公式是平面版本，高斯公式对应体积与边界，斯托克斯公式对应曲面与边界。它们共同表达了“边界上的信息由内部的变化率决定”。</p>
+
+          <div class="remark">
+            <p><span class="label">要点</span>两类积分的区别是“无向的长度/面积”与“有向的通量/环量”；格林公式连接平面区域与边界，高斯公式连接体积与闭曲面，斯托克斯公式连接曲面与空间边界；三者统一为广义斯托克斯定理。使用前要检查定向与光滑性条件。</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="chapter" id="ch-series" data-num="05" data-title="无穷级数">
+      <header class="chapter-head">
+        <span class="chapter-num">05</span>
+        <div>
+          <h2>无穷级数</h2>
+          <p class="chapter-en">INFINITE SERIES</p>
+        </div>
+        <p class="chapter-count">2 篇</p>
+      </header>
+
+      <article class="entry" id="e-series" data-toc="数项级数：收敛与判别" data-terms="级数收敛|正项级数|交错级数|绝对收敛·条件收敛">
+        <p class="entry-meta">§ 5.1</p>
+        <h3 class="entry-title">数项级数：收敛与判别</h3>
+        <p class="entry-en">Numerical series: convergence and tests</p>
+
+        <div class="prose">
+          <p>把无穷多个数相加，结果未必是无穷大，也未必有定义。级数理论的任务，是判断“部分和”是否有极限，并在收敛时求出或估计这个极限。</p>
+
+          <h4>收敛的定义</h4>
+          <p>给定数列 \(a_1,a_2,\dots\)，令部分和</p>
+          \[ S_n=\sum_{k=1}^n a_k. \]
+          <p>若数列 \(\{S_n\}\) 收敛于 \(S\)，则称级数 \(\sum_{n=1}^\infty a_n\) 收敛，\(S\) 为它的和；否则称为发散。收敛的必要条件是 \(a_n\to0\)，但它不是充分条件：调和级数 \(\sum1/n\) 的通项趋于零，级数却发散。</p>
+
+          <div class="proof">
+            <p class="label">证明</p>
+            <p>调和级数发散。把项按 \(2\) 的幂分组：</p>
+            \[ \left(1+\frac12\right)+\left(\frac13+\frac14\right)+\left(\frac15+\cdots+\frac18\right)+\cdots \]
+            <p>第 \(k\) 组有 \(2^{k-1}\) 项，每一项都不小于 \(1/2^k\)，故该组之和不小于 \(1/2\)。于是部分和可以超过任意给定的数，级数发散。\(\square\)</p>
+          </div>
+
+          <p>几何级数 \(\sum q^n\) 在 \(|q|&lt;1\) 时收敛于 \(1/(1-q)\)，在 \(|q|\ge1\) 时发散。\(p\)-级数 \(\sum1/n^p\) 在 \(p>1\) 时收敛，在 \(p\le1\) 时发散；这是最常用的比较标准。</p>
+
+          <h4>正项级数的判别法</h4>
+          <p>若所有 \(a_n\ge0\)，部分和单调递增，因此级数收敛当且仅当部分和有上界。由此得到：</p>
+          <ul>
+            <li><strong>比较判别法</strong>：若 \(0\le a_n\le b_n\)，且 \(\sum b_n\) 收敛，则 \(\sum a_n\) 收敛；若 \(\sum a_n\) 发散，则 \(\sum b_n\) 发散。</li>
+            <li><strong>比值判别法</strong>：若 \(\lim |a_{n+1}/a_n|=L\)，则 \(L&lt;1\) 时绝对收敛，\(L>1\) 时发散；\(L=1\) 时失效。</li>
+            <li><strong>根值判别法</strong>：若 \(\lim\sqrt[n]{|a_n|}=L\)，结论同上。</li>
+          </ul>
+          <p>比值判别法适合含阶乘或指数的项，根值判别法适合含 \(n\) 次幂的项。</p>
+
+          <h4>交错级数与绝对收敛</h4>
+          <p>若 \(a_n\) 单调递减趋于零，则交错级数 \(\sum(-1)^{n-1}a_n\) 收敛。证明思路：偶数部分和单调递增，奇数部分和单调递减，且二者之差 \(a_n\to0\)，于是它们夹出同一个极限。</p>
+          <p>若 \(\sum|a_n|\) 收敛，则称原级数绝对收敛；若原级数收敛而绝对值级数发散，则称条件收敛。例如 \(\sum(-1)^{n-1}/\sqrt n\) 条件收敛：交错项单调趋于零，故收敛；但 \(\sum1/\sqrt n\) 是 \(p=1/2\) 的 \(p\)-级数，发散。绝对收敛的级数可以任意重排而不改变和，条件收敛则不能。</p>
+
+          <div class="remark">
+            <p><span class="label">要点</span>先看通项是否趋于零；正项级数用比较、比值或根值；交错级数用莱布尼茨判别法；绝对收敛强于条件收敛。判断敛散时，选对比较标准（几何级数或 \(p\)-级数）往往决定成败。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" id="e-power-fourier" data-toc="幂级数、泰勒级数与傅里叶级数" data-terms="幂级数|泰勒级数|傅里叶级数|傅里叶系数|正交性">
+        <p class="entry-meta">§ 5.2</p>
+        <h3 class="entry-title">幂级数、泰勒级数与傅里叶级数</h3>
+        <p class="entry-en">Power series, Taylor series, and Fourier series</p>
+
+        <div class="prose">
+          <p>数项级数把数相加，函数项级数则把函数相加。幂级数用 \((x-x_0)^n\) 作积木，泰勒级数用一点处的各阶导数确定系数；傅里叶级数改用正弦、余弦作积木，适合描述周期现象。</p>
+
+          <h4>幂级数与收敛半径</h4>
+          <p>形如 \(\sum a_n(x-x_0)^n\) 的级数称为幂级数。它的收敛集合总是一个以 \(x_0\) 为中心的区间：存在 \(R\in[0,\infty]\)，使得 \(|x-x_0|&lt;R\) 时绝对收敛，\(|x-x_0|>R\) 时发散，端点需单独判断。\(R\) 称为收敛半径，可由</p>
+          \[ R=\frac1{\limsup_{n\to\infty}\sqrt[n]{|a_n|}} \]
+          <p>计算；若极限 \(L=\lim|a_{n+1}/a_n|\) 存在，则 \(R=1/L\)。例如 \(\sum x^n/n\) 的系数比为 \(n/(n+1)\to1\)，故 \(R=1\)；在 \(x=1\) 处为调和级数发散，在 \(x=-1\) 处为交错级数收敛，收敛域为 \([-1,1)\)。</p>
+          <p>幂级数在收敛区间内部可以逐项求导、逐项积分，且收敛半径不变。这是它作为“无穷多项式”的核心性质。</p>
+
+          <h4>泰勒级数</h4>
+          <p>若 \(f\) 在 \(x_0\) 处无穷次可导，则形式幂级数</p>
+          \[ \sum_{n=0}^\infty\frac{f^{(n)}(x_0)}{n!}(x-x_0)^n \]
+          <p>称为 \(f\) 在 \(x_0\) 处的泰勒级数。它在收敛区间内是否等于 \(f\)，取决于余项是否趋于零。例如</p>
+          \[ e^x=\sum_{n=0}^\infty\frac{x^n}{n!},\qquad
+             \sin x=\sum_{n=0}^\infty\frac{(-1)^n x^{2n+1}}{(2n+1)!}, \]
+          <p>两个展开式都在整个实数轴上成立。泰勒级数把函数在一点的全部局部信息编码成系数，是解析函数的“指纹”。</p>
+
+          <h4>傅里叶级数与正交性</h4>
+          <p>设 \(f\) 以 \(2\pi\) 为周期且在 \([-\pi,\pi]\) 上可积，则其傅里叶级数为</p>
+          \[ \frac{a_0}{2}+\sum_{n=1}^\infty\bigl(a_n\cos nx+b_n\sin nx\bigr), \]
+          <p>其中</p>
+          \[ a_n=\frac1\pi\int_{-\pi}^{\pi}f(x)\cos nx\,\mathrm dx,\qquad
+             b_n=\frac1\pi\int_{-\pi}^{\pi}f(x)\sin nx\,\mathrm dx. \]
+          <p>系数公式来自三角函数的正交性：</p>
+          \[ \int_{-\pi}^{\pi}\cos nx\cos mx\,\mathrm dx=\pi\delta_{nm},\qquad
+             \int_{-\pi}^{\pi}\sin nx\sin mx\,\mathrm dx=\pi\delta_{nm}, \]
+          <p>而正弦与余弦、不同频率之间的内积为零。正因为这些内积像坐标轴一样“互相垂直”，才能把每个频率的系数单独筛出来。</p>
+
+          <div class="example">
+            <p class="label">例题 5.1</p>
+            <p class="ask">求方波 \(f(x)=1\ (0&lt;x&lt;\pi)\)，\(f(x)=-1\ (-\pi&lt;x&lt;0)\) 的傅里叶级数。</p>
+            <p class="sol-label">解</p>
+            <p>方波是奇函数，故 \(a_n=0\)。对 \(n\ge1\)，</p>
+            \[ b_n=\frac1\pi\int_{-\pi}^{\pi}f(x)\sin nx\,\mathrm dx
+                 =\frac2\pi\int_0^{\pi}\sin nx\,\mathrm dx
+                 =\frac{2(1-\cos n\pi)}{n\pi}. \]
+            <p>当 \(n\) 为偶数时 \(b_n=0\)；当 \(n\) 为奇数时 \(b_n=\dfrac4{n\pi}\)。因此</p>
+            \[ f(x)\sim\frac4\pi\left(\sin x+\frac{\sin3x}{3}+\frac{\sin5x}{5}+\cdots\right). \]
+            <p>在连续点处级数收敛于 \(f(x)\)；在跳跃点 \(x=0\) 处收敛于左右极限的平均值 \(0\)。级数在跳变附近会出现过冲，即吉布斯现象，增加项数只能压缩振荡宽度，不能消除过冲。</p>
+          </div>
+
+          <div class="remark">
+            <p><span class="label">要点</span>幂级数有收敛半径，内部可逐项求导积分；泰勒级数用局部导数作系数；傅里叶级数用正交的三角函数作积木。傅里叶系数是内积，正交性是计算系数的根本原因。</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="chapter" id="ch-ode" data-num="06" data-title="微分方程">
+      <header class="chapter-head">
+        <span class="chapter-num">06</span>
+        <div>
+          <h2>微分方程</h2>
+          <p class="chapter-en">DIFFERENTIAL EQUATIONS</p>
+        </div>
+        <p class="chapter-count">2 篇</p>
+      </header>
+
+      <article class="entry" id="e-first-ode" data-toc="一阶微分方程" data-terms="微分方程：阶·通解·特解|可分离变量方程|齐次方程|一阶线性方程">
+        <p class="entry-meta">§ 6.1</p>
+        <h3 class="entry-title">一阶微分方程：分离变量、齐次与线性</h3>
+        <p class="entry-en">First-order differential equations</p>
+
+        <div class="prose">
+          <p>微分方程含有未知函数及其导数，解是函数而不是数。方程的阶是最高导数的阶；含有任意常数的解称为通解，给定初始条件后确定的解称为特解。一阶方程有几类标准可解结构，识别结构比记忆公式更重要。</p>
+
+          <h4>可分离变量方程</h4>
+          <p>若方程可以写成</p>
+          \[ \frac{\mathrm dy}{\mathrm dx}=f(x)g(y), \]
+          <p>则把含 \(y\) 的因子移到左边，两边积分：</p>
+          \[ \int\frac{\mathrm dy}{g(y)}=\int f(x)\,\mathrm dx. \]
+          <p>例如 \(y'=2xy\)，分离得 \(\mathrm dy/y=2x\,\mathrm dx\)，积分得 \(\ln|y|=x^2+C\)，即 \(y=Ce^{x^2}\)。若给定 \(y(0)=1\)，则 \(C=1\)，特解为 \(y=e^{x^2}\)。</p>
+
+          <h4>齐次方程</h4>
+          <p>若右端只依赖比值 \(y/x\)，即 \(y'=f(y/x)\)，可令 \(u=y/x\)，则 \(y=ux\)，\(y'=u+xu'\)，方程化为</p>
+          \[ u+x\frac{\mathrm du}{\mathrm dx}=f(u), \]
+          <p>这是可分离方程。例如 \(y'=\dfrac{x+y}{x}=1+\dfrac yx\)，令 \(u=y/x\)，得 \(u+xu'=1+u\)，即 \(xu'=1\)。积分得 \(u=\ln|x|+C\)，故</p>
+          \[ y=x\ln|x|+Cx. \]
+          <p>换元的关键是让方程只依赖新的组合变量 \(u\)，而不是单独依赖 \(x\) 与 \(y\)。</p>
+
+          <h4>一阶线性方程</h4>
+          <p>形如</p>
+          \[ y'+P(x)y=Q(x) \]
+          <p>的方程称为一阶线性方程。取积分因子</p>
+          \[ \mu(x)=e^{\int P(x)\,\mathrm dx}, \]
+          <p>两边乘以 \(\mu\)，左边恰好成为 \((\mu y)'\)：</p>
+          \[ (\mu y)'=\mu Q\quad\Longrightarrow\quad y=\frac1\mu\left(\int\mu Q\,\mathrm dx+C\right). \]
+          <p>这个方法把“解方程”转化为“找乘积的导数”，是乘积法则的逆用。</p>
+
+          <div class="example">
+            <p class="label">例题 6.1</p>
+            <p class="ask">解初值问题 \(y'+y=e^x,\ y(0)=1\)。</p>
+            <p class="sol-label">解</p>
+            <p>这里 \(P=1\)，积分因子 \(\mu=e^x\)。两边乘 \(e^x\) 得</p>
+            \[ (e^xy)'=e^{2x}. \]
+            <p>积分：\(e^xy=\frac12e^{2x}+C\)，故 \(y=\frac12e^x+Ce^{-x}\)。代入 \(y(0)=1\) 得 \(\frac12+C=1\)，所以 \(C=\frac12\)，特解为</p>
+            \[ y=\frac12(e^x+e^{-x})=\cosh x. \]
+          </div>
+
+          <div class="remark">
+            <p><span class="label">要点</span>一阶方程先识别结构：可分离就分离，齐次就令 \(u=y/x\)，线性就用积分因子。通解含一个任意常数，初值条件用来确定它。解的存在唯一性需要右端函数满足一定的连续性条件（如利普希茨条件）。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" id="e-second-ode" data-toc="二阶方程与欧拉方程" data-terms="二阶常系数线性方程|欧拉方程">
+        <p class="entry-meta">§ 6.2</p>
+        <h3 class="entry-title">二阶方程与欧拉方程</h3>
+        <p class="entry-en">Second-order equations and Euler equations</p>
+
+        <div class="prose">
+          <p>二阶线性方程是振动、电路与许多物理模型的核心。常系数情形可以用代数方程求解；欧拉方程则通过换元化归为常系数。</p>
+
+          <h4>二阶常系数线性方程</h4>
+          <p>考虑</p>
+          \[ y''+py'+qy=0. \]
+          <p>尝试 \(y=e^{rx}\)，得到特征方程</p>
+          <div class="formula">\[ r^2+pr+q=0. \]</div>
+          <p>根据判别式，有三种情形：</p>
+          <ul>
+            <li>两个不同实根 \(r_1\ne r_2\)：\(y=C_1e^{r_1x}+C_2e^{r_2x}\)；</li>
+            <li>重根 \(r_1=r_2=r\)：\(y=(C_1+C_2x)e^{rx}\)；</li>
+            <li>共轭复根 \(r=\alpha\pm i\beta\)：\(y=e^{\alpha x}(C_1\cos\beta x+C_2\sin\beta x)\)。</li>
+          </ul>
+          <p>例如 \(y''-3y'+2y=0\) 的特征方程为 \(r^2-3r+2=(r-1)(r-2)=0\)，故通解 \(y=C_1e^x+C_2e^{2x}\)。</p>
+
+          <h4>非齐次方程与待定系数法</h4>
+          <p>对 \(y''+py'+qy=f(x)\)，先求齐次通解 \(y_h\)，再求一个特解 \(y_p\)，最终解为 \(y_h+y_p\)。若 \(f\) 是多项式、指数或正弦余弦，可猜测同类型函数作为 \(y_p\)。例如 \(y''-3y'+2y=e^{3x}\)，设 \(y_p=Ae^{3x}\)，代入得</p>
+          \[ (9-9+2)Ae^{3x}=e^{3x}, \]
+          <p>故 \(A=\frac12\)，通解为</p>
+          \[ y=C_1e^x+C_2e^{2x}+\frac12e^{3x}. \]
+          <p>若 \(f\) 中的指数恰好是特征根，则需把试探解乘以 \(x\) 或 \(x^2\)，以解决共振。</p>
+
+          <div class="example">
+            <p class="label">例题 6.2</p>
+            <p class="ask">解初值问题 \(y''-3y'+2y=0,\ y(0)=0,\ y'(0)=1\)。</p>
+            <p class="sol-label">解</p>
+            <p>特征方程 \(r^2-3r+2=(r-1)(r-2)=0\)，通解为</p>
+            \[ y=C_1e^x+C_2e^{2x}. \]
+            <p>代入初始条件：\(C_1+C_2=0\)，\(C_1+2C_2=1\)。两式相减得 \(C_2=1\)，从而 \(C_1=-1\)。所以</p>
+            \[ y=e^{2x}-e^x. \]
+            <p>验证：\(y(0)=1-1=0\)，\(y'(0)=2-1=1\)。两个初始条件唯一确定了两个常数，这与二阶方程的通解含两个任意常数相一致。</p>
+          </div>
+
+          <h4>欧拉方程</h4>
+          <p>形如</p>
+          \[ x^2y''+axy'+by=0\qquad(x>0) \]
+          <p>的方程称为欧拉方程。令 \(x=e^t\)，则 \(x\,\mathrm dy/\mathrm dx=\mathrm dy/\mathrm dt\)，且</p>
+          \[ x^2y''=\frac{\mathrm d^2y}{\mathrm dt^2}-\frac{\mathrm dy}{\mathrm dt}. \]
+          <p>方程化为常系数线性方程。例如 \(x^2y''-2xy'+2y=0\)，令 \(y=x^r\)，代入得</p>
+          \[ r(r-1)-2r+2=r^2-3r+2=(r-1)(r-2)=0, \]
+          <p>故通解 \(y=C_1x+C_2x^2\)。欧拉方程的解通常是幂函数，这与换元 \(x=e^t\) 后指数解 \(e^{rt}\) 一一对应。</p>
+
+          <div class="remark">
+            <p><span class="label">要点</span>常系数齐次方程由特征根决定；非齐次方程用“齐次通解 + 一个特解”；欧拉方程用 \(x=e^t\) 或直接试 \(x^r\)。初始条件用于确定两个常数，物理上对应初始位置与初始速度。</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="chapter" id="ch-geometry" data-num="07" data-title="空间解析几何">
+      <header class="chapter-head">
+        <span class="chapter-num">07</span>
+        <div>
+          <h2>空间解析几何</h2>
+          <p class="chapter-en">ANALYTIC GEOMETRY IN SPACE</p>
+        </div>
+        <p class="chapter-count">1 篇</p>
+      </header>
+
+      <article class="entry" id="e-vectors" data-toc="向量、平面、直线与曲面" data-terms="向量|点积|叉积|混合积|平面方程|直线方程|柱面·旋转曲面|二次曲面|空间曲线">
+        <p class="entry-meta">§ 7.1</p>
+        <h3 class="entry-title">向量、平面、直线与曲面</h3>
+        <p class="entry-en">Vectors, planes, lines, and surfaces in space</p>
+
+        <div class="prose">
+          <p>空间解析几何用坐标与向量描述几何对象。向量提供方向与长度，点积度量投影，叉积产生法向与面积，混合积给出体积；平面、直线和曲面则都可以写成方程。</p>
+
+          <h4>向量的三种积：点积、叉积与混合积</h4>
+          <p>设 \(\mathbf a=(a_1,a_2,a_3)\)，\(\mathbf b=(b_1,b_2,b_3)\)。点积为</p>
+          \[ \mathbf a\cdot\mathbf b=a_1b_1+a_2b_2+a_3b_3=|\mathbf a||\mathbf b|\cos\theta, \]
+          <p>它给出投影与夹角。叉积为</p>
+          \[ \mathbf a\times\mathbf b=
+          \begin{vmatrix}\mathbf i&\mathbf j&\mathbf k\\ a_1&a_2&a_3\\ b_1&b_2&b_3\end{vmatrix}, \]
+          <p>方向由右手定则确定，长度等于两向量张成的平行四边形面积。混合积</p>
+          \[ (\mathbf a\times\mathbf b)\cdot\mathbf c \]
+          <p>的绝对值等于三向量张成的平行六面体体积；符号反映定向。三向量共面当且仅当混合积为零。</p>
+
+          <div class="example">
+            <p class="label">例题 7.1</p>
+            <p class="ask">设 \(\mathbf a=(1,2,3)\)，\(\mathbf b=(2,0,-1)\)，\(\mathbf c=(0,1,1)\)。求 \(\mathbf a\cdot\mathbf b\)、\(\mathbf a\times\mathbf b\) 与混合积。</p>
+            <p class="sol-label">解</p>
+            <p>\(\mathbf a\cdot\mathbf b=2+0-3=-1\)。叉积为</p>
+            \[ \mathbf a\times\mathbf b=(2\cdot(-1)-3\cdot0,\ 3\cdot2-1\cdot(-1),\ 1\cdot0-2\cdot2)=(-2,7,-4). \]
+            <p>于是混合积 \((\mathbf a\times\mathbf b)\cdot\mathbf c=(-2,7,-4)\cdot(0,1,1)=3\)。三向量不共面，平行六面体体积为 \(3\)。</p>
+          </div>
+
+          <h4>平面与直线方程</h4>
+          <p>过点 \(P_0(x_0,y_0,z_0)\)、以 \(\mathbf n=(A,B,C)\) 为法向的平面方程为</p>
+          \[ A(x-x_0)+B(y-y_0)+C(z-z_0)=0. \]
+          <p>过点 \(P_0\)、以 \(\mathbf d=(l,m,n)\) 为方向的直线可写成参数方程</p>
+          \[ (x,y,z)=(x_0,y_0,z_0)+t(l,m,n), \]
+          <p>或对称式 \(\dfrac{x-x_0}{l}=\dfrac{y-y_0}{m}=\dfrac{z-z_0}{n}\)（方向分量不为零时）。直线与平面的位置关系可由方向向量与法向量的点积判断：点积为零意味着平行或落在平面内。</p>
+
+          <div class="example">
+            <p class="label">例题 7.2</p>
+            <p class="ask">求过三点 \(A(1,0,0),B(0,1,0),C(0,0,1)\) 的平面方程。</p>
+            <p class="sol-label">解</p>
+            <p>取 \(\overrightarrow{AB}=(-1,1,0)\)，\(\overrightarrow{AC}=(-1,0,1)\)，法向为</p>
+            \[ \mathbf n=\overrightarrow{AB}\times\overrightarrow{AC}=(1,1,1). \]
+            <p>用点 \(A\)，得平面方程 \((x-1)+y+z=0\)，即 \(x+y+z=1\)。</p>
+          </div>
+
+          <h4>曲面与空间曲线</h4>
+          <p>常见的二次曲面包括：椭球面 \(\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}+\dfrac{z^2}{c^2}=1\)；椭圆抛物面 \(z=\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}\)；双曲抛物面（马鞍面）\(z=\dfrac{x^2}{a^2}-\dfrac{y^2}{b^2}\)；单叶双曲面 \(\dfrac{x^2}{a^2}+\dfrac{y^2}{b^2}-\dfrac{z^2}{c^2}=1\)。柱面是母线平行于某方向的曲面，例如 \(x^2+y^2=R^2\) 是沿 \(z\) 轴方向的圆柱面。</p>
+          <p>旋转曲面由一条母线绕轴旋转生成。空间曲线通常写成两张曲面的交线，或直接用参数方程表示。例如螺旋线</p>
+          \[ \mathbf r(t)=(a\cos t,\ a\sin t,\ bt), \]
+          <p>的切向为 \(\mathbf r'(t)=(-a\sin t,\ a\cos t,\ b)\)，它在水平面内匀速转动，同时沿 \(z\) 轴匀速上升。</p>
+
+          <div class="remark">
+            <p><span class="label">要点</span>点积管投影与夹角，叉积管面积与法向，混合积管体积；平面由“点 + 法向”确定，直线由“点 + 方向”确定；二次曲面用标准方程识别形状，空间曲线用参数方程或曲面交线描述。</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="chapter" id="ch-mechanics" data-num="08" data-title="力学">
+      <header class="chapter-head">
+        <span class="chapter-num">08</span>
+        <div>
+          <h2>力学</h2>
+          <p class="chapter-en">MECHANICS</p>
+        </div>
+        <p class="chapter-count">4 篇</p>
+      </header>
+
+      <article class="entry" id="e-kinematics" data-toc="运动学与牛顿定律" data-terms="位移·路程|速度·加速度|牛顿三定律|惯性系">
+        <p class="entry-meta">§ 8.1</p>
+        <h3 class="entry-title">运动学与牛顿定律</h3>
+        <p class="entry-en">Kinematics and Newton's laws</p>
+
+        <div class="prose">
+          <p>运动学研究“如何运动”，不追问原因；牛顿定律则回答“为什么这样运动”。把位置写成时间的函数，速度与加速度就由求导得到；把力写成位置、速度的函数，运动就由微分方程决定。</p>
+
+          <h4>位移、路程、速度与加速度</h4>
+          <p>质点位置用向量 \(\mathbf r(t)\) 表示。从 \(t_0\) 到 \(t\) 的位移是 \(\Delta\mathbf r=\mathbf r(t)-\mathbf r(t_0)\)，它只依赖首尾位置；路程 \(s\) 是轨迹的弧长，依赖走过的路径。速度与加速度分别为</p>
+          \[ \mathbf v=\frac{\mathrm d\mathbf r}{\mathrm dt},\qquad
+             \mathbf a=\frac{\mathrm d\mathbf v}{\mathrm dt}=\frac{\mathrm d^2\mathbf r}{\mathrm dt^2}. \]
+          <p>速度沿轨迹切线，加速度指向轨迹弯曲的一侧。曲线运动中，加速度可分解为切向与法向：</p>
+          \[ a_\tau=\frac{\mathrm dv}{\mathrm dt},\qquad a_n=\frac{v^2}{R}=v^2\kappa, \]
+          <p>其中 \(R\) 是曲率半径。这说明曲率不仅是几何量，也直接决定法向加速度。</p>
+
+          <div class="example">
+            <p class="label">例题 8.1</p>
+            <p class="ask">以初速度 \(v_0\)、仰角 \(\theta\) 斜抛一个小球，忽略空气阻力，求轨迹与水平射程。</p>
+            <p class="sol-label">解</p>
+            <p>取抛出点为原点，水平向右为 \(x\) 轴，竖直向上为 \(y\) 轴。则</p>
+            \[ x=v_0\cos\theta\,t,\qquad y=v_0\sin\theta\,t-\frac12gt^2. \]
+            <p>消去 \(t\) 得轨迹</p>
+            \[ y=x\tan\theta-\frac{g}{2v_0^2\cos^2\theta}x^2, \]
+            <p>是一条抛物线。令 \(y=0\) 得射程</p>
+            \[ R=\frac{v_0^2\sin2\theta}{g}, \]
+            <p>当 \(\theta=45^\circ\) 时射程最大。</p>
+          </div>
+
+          <h4>牛顿三定律与惯性系</h4>
+          <p>牛顿第一定律指出：不受外力时，物体保持静止或匀速直线运动。它定义了惯性参考系——在这种参考系中，第一定律成立。第二定律给出</p>
+          \[ \mathbf F=m\mathbf a, \]
+          <p>即合力决定加速度；第三定律指出作用力与反作用力大小相等、方向相反、作用在不同物体上。</p>
+          <p>在非惯性系（例如加速的车厢）中，第二定律不直接成立。若车厢相对地面加速度为 \(\mathbf a_0\)，在车厢系中需要引入惯性力 \(-m\mathbf a_0\)，才能继续使用 \(m\mathbf a\) 的形式。惯性力没有施力物体，是参考系加速带来的“修正项”。</p>
+
+          <div class="remark">
+            <p><span class="label">要点</span>位移看首尾，路程看轨迹；速度是位置导数，加速度是速度导数；曲线运动有法向加速度 \(v^2/R\)；牛顿定律只在惯性系中直接成立。惯性力不是真实相互作用，而是非惯性系的坐标效应。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" id="e-momentum-energy" data-toc="动量、功与能量守恒" data-terms="动量·冲量|动量守恒|功·功率|动能·动能定理|保守力|势能|机械能守恒">
+        <p class="entry-meta">§ 8.2</p>
+        <h3 class="entry-title">动量、功与能量守恒</h3>
+        <p class="entry-en">Momentum, work, and energy conservation</p>
+
+        <div class="prose">
+          <p>动量与能量是力学的两本总账。动量是矢量，对应力对时间的累积；能量是标量，对应力对空间的累积。它们各自的守恒律，往往比直接解牛顿方程更省力。</p>
+
+          <h4>动量与冲量</h4>
+          <p>动量定义为 \(\mathbf p=m\mathbf v\)。由牛顿第二定律，</p>
+          \[ \mathbf F=\frac{\mathrm d\mathbf p}{\mathrm dt}, \]
+          <p>两边对时间积分，得到冲量—动量定理</p>
+          <div class="formula">\[ \mathbf J=\int_{t_1}^{t_2}\mathbf F\,\mathrm dt=\mathbf p_2-\mathbf p_1. \]</div>
+          <p>对一个系统，若合外力为零，则总动量守恒。证明只需把所有质点的牛顿方程相加：内力成对出现，由牛顿第三定律相互抵消。</p>
+
+          <h4>功、功率与动能定理</h4>
+          <p>力沿路径做的功为</p>
+          \[ W=\int_A^B\mathbf F\cdot\mathrm d\mathbf r, \]
+          <p>瞬时功率为 \(P=\mathbf F\cdot\mathbf v\)。对单个质点，利用 \(\mathbf F=m\dot{\mathbf v}\)，</p>
+          \[ W=\int_A^B m\frac{\mathrm d\mathbf v}{\mathrm dt}\cdot\mathbf v\,\mathrm dt
+              =\int_A^B \mathrm d\left(\frac12m\mathbf v^2\right)
+              =\frac12mv_B^2-\frac12mv_A^2. \]
+          <p>这就是动能定理：合外力做的功等于动能的变化。</p>
+
+          <h4>保守力、势能与机械能守恒</h4>
+          <p>若某种力做功只依赖起点和终点，而与路径无关，则称为保守力。此时可以定义势能 \(U\)，使得</p>
+          <div class="formula">\[ \mathbf F=-\nabla U,\qquad W_{A\to B}=U(A)-U(B). \]</div>
+          <p>重力、弹力、静电力都是保守力；摩擦力不是，因为它做功依赖路径长度。把动能定理用于保守力，得到</p>
+          \[ W_{\text{保}}=\Delta K=- \Delta U\quad\Longrightarrow\quad K+U=\text{常量}. \]
+          <p>若还有非保守力做功，则 \(K+U\) 的变化等于非保守力做的功，例如摩擦使机械能转化为热能。</p>
+
+          <div class="example">
+            <p class="label">例题 8.2</p>
+            <p class="ask">质量为 \(m\) 的滑块从高为 \(h\) 的光滑斜面顶端由静止下滑，求到达底端的速度。</p>
+            <p class="sol-label">解</p>
+            <p>支持力垂直于位移，不做功；只有重力做功，且重力是保守力。取底端为势能零点，则</p>
+            \[ mgh=\frac12mv^2\quad\Longrightarrow\quad v=\sqrt{2gh}. \]
+            <p>结果与斜面倾角无关，只取决于高度差。这正是“等面积、等功”的体现：只要起点与终点相同，重力做的功相同。</p>
+          </div>
+
+          <div class="remark">
+            <p><span class="label">要点</span>冲量是力对时间的累积，动量守恒来自内力成对抵消；功是力对空间的累积，动能定理对所有合力成立；保守力可以引入势能，机械能守恒只在非保守力不做功时成立。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" id="e-rotation" data-toc="质心、角动量与刚体转动" data-terms="质心|力矩|角动量|角动量守恒|刚体|转动惯量|平行轴定理">
+        <p class="entry-meta">§ 8.3</p>
+        <h3 class="entry-title">质心、角动量与刚体转动</h3>
+        <p class="entry-en">Center of mass, angular momentum, and rigid-body rotation</p>
+
+        <div class="prose">
+          <p>转动是力学中最容易“看起来会”但算起来出错的部分。关键是把平动中的质量、力、动量换成转动中的转动惯量、力矩、角动量，并记住它们都是相对于某个轴或点定义的。</p>
+
+          <h4>质心</h4>
+          <p>质点系的质心定义为</p>
+          \[ \mathbf R=\frac{\sum m_i\mathbf r_i}{\sum m_i}. \]
+          <p>连续体则把求和换成积分。质心是质量分布的加权平均位置；系统总动量等于 \(M\mathbf V_{\mathrm{cm}}\)，因此质心的运动就像一个受合外力作用的质点。</p>
+
+          <h4>力矩与角动量</h4>
+          <p>相对某点 \(O\)，力 \(\mathbf F\) 作用在位置 \(\mathbf r\) 处，力矩为</p>
+          \[ \boldsymbol\tau=\mathbf r\times\mathbf F. \]
+          <p>角动量为</p>
+          \[ \mathbf L=\mathbf r\times\mathbf p=\mathbf r\times m\mathbf v. \]
+          <p>对质点求导可得 \(\mathrm d\mathbf L/\mathrm dt=\boldsymbol\tau\)。对系统，只有外力矩能改变总角动量；内力矩成对抵消。因此合外力矩为零时，总角动量守恒。</p>
+
+          <h4>刚体与转动惯量</h4>
+          <p>刚体是形状不变的物体，各点角速度相同。绕固定轴转动时，转动惯量定义为</p>
+          <div class="formula">\[ I=\sum_i m_i r_i^2, \]</div>
+          <p>其中 \(r_i\) 是质量元到轴的距离。转动动能为 \(K=\frac12I\omega^2\)，角动量为 \(L=I\omega\)。</p>
+          <p><strong>平行轴定理.</strong> 若刚体质量为 \(m\)，绕过质心的轴转动惯量为 \(I_{\mathrm{cm}}\)，则绕相距 \(d\) 的平行轴的转动惯量为</p>
+          <div class="formula">\[ I=I_{\mathrm{cm}}+md^2. \]</div>
+          <p>证明只需把坐标写成“质心坐标 + 相对坐标”，交叉项因质心的定义而消失。</p>
+
+          <div class="example">
+            <p class="label">例题 8.3</p>
+            <p class="ask">质量为 \(m\)、长为 \(L\) 的均匀细杆绕一端垂直于杆的轴转动，求转动惯量；再求绕中点的转动惯量。</p>
+            <p class="sol-label">解</p>
+            <p>绕一端：把杆看作线密度 \(\lambda=m/L\)，距端点 \(x\) 处的质量元为 \(\mathrm dm=\lambda\,\mathrm dx\)，于是</p>
+            \[ I_{\text{端}}=\int_0^L x^2\lambda\,\mathrm dx=\frac{mL^2}{3}. \]
+            <p>绕中点：由平行轴定理，\(I_{\text{中}}=I_{\text{端}}-m\left(\frac L2\right)^2=\frac{mL^2}{3}-\frac{mL^2}{4}=\frac{mL^2}{12}\)。也可以直接积分验证。</p>
+          </div>
+
+          <div class="remark">
+            <p><span class="label">要点</span>质心是质量加权平均；力矩和角动量都依赖参考点；只有外力矩改变总角动量；转动惯量是“转动版的质量”，越大越难改变角速度。平行轴定理把绕质心的惯量平移到任意平行轴。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" id="e-gravity-shm" data-toc="万有引力与简谐振动" data-terms="万有引力|开普勒三定律|简谐振动|振幅·周期·频率·角频率|相位·初相|阻尼振动|受迫振动·共振|单摆·复摆">
+        <p class="entry-meta">§ 8.4</p>
+        <h3 class="entry-title">万有引力与简谐振动</h3>
+        <p class="entry-en">Gravitation and simple harmonic motion</p>
+
+        <div class="prose">
+          <p>行星运动与弹簧振子看似遥远，实际上都由“回复力”驱动：引力提供向心加速度，弹力提供与位移成正比的回复力。前者的轨道是椭圆，后者的运动是正弦。</p>
+
+          <h4>万有引力与开普勒定律</h4>
+          <p>两质点间的引力大小为</p>
+          \[ F=G\frac{m_1m_2}{r^2}, \]
+          <p>方向沿连线相互吸引。引力势能为 \(U=-GMm/r\)（取无穷远为零）。由牛顿第二定律与引力定律可以推出开普勒三定律：行星轨道为椭圆，太阳在焦点；行星与太阳连线在相等时间内扫过相等面积；周期平方与半长轴立方成正比。</p>
+          <p>圆轨道是最简单的特例：引力提供向心力，</p>
+          \[ \frac{GMm}{r^2}=\frac{mv^2}{r}\quad\Longrightarrow\quad v=\sqrt{\frac{GM}{r}}. \]
+          <p>周期 \(T=2\pi r/v=2\pi\sqrt{r^3/(GM)}\)，与 \(r^{3/2}\) 成正比。</p>
+
+          <h4>简谐振动</h4>
+          <p>若回复力与位移成正比，\(F=-kx\)，则</p>
+          \[ m\frac{\mathrm d^2x}{\mathrm dt^2}+kx=0. \]
+          <p>令 \(\omega=\sqrt{k/m}\)，通解为</p>
+          <div class="formula">\[ x(t)=A\cos(\omega t+\varphi). \]</div>
+          <p>其中 \(A\) 是振幅，\(\omega\) 是角频率，\(\varphi\) 是初相。周期 \(T=2\pi/\omega\)，频率 \(f=1/T\)。相位 \(\omega t+\varphi\) 决定振动处在周期的哪一步；速度与加速度分别为</p>
+          \[ v=-A\omega\sin(\omega t+\varphi),\qquad
+             a=-A\omega^2\cos(\omega t+\varphi). \]
+          <p>加速度总与位移反向，这是“回复”二字的数学含义。</p>
+
+          <h4>阻尼振动、受迫振动与共振</h4>
+          <p>有阻尼时方程变为</p>
+          \[ m\ddot x+b\dot x+kx=0. \]
+          <p>阻尼使振幅随时间衰减。若外力周期性驱动，则系统最终以驱动频率振动；当驱动频率接近固有频率 \(\omega_0=\sqrt{k/m}\) 时，振幅显著增大，这就是共振。共振不是无穷大，阻尼越小峰越高。</p>
+
+          <h4>单摆与复摆</h4>
+          <p>单摆的方程为</p>
+          \[ \ddot\theta+\frac gL\sin\theta=0. \]
+          <p>小角度下 \(\sin\theta\approx\theta\)，化为简谐振动，周期 \(T=2\pi\sqrt{L/g}\)。复摆的周期为 \(T=2\pi\sqrt{I/(mgd)}\)，其中 \(I\) 为绕转轴的转动惯量，\(d\) 为质心到轴的距离。</p>
+
+          <div class="example">
+            <p class="label">例题 8.4</p>
+            <p class="ask">一弹簧振子的质量为 \(0.2\,\mathrm{kg}\)，弹簧劲度系数为 \(5\,\mathrm{N/m}\)，振幅为 \(0.1\,\mathrm m\)。求角频率、周期与最大速度。</p>
+            <p class="sol-label">解</p>
+            <p>\(\omega=\sqrt{k/m}=\sqrt{5/0.2}=5\,\mathrm{rad/s}\)，周期 \(T=2\pi/\omega=2\pi/5\approx1.257\,\mathrm s\)。最大速度为</p>
+            \[ v_{\max}=A\omega=0.1\times5=0.5\,\mathrm{m/s}. \]
+            <p>最大加速度为 \(A\omega^2=2.5\,\mathrm{m/s^2}\)，发生在位移最大处，方向指向平衡位置。</p>
+          </div>
+
+          <div class="remark">
+            <p><span class="label">要点</span>万有引力与开普勒定律是同一套动力学；简谐振动由线性回复力产生，解为正弦；振幅、周期、频率、角频率与相位共同描述振动；阻尼使振幅衰减，受迫振动在共振时响应最大；单摆与复摆在小角度下近似简谐。</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="chapter" id="ch-fluids" data-num="09" data-title="流体">
+      <header class="chapter-head">
+        <span class="chapter-num">09</span>
+        <div>
+          <h2>流体</h2>
+          <p class="chapter-en">FLUIDS</p>
+        </div>
+        <p class="chapter-count">1 篇</p>
+      </header>
+
+      <article class="entry" id="e-fluids" data-toc="流体静力学与伯努利方程" data-terms="压强|浮力·阿基米德原理|连续性方程|伯努利方程|黏性·雷诺数">
+        <p class="entry-meta">§ 9.1</p>
+        <h3 class="entry-title">流体静力学与伯努利方程</h3>
+        <p class="entry-en">Fluid statics and Bernoulli's equation</p>
+
+        <div class="prose">
+          <p>流体力学研究气体与液体的宏观运动。静止流体的核心是压强与浮力；运动流体的核心是连续性方程与伯努利方程，它们分别来自质量守恒与能量守恒。</p>
+
+          <h4>压强与浮力</h4>
+          <p>压强定义为单位面积上的法向力：\(p=F/A\)。在重力场中，静止液体的压强随深度增加。取高度为 \(\mathrm dz\) 的薄层，上下压强差正好支撑其重量，得到</p>
+          \[ \frac{\mathrm dp}{\mathrm dz}=-\rho g, \]
+          <p>积分得 \(p=p_0+\rho gh\)，其中 \(h\) 是深度。</p>
+          <p>阿基米德原理指出：浸在流体中的物体受到向上的浮力，大小等于排开流体的重量。证明只需对物体表面压强积分；闭合曲面上的净压力等于排开体积的重量。即 \(F_{\text{浮}}=\rho gV_{\text{排}}\)。</p>
+
+          <h4>连续性方程</h4>
+          <p>对不可压缩流体，质量守恒给出体积流量守恒。若管道截面积为 \(A\)，流速为 \(v\)，则</p>
+          <div class="formula">\[ A_1v_1=A_2v_2. \]</div>
+          <p>管道变窄处流速变大，这就是水流从粗管进入细管时加速的原因。连续性方程本质上是“流入等于流出”。</p>
+
+          <h4>伯努利方程</h4>
+          <p>对理想、不可压缩、定常流动，沿同一流线有</p>
+          <div class="formula">\[ p+\frac12\rho v^2+\rho gh=\text{常量}. \]</div>
+          <p>它可由功能原理推出：压力差做功、重力做功与动能变化之和为零。物理含义是：流速大的地方压强小。因此机翼上方流线密、流速大，压强较小，产生升力。</p>
+
+          <div class="example">
+            <p class="label">例题 9.1</p>
+            <p class="ask">水平放置的管道中，粗管截面积为 \(A_1\)、流速为 \(v_1\)，细管截面积为 \(A_2=A_1/2\)。若忽略高度差，求细管处的流速与压强差。</p>
+            <p class="sol-label">解</p>
+            <p>由连续性方程，\(A_1v_1=A_2v_2\)，得</p>
+            \[ v_2=2v_1. \]
+            <p>由伯努利方程（同一高度），</p>
+            \[ p_1+\frac12\rho v_1^2=p_2+\frac12\rho v_2^2, \]
+            <p>故</p>
+            \[ p_1-p_2=\frac12\rho(4v_1^2-v_1^2)=\frac32\rho v_1^2. \]
+            <p>细管处流速加倍，压强下降，这与日常用细管抽吸液体、喷雾器的原理一致。</p>
+          </div>
+
+          <h4>黏性与雷诺数</h4>
+          <p>真实流体有内摩擦，称为黏性。黏性使相邻流层之间产生切应力，并导致能量耗散。流动是平滑的层流还是混乱的湍流，由雷诺数</p>
+          \[ \mathrm{Re}=\frac{\rho vL}{\eta} \]
+          <p>判断，其中 \(L\) 是特征长度，\(\eta\) 是黏度。雷诺数小时黏性占主导，流动分层；大时惯性占主导，流动趋于湍流。相似几何下，雷诺数相同意味着流动形态相似。</p>
+
+          <div class="remark">
+            <p><span class="label">要点</span>压强随深度线性增加；浮力等于排开流体的重量；连续性方程是质量守恒；伯努利方程是能量守恒，流速大处压强小；黏性耗散能量，雷诺数判断层流与湍流。</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="chapter" id="ch-thermo" data-num="10" data-title="热学">
+      <header class="chapter-head">
+        <span class="chapter-num">10</span>
+        <div>
+          <h2>热学</h2>
+          <p class="chapter-en">THERMODYNAMICS</p>
+        </div>
+        <p class="chapter-count">3 篇</p>
+      </header>
+
+      <article class="entry" id="e-thermo-first-law" data-toc="理想气体与第一定律" data-terms="热力学系统·平衡态·状态参量|理想气体状态方程|内能|热力学第一定律|等容·等压·等温·绝热过程">
+        <p class="entry-meta">§ 10.1</p>
+        <h3 class="entry-title">理想气体与热力学第一定律</h3>
+        <p class="entry-en">Ideal gases and the first law of thermodynamics</p>
+
+        <div class="prose">
+          <p>热力学不追踪每个分子的微观运动，而是用压强、体积、温度等宏观量描述系统。第一定律是能量守恒在热学中的表述：热量与功都能源自能量的转移，但内能的变化只由初末状态决定。</p>
+
+          <h4>系统、状态参量与理想气体</h4>
+          <p>热力学系统是被选定的研究对象；平衡态是宏观量不随时间变化的状态；描述平衡态的量称为状态参量。对气体，通常取压强 \(p\)、体积 \(V\)、温度 \(T\)。理想气体的状态方程是</p>
+          <div class="formula">\[ pV=nRT, \]</div>
+          <p>其中 \(n\) 为物质的量，\(R=8.314\,\mathrm{J/(mol\cdot K)}\)。温度必须用热力学温标 \(T/\mathrm K\)。状态量只依赖当前状态，内能就是一个状态量。</p>
+
+          <h4>内能与第一定律</h4>
+          <p>理想气体的内能只是温度的函数，常写成 \(U=\nu C_VT\)，其中 \(C_V\) 是定容摩尔热容。热力学第一定律的常用形式为</p>
+          <div class="formula">\[ \Delta U=Q-W, \]</div>
+          <p>其中 \(Q\) 是系统吸收的热量，\(W\) 是系统对外做功。约定 \(Q>0\) 表示吸热，\(W>0\) 表示系统膨胀对外做功。准静态过程中</p>
+          \[ W=\int_{V_1}^{V_2}p\,\mathrm dV. \]
+          <p>在 \(p\)-\(V\) 图上，功就是过程曲线下方的面积；回到初态的循环，净功等于闭合曲线围成的有向面积。</p>
+
+          <h4>四种典型过程</h4>
+          <ul>
+            <li><strong>等容</strong>：\(V\) 不变，\(W=0\)，\(Q=\Delta U\)。</li>
+            <li><strong>等压</strong>：\(p\) 不变，\(W=p\Delta V\)，\(Q=\Delta U+p\Delta V\)。</li>
+            <li><strong>等温</strong>：理想气体 \(T\) 不变，内能不变，\(Q=W=nRT\ln\frac{V_2}{V_1}\)。</li>
+            <li><strong>绝热</strong>：\(Q=0\)，\(W=-\Delta U\)。理想气体绝热过程满足 \(pV^\gamma=\text{常量}\)，其中 \(\gamma=C_p/C_V\)。</li>
+          </ul>
+          <p>等温线与绝热线在 \(p\)-\(V\) 图上的形状不同：绝热线更陡，因为它不允许热量补偿体积变化所做的功。</p>
+
+          <div class="example">
+            <p class="label">例题 10.1</p>
+            <p class="ask">\(1\,\mathrm{mol}\) 理想气体在 \(300\,\mathrm K\) 下等温膨胀，体积从 \(V\) 变为 \(2V\)，求气体对外做的功与吸收的热量。</p>
+            <p class="sol-label">解</p>
+            <p>等温下 \(p=nRT/V\)，于是</p>
+            \[ W=\int_V^{2V}\frac{nRT}{V'}\,\mathrm dV'
+              =nRT\ln2. \]
+            <p>代入 \(n=1\)、\(R=8.314\)、\(T=300\)，得 \(W\approx1.73\times10^3\,\mathrm J\)。理想气体内能只依赖温度，等温过程 \(\Delta U=0\)，故 \(Q=W\)。膨胀对外做功的能量全部来自吸收的热量。</p>
+          </div>
+
+          <div class="remark">
+            <p><span class="label">要点</span>理想气体内能只依赖温度；第一定律是能量守恒；功是 \(p\,\mathrm dV\) 的积分；等温与绝热的区别在于是否允许热交换。符号约定要在题目开始处写清楚。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" id="e-cycles-entropy" data-toc="循环、卡诺定理与熵" data-terms="循环·热机效率|卡诺循环·卡诺定理|热力学第二定律|可逆·不可逆过程|熵·熵增原理">
+        <p class="entry-meta">§ 10.2</p>
+        <h3 class="entry-title">循环、卡诺定理与熵</h3>
+        <p class="entry-en">Cycles, Carnot's theorem, and entropy</p>
+
+        <div class="prose">
+          <p>第一定律只限制能量守恒，不限制能量转化的方向。热机把吸来的热量一部分变成功，另一部分排给冷源；第二定律说明这部分“废热”不可能为零，并给出效率的上限。</p>
+
+          <h4>循环与热机效率</h4>
+          <p>系统经过一系列过程回到初态，称为循环。循环中内能变化为零，净功等于净吸热：</p>
+          \[ W=Q_{\text{吸}}-Q_{\text{放}}. \]
+          <p>热机效率定义为</p>
+          <div class="formula">\[ \eta=\frac{W}{Q_{\text{吸}}}=1-\frac{Q_{\text{放}}}{Q_{\text{吸}}}. \]</div>
+          <p>在 \(p\)-\(V\) 图上，循环的净功等于闭合曲线围成的面积。顺时针循环为正功，逆时针为负功（制冷机）。</p>
+
+          <h4>卡诺循环与卡诺定理</h4>
+          <p>卡诺循环由两个等温过程和两个绝热过程组成，工作于高温热源 \(T_h\) 与低温热源 \(T_c\) 之间。可以证明其效率为</p>
+          <div class="formula">\[ \eta_{\text{卡诺}}=1-\frac{T_c}{T_h}. \]</div>
+          <p>卡诺定理指出：在相同温度的两个热源之间工作的一切热机，可逆热机的效率最高，且所有可逆热机的效率都等于上式；不可逆热机的效率更低。因此 \(\eta_{\text{卡诺}}\) 是理论极限，而不是某种具体机器的效率。</p>
+
+          <h4>热力学第二定律与可逆性</h4>
+          <p>第二定律有多种等价表述：</p>
+          <ul>
+            <li><strong>开尔文表述</strong>：不可能从单一热源吸热并全部转化为功而不产生其他影响。</li>
+            <li><strong>克劳修斯表述</strong>：不可能把热量从低温物体自发地传到高温物体而不产生其他影响。</li>
+          </ul>
+          <p>可逆过程是理想化的过程：每一步都能反向进行且不留下任何变化。真实过程总伴随摩擦、热传导或扩散，因而不可逆。不可逆性不是“技术不够好”，而是自然过程的方向性。</p>
+
+          <h4>熵与熵增原理</h4>
+          <p>对可逆过程，熵变定义为</p>
+          <div class="formula">\[ \Delta S=\int_{A}^{B}\frac{\delta Q_{\text{可逆}}}{T}. \]</div>
+          <p>熵是状态函数。对不可逆过程，系统熵变仍按连接初末态的可逆路径计算，但系统与外界的总熵增加：</p>
+          \[ \Delta S_{\text{系统}}+\Delta S_{\text{环境}}\ge0, \]
+          <p>等号仅对可逆过程成立。孤立系统的熵不减，这就是熵增原理。</p>
+
+          <div class="example">
+            <p class="label">例题 10.2</p>
+            <p class="ask">\(n\,\mathrm{mol}\) 理想气体向真空自由膨胀，体积由 \(V_1\) 变为 \(V_2\)，温度不变。求熵变。</p>
+            <p class="sol-label">解</p>
+            <p>自由膨胀不可逆，但初末态温度相同、体积不同。可设计一条等温可逆路径连接两态：</p>
+            \[ \Delta S=\int_{V_1}^{V_2}\frac{nRT}{V}\frac{\mathrm dV}{T}
+              =nR\ln\frac{V_2}{V_1}>0. \]
+            <p>系统熵增加，环境没有变化（真空膨胀不做功、不传热），所以总熵增加，过程不可逆。若气体被等温压缩回原体积，外界必须做功并把热量排出，环境熵增加得更多，总熵仍然不减。</p>
+          </div>
+
+          <div class="remark">
+            <p><span class="label">要点</span>循环净功是 \(p\)-\(V\) 图面积；卡诺效率 \(1-T_c/T_h\) 是不可超越的上限；第二定律规定自然过程的方向；熵是状态函数，按可逆路径计算；孤立系统总熵不减。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" id="e-potentials-stats" data-toc="热力学势与统计初步" data-terms="焓·自由能·吉布斯函数|麦克斯韦速率分布|能量均分定理|平均自由程">
+        <p class="entry-meta">§ 10.3</p>
+        <h3 class="entry-title">热力学势与统计初步</h3>
+        <p class="entry-en">Thermodynamic potentials and statistical physics</p>
+
+        <div class="prose">
+          <p>热力学势是把内能按不同约束条件改装后的能量函数，用于判断在等温、等压等条件下的平衡方向。统计物理则从分子的速率分布出发，把宏观量解释为微观量的平均。</p>
+
+          <h4>焓、自由能与吉布斯函数</h4>
+          <p>四个常用热力学函数是</p>
+          \[ H=U+pV,\qquad F=U-TS,\qquad G=H-TS. \]
+          <p>它们的微分形式为</p>
+          \[ \mathrm dU=T\,\mathrm dS-p\,\mathrm dV,\quad
+             \mathrm dH=T\,\mathrm dS+V\,\mathrm dp, \]
+          \[ \mathrm dF=-S\,\mathrm dT-p\,\mathrm dV,\quad
+             \mathrm dG=-S\,\mathrm dT+V\,\mathrm dp. \]
+          <p>焓 \(H\) 适合等压过程，例如化学反应的热效应；亥姆霍兹自由能 \(F\) 适合等温等容过程；吉布斯函数 \(G\) 适合等温等压过程。自发过程使相应的势减小，平衡时取极小值。</p>
+
+          <h4>麦克斯韦速率分布</h4>
+          <p>理想气体分子的速率分布为</p>
+          <div class="formula">\[ f(v)=4\pi\left(\frac{m}{2\pi kT}\right)^{3/2}v^2e^{-mv^2/(2kT)}. \]</div>
+          <p>它给出速率在 \(v\) 附近的概率密度。最概然速率为</p>
+          \[ v_p=\sqrt{\frac{2kT}{m}}, \]
+          <p>平均速率为 \(\bar v=\sqrt{8kT/(\pi m)}\)，方均根速率为 \(\sqrt{3kT/m}\)。温度升高，分布变宽，峰值右移；曲线下面积始终为 \(1\)。</p>
+
+          <h4>能量均分定理与平均自由程</h4>
+          <p>在温度 \(T\) 下，每个二次型自由度平均贡献 \(\frac12kT\) 的能量。单原子理想气体只有三个平动自由度，故 \(C_V=\frac32R\)；双原子气体在常温下还有两个转动自由度，\(C_V=\frac52R\)。这正是经典比热容的来源。</p>
+          <p>分子两次碰撞之间的平均路程为</p>
+          \[ \lambda=\frac{1}{\sqrt2\,\pi d^2n}, \]
+          <p>其中 \(d\) 是分子有效直径，\(n\) 是数密度。常温常压下，\(\lambda\) 约为 \(10^{-7}\,\mathrm m\) 量级，远大于分子尺度，这说明气体在宏观上仍然相当“空旷”。</p>
+
+          <div class="example">
+            <p class="label">例题 10.3</p>
+            <p class="ask">求 \(300\,\mathrm K\) 时氮气分子的最概然速率（氮气摩尔质量 \(28\times10^{-3}\,\mathrm{kg/mol}\)）。</p>
+            <p class="sol-label">解</p>
+            <p>用 \(v_p=\sqrt{2RT/M}\)：</p>
+            \[ v_p=\sqrt{\frac{2\times8.314\times300}{28\times10^{-3}}}
+              \approx\sqrt{1.78\times10^5}
+              \approx422\,\mathrm{m/s}. \]
+            <p>室温下气体分子的热运动速度通常为几百米每秒，但分子间频繁碰撞使扩散看起来慢得多。</p>
+          </div>
+
+          <div class="remark">
+            <p><span class="label">要点</span>热力学势是不同约束下的能量账本，平衡方向由相应势的极值决定；麦克斯韦分布描述速率统计；能量均分给出比热容；平均自由程连接微观碰撞与宏观输运。</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="chapter" id="ch-em" data-num="11" data-title="电磁学">
+      <header class="chapter-head">
+        <span class="chapter-num">11</span>
+        <div>
+          <h2>电磁学</h2>
+          <p class="chapter-en">ELECTROMAGNETISM</p>
+        </div>
+        <p class="chapter-count">4 篇</p>
+      </header>
+
+      <article class="entry" id="e-electrostatics" data-toc="静电场：库仑定律、高斯定理与电势" data-terms="电荷·库仑定律|电场强度|电场线|电通量|高斯定理|电势·电势差|等势面">
+        <p class="entry-meta">§ 11.1</p>
+        <h3 class="entry-title">静电场：库仑定律、高斯定理与电势</h3>
+        <p class="entry-en">Electrostatics: Coulomb, Gauss, and potential</p>
+
+        <div class="prose">
+          <p>静电学研究静止电荷产生的电场。库仑定律给出点电荷之间的作用力，电场描述空间每一点的受力，高斯定理把场的通量与电荷联系起来，电势则把矢量场转化为标量势。</p>
+
+          <h4>库仑定律与电场强度</h4>
+          <p>真空中两个点电荷之间的作用力为</p>
+          \[ \mathbf F=\frac{1}{4\pi\varepsilon_0}\frac{q_1q_2}{r^2}\hat{\mathbf r}, \]
+          <p>同号相斥、异号相吸。定义电场强度</p>
+          \[ \mathbf E=\frac{\mathbf F}{q_0}, \]
+          <p>即单位正电荷在该点受到的力。点电荷的场为 \(\mathbf E=\dfrac{q}{4\pi\varepsilon_0r^2}\hat{\mathbf r}\)，多个电荷的场按矢量叠加。</p>
+          <p>电场线从正电荷出发、终止于负电荷（或延伸到无穷远）。电场线的疏密表示场强大小，切线方向表示场的方向。</p>
+
+          <h4>电通量与高斯定理</h4>
+          <p>穿过曲面 \(S\) 的电通量为</p>
+          \[ \Phi_E=\iint_S\mathbf E\cdot\mathrm d\mathbf S. \]
+          <p>高斯定理指出：对任意闭合曲面，</p>
+          <div class="formula">\[ \oint_S\mathbf E\cdot\mathrm d\mathbf S=\frac{Q_{\text{内}}}{\varepsilon_0}. \]</div>
+          <p>注意只计入曲面内部的净电荷。高斯定理是麦克斯韦方程组之一，它的微分形式为 \(\nabla\cdot\mathbf E=\rho/\varepsilon_0\)。</p>
+          <p>用高斯定理可以快速求出高对称性的场。例如点电荷取球面 \(S\)，由对称性 \(E\) 在球面上大小相同且沿法向，故 \(E\cdot4\pi r^2=q/\varepsilon_0\)，即 \(E=q/(4\pi\varepsilon_0r^2)\)。无限长均匀带电直线的场为 \(E=\lambda/(2\pi\varepsilon_0r)\)，无限大均匀带电平面的场为 \(E=\sigma/(2\varepsilon_0)\)。</p>
+
+          <h4>电势与等势面</h4>
+          <p>静电场是保守场，可以定义电势 \(V\)，使得</p>
+          \[ V(B)-V(A)=-\int_A^B\mathbf E\cdot\mathrm d\mathbf r,\qquad
+             \mathbf E=-\nabla V. \]
+          <p>通常取无穷远处为零势。点电荷的电势为 \(V=\dfrac{q}{4\pi\varepsilon_0r}\)。电势相同的点构成等势面；等势面与电场线处处垂直，因为沿等势面移动时电势不变，电场不做功。</p>
+
+          <div class="example">
+            <p class="label">例题 11.1</p>
+            <p class="ask">两点电荷 \(q_1=2\times10^{-9}\,\mathrm C\) 与 \(q_2=-2\times10^{-9}\,\mathrm C\) 相距 \(0.1\,\mathrm m\)。求它们连线中点处的电场强度与电势。</p>
+            <p class="sol-label">解</p>
+            <p>中点到场源距离 \(r=0.05\,\mathrm m\)。两个电荷在中点产生的场方向相同（都指向负电荷），大小相等：</p>
+            \[ E=2\cdot\frac{1}{4\pi\varepsilon_0}\frac{|q|}{r^2}
+              =2\cdot9\times10^9\cdot\frac{2\times10^{-9}}{0.0025}
+              =1.44\times10^4\,\mathrm{V/m}. \]
+            <p>电势是标量，直接相加：</p>
+            \[ V=\frac{1}{4\pi\varepsilon_0}\left(\frac{q_1}{r}+\frac{q_2}{r}\right)=0. \]
+            <p>中点电势为零，但电场不为零。这说明“电势为零”与“场强为零”是两件不同的事。</p>
+          </div>
+
+          <div class="remark">
+            <p><span class="label">要点</span>电场是矢量，电势是标量；高斯定理只由内部净电荷决定通量；电势差是电场沿路径的负积分，电场是电势的负梯度；等势面与电场线垂直。电势为零不代表场强为零。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" id="e-conductors-current" data-toc="导体、电容与稳恒电流" data-terms="导体静电平衡|静电屏蔽|电容|电介质·极化·介电常数|电流·电流密度|电阻·电导率|电动势">
+        <p class="entry-meta">§ 11.2</p>
+        <h3 class="entry-title">导体、电容与稳恒电流</h3>
+        <p class="entry-en">Conductors, capacitance, and steady currents</p>
+
+        <div class="prose">
+          <p>导体中的电荷可以自由移动，因此在静电平衡时电荷会重新分布，直到内部电场为零。电容利用导体极板储存电荷；稳恒电流则是电荷在电场驱动下的持续漂移。</p>
+
+          <h4>导体静电平衡与静电屏蔽</h4>
+          <p>导体达到静电平衡时具有三条性质：内部电场为零；净电荷只分布在表面；表面附近的电场垂直于表面。若导体内部有空腔，且腔内无电荷，则腔内电场也为零，这就是静电屏蔽。外部电场被导体表面的感应电荷“挡”在外面，腔体内部不受影响。</p>
+
+          <h4>电容与电介质</h4>
+          <p>电容定义为</p>
+          <div class="formula">\[ C=\frac QU, \]</div>
+          <p>即升高单位电压所需储存的电荷。平行板电容器的电容为</p>
+          \[ C=\frac{\varepsilon_0 A}{d}\quad\text{（真空）},\qquad
+             C=\frac{\varepsilon_r\varepsilon_0 A}{d}\quad\text{（介质）}, \]
+          <p>其中 \(\varepsilon_r\) 是相对介电常数。电容器储存的能量为</p>
+          \[ W=\frac12CU^2=\frac12QU=\frac{Q^2}{2C}. \]
+          <p>电介质在外电场中发生极化：分子正负电荷中心分离形成偶极子，偶极子沿场方向排列，产生反向的内部场，使总场减弱。介电常数正是描述这种减弱程度的量。</p>
+
+          <h4>电流、电阻与电动势</h4>
+          <p>电流定义为单位时间通过的电荷，\(I=\mathrm dQ/\mathrm dt\)；电流密度 \(J=I/A\)。微观上，</p>
+          \[ J=ne v_d, \]
+          <p>其中 \(n\) 是载流子数密度，\(v_d\) 是漂移速度。电阻与电阻率的关系为</p>
+          \[ R=\rho\frac LA,\qquad \sigma=\frac1\rho, \]
+          <p>\(\sigma\) 为电导率。欧姆定律的宏观形式是 \(U=IR\)；微观形式是 \(\mathbf J=\sigma\mathbf E\)。电动势 \(\mathcal E\) 定义为单位电荷绕闭合回路一周非静电力做的功，它维持电路中的持续电流。</p>
+
+          <div class="example">
+            <p class="label">例题 11.2</p>
+            <p class="ask">一根铜导线长 \(1\,\mathrm m\)、截面积 \(1\,\mathrm{mm^2}\)，铜的电阻率为 \(1.7\times10^{-8}\,\Omega\cdot\mathrm m\)。求其电阻；若通过 \(2\,\mathrm A\) 电流，求两端电压。</p>
+            <p class="sol-label">解</p>
+            <p>截面积 \(A=1\,\mathrm{mm^2}=10^{-6}\,\mathrm{m^2}\)，于是</p>
+            \[ R=\rho\frac LA=1.7\times10^{-8}\cdot\frac1{10^{-6}}
+               =1.7\times10^{-2}\,\Omega. \]
+            <p>由欧姆定律，\(U=IR=2\times0.017=0.034\,\mathrm V\)。铜的电阻很小，因此常用作导线。</p>
+          </div>
+
+          <div class="remark">
+            <p><span class="label">要点</span>静电平衡时导体内部无场、电荷在表面；电容衡量储电荷能力，介质使其增大；电流是电荷的定向漂移，电阻由材料与几何共同决定；电动势是非静电力对单位电荷做的功。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" id="e-magnetic" data-toc="磁场、洛伦兹力与安培定律" data-terms="磁感应强度·磁感线|毕奥-萨伐尔定律|安培环路定理|安培力|洛伦兹力|磁矩|霍尔效应|磁介质·磁化·磁导率">
+        <p class="entry-meta">§ 11.3</p>
+        <h3 class="entry-title">磁场、洛伦兹力与安培定律</h3>
+        <p class="entry-en">Magnetic fields, Lorentz force, and Ampère's law</p>
+
+        <div class="prose">
+          <p>运动电荷与电流在周围产生磁场。磁场对运动电荷有垂直于速度的作用力，对载流导线有安培力；磁感线永远闭合，说明不存在磁单极子。</p>
+
+          <h4>磁感应强度与毕奥—萨伐尔定律</h4>
+          <p>磁感应强度 \(\mathbf B\) 描述磁场的强弱与方向，磁感线是闭合曲线。电流元 \(I\,\mathrm d\mathbf l\) 产生的磁场由毕奥—萨伐尔定律给出：</p>
+          <div class="formula">\[ \mathrm d\mathbf B=\frac{\mu_0}{4\pi}\frac{I\,\mathrm d\mathbf l\times\hat{\mathbf r}}{r^2}. \]</div>
+          <p>对无限长直导线积分可得 \(B=\dfrac{\mu_0I}{2\pi r}\)，方向沿以导线为轴的同心圆；对长直螺线管内部 \(B=\mu_0nI\)，其中 \(n\) 是单位长度匝数。</p>
+
+          <h4>安培环路定理、安培力与洛伦兹力</h4>
+          <p>安培环路定理指出，沿任意闭合回路的环量等于穿过回路电流的代数和乘以 \(\mu_0\)：</p>
+          <div class="formula">\[ \oint_C\mathbf B\cdot\mathrm d\mathbf l=\mu_0 I_{\text{穿}}. \]</div>
+          <p>它适合处理高对称性的磁场，如长直导线、螺线管和螺绕环。</p>
+          <p>载流导线在磁场中受到的安培力为</p>
+          \[ \mathrm d\mathbf F=I\,\mathrm d\mathbf l\times\mathbf B. \]
+          <p>运动电荷受到的洛伦兹力为</p>
+          <div class="formula">\[ \mathbf F=q(\mathbf E+\mathbf v\times\mathbf B). \]</div>
+          <p>磁场力垂直于速度，因此不做功，只改变运动方向。带电粒子在匀强磁场中做圆周运动，半径为 \(r=\dfrac{mv}{|q|B}\)，周期 \(T=\dfrac{2\pi m}{|q|B}\)。</p>
+
+          <h4>磁矩、霍尔效应与磁介质</h4>
+          <p>载流线圈的磁矩为 \(\boldsymbol\mu=IA\)，方向由右手定则确定。它在磁场中受到力矩 \(\boldsymbol\tau=\boldsymbol\mu\times\mathbf B\)，能量为 \(-\boldsymbol\mu\cdot\mathbf B\)。</p>
+          <p>霍尔效应：电流在磁场中偏转，使导体两侧累积电荷，出现横向电压。霍尔电压为</p>
+          \[ U_H=\frac{IB}{nqd}, \]
+          <p>其中 \(d\) 是厚度。霍尔电压的符号可以判断载流子的正负，这是半导体测量中的重要工具。</p>
+          <p>磁介质在外磁场中被磁化，磁化强度 \(\mathbf M\) 与磁场强度 \(\mathbf H\) 满足 \(\mathbf B=\mu_0(\mathbf H+\mathbf M)=\mu\mathbf H\)。顺磁质 \(\mu>\mu_0\)，抗磁质 \(\mu&lt;\mu_0\)，铁磁质则有显著的磁滞与饱和。</p>
+
+          <div class="example">
+            <p class="label">例题 11.3</p>
+            <p class="ask">一束速度 \(v=2\times10^6\,\mathrm{m/s}\) 的电子垂直进入 \(B=0.1\,\mathrm T\) 的匀强磁场。求电子圆周运动的半径；电子质量 \(9.11\times10^{-31}\,\mathrm{kg}\)。</p>
+            <p class="sol-label">解</p>
+            <p>洛伦兹力提供向心力：\(evB=mv^2/r\)，故</p>
+            \[ r=\frac{mv}{eB}
+              =\frac{9.11\times10^{-31}\times2\times10^6}
+              {1.6\times10^{-19}\times0.1}
+              \approx1.14\times10^{-4}\,\mathrm m. \]
+            <p>半径约为 \(0.114\,\mathrm{mm}\)。周期为 \(T=2\pi m/(eB)\approx3.6\times10^{-10}\,\mathrm s\)。</p>
+          </div>
+
+          <div class="remark">
+            <p><span class="label">要点</span>磁感线闭合，磁场无源；毕奥—萨伐尔给出电流元的磁场，安培环路定理处理对称场；洛伦兹力不做功，只改变方向；霍尔电压可判载流子符号；磁介质的磁导率描述磁化响应。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" id="e-induction-maxwell" data-toc="电磁感应与麦克斯韦方程组" data-terms="法拉第电磁感应定律|楞次定律|动生电动势|感生电动势|自感·互感|位移电流|麦克斯韦方程组|电磁波">
+        <p class="entry-meta">§ 11.4</p>
+        <h3 class="entry-title">电磁感应与麦克斯韦方程组</h3>
+        <p class="entry-en">Electromagnetic induction and Maxwell's equations</p>
+
+        <div class="prose">
+          <p>变化的磁场会产生电场，这是电磁感应的核心。麦克斯韦进一步指出，变化的电场也会产生磁场；把两者合在一起，就得到电场与磁场相互激发、脱离源在空间中传播的电磁波。</p>
+
+          <h4>法拉第定律与楞次定律</h4>
+          <p>穿过回路 \(S\) 的磁通量为</p>
+          \[ \Phi_B=\iint_S\mathbf B\cdot\mathrm d\mathbf S. \]
+          <p>法拉第电磁感应定律指出：回路中的感应电动势等于磁通量变化率的负值，</p>
+          <div class="formula">\[ \mathcal E=-\frac{\mathrm d\Phi_B}{\mathrm dt}. \]</div>
+          <p>负号由楞次定律给出：感应电流产生的磁场总是反抗原磁通量的变化。楞次定律是能量守恒的体现——如果感应电流帮助磁通量变化，就会产生无限增殖的能量。</p>
+
+          <h4>动生与感生电动势</h4>
+          <p>导体在磁场中运动产生的电动势称为动生电动势。长为 \(L\) 的直导线以速度 \(v\) 垂直切割磁感线时，</p>
+          \[ \mathcal E=BLv. \]
+          <p>若磁场本身随时间变化，即使导体不动，也会在空间中激发涡旋电场，产生感生电动势：</p>
+          \[ \oint_C\mathbf E\cdot\mathrm d\mathbf l=-\frac{\mathrm d}{\mathrm dt}\iint_S\mathbf B\cdot\mathrm d\mathbf S. \]
+          <p>这两者的物理机制不同，但都服从同一个法拉第定律。</p>
+
+          <h4>自感、互感与位移电流</h4>
+          <p>线圈自身电流变化产生的电动势为</p>
+          \[ \mathcal E_L=-L\frac{\mathrm dI}{\mathrm dt}, \]
+          <p>\(L\) 为自感系数，能量为 \(\frac12LI^2\)。两个线圈之间通过磁通量耦合，产生互感电动势。自感与互感是变压器与无线充电的基础。</p>
+          <p>麦克斯韦注意到，在电容器充电的间隙中并没有电荷通过，但磁场仍然存在。他引入位移电流</p>
+          \[ I_d=\varepsilon_0\frac{\mathrm d\Phi_E}{\mathrm dt}, \]
+          <p>把变化的电场等效为电流。这样安培环路定理就补全为</p>
+          \[ \oint_C\mathbf B\cdot\mathrm d\mathbf l
+             =\mu_0 I+\mu_0\varepsilon_0\frac{\mathrm d\Phi_E}{\mathrm dt}. \]
+          <p>有了这一项，电场与磁场可以互相激发，形成自持传播的电磁波。</p>
+
+          <h4>麦克斯韦方程组与电磁波</h4>
+          <p>真空中麦克斯韦方程组的积分形式为</p>
+          \[ \oint_S\mathbf E\cdot\mathrm d\mathbf S=\frac{Q}{\varepsilon_0},\qquad
+             \oint_S\mathbf B\cdot\mathrm d\mathbf S=0, \]
+          \[ \oint_C\mathbf E\cdot\mathrm d\mathbf l=-\frac{\mathrm d\Phi_B}{\mathrm dt},\qquad
+             \oint_C\mathbf B\cdot\mathrm d\mathbf l=\mu_0I+\mu_0\varepsilon_0\frac{\mathrm d\Phi_E}{\mathrm dt}. \]
+          <p>在无源真空中，它们给出波动方程</p>
+          \[ \nabla^2\mathbf E=\mu_0\varepsilon_0\frac{\partial^2\mathbf E}{\partial t^2}, \]
+          <p>波速为</p>
+          <div class="formula">\[ c=\frac{1}{\sqrt{\mu_0\varepsilon_0}}\approx3.00\times10^8\,\mathrm{m/s}. \]</div>
+          <p>这个速度恰好等于光速，从而揭示了光就是电磁波。电磁波中 \(\mathbf E\) 与 \(\mathbf B\) 相互垂直、同相振荡，传播方向由 \(\mathbf E\times\mathbf B\) 给出。</p>
+
+          <div class="example">
+            <p class="label">例题 11.4</p>
+            <p class="ask">长 \(L=0.5\,\mathrm m\) 的金属杆在 \(B=0.2\,\mathrm T\) 的匀强磁场中以 \(v=3\,\mathrm{m/s}\) 垂直切割磁感线，求动生电动势。</p>
+            <p class="sol-label">解</p>
+            <p>直接代入 \(\mathcal E=BLv\)：</p>
+            \[ \mathcal E=0.2\times0.5\times3=0.3\,\mathrm V. \]
+            <p>若杆与导轨构成闭合回路，感应电流的方向由楞次定律决定：磁场力会阻碍杆的运动，因此外力必须持续做功，才能维持杆的速度。这再次体现了能量守恒。</p>
+          </div>
+
+          <div class="remark">
+            <p><span class="label">要点</span>法拉第定律是电磁感应的总规律，楞次定律给出方向；动生与感生是两种机制，统一于磁通量变化；自感来自自身磁通量变化；位移电流补全了安培环路定理；麦克斯韦方程组预言了光速传播的电磁波。</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="chapter" id="ch-waves" data-num="12" data-title="振动与波动">
+      <header class="chapter-head">
+        <span class="chapter-num">12</span>
+        <div>
+          <h2>振动与波动</h2>
+          <p class="chapter-en">OSCILLATION AND WAVES</p>
+        </div>
+        <p class="chapter-count">2 篇</p>
+      </header>
+
+      <article class="entry" id="e-wave-basics" data-toc="波的基本描述与能量" data-terms="波·波速·波长·波数|横波·纵波|波前·波面·波线|波的能量·能流密度·强度">
+        <p class="entry-meta">§ 12.1</p>
+        <h3 class="entry-title">波的基本描述与能量</h3>
+        <p class="entry-en">Describing waves and their energy</p>
+
+        <div class="prose">
+          <p>波是振动在空间中的传播。介质中的质点只在平衡位置附近振动，扰动本身却以波速向前推进。描述一列简谐波，需要振幅、频率、波长、波速与相位这几个量。</p>
+
+          <h4>波函数与基本量</h4>
+          <p>沿 \(+x\) 方向传播的简谐波可写成</p>
+          <div class="formula">\[ y(x,t)=A\cos(kx-\omega t+\varphi_0), \]</div>
+          <p>其中 \(A\) 是振幅，\(k=2\pi/\lambda\) 是波数，\(\omega=2\pi f\) 是角频率。波长 \(\lambda\) 是一个周期内波传播的距离，周期 \(T=1/f\)，波速</p>
+          \[ v=\frac\lambda T=\lambda f=\frac\omega k. \]
+          <p>相位 \(kx-\omega t+\varphi_0\) 决定某点在某时刻的振动状态。波数 \(k\) 可以理解为“单位长度内的相位变化率”。</p>
+
+          <h4>横波与纵波</h4>
+          <p>振动方向垂直于传播方向的是横波，例如绳上的波与电磁波；振动方向平行于传播方向的是纵波，例如空气中的声波。横波需要切变恢复力，因此不能在理想流体中传播；纵波可以在固体、液体和气体中传播。</p>
+
+          <h4>波前、波面与波线</h4>
+          <p>同一时刻相位相同的点构成波面；最前面的波面称为波前。波线是与波面垂直、指向传播方向的线。平面波的波面是平面，波线是平行直线；点源发出的球面波，波面是同心球面，波线沿半径向外。</p>
+
+          <h4>波的能量与强度</h4>
+          <p>波传播时，介质质点具有动能与势能，二者同相位地变化。对机械波，能流密度（单位时间通过单位面积的能量）与振幅平方、频率平方成正比。波的强度 \(I\) 定义为单位面积上的平均功率，满足</p>
+          <div class="formula">\[ I\propto A^2. \]</div>
+          <p>球面波从点源向外扩散时，能量分布在半径 \(r\) 的球面上，因此强度按 \(1/r^2\) 衰减。这就是为什么远处的声音会变弱。</p>
+
+          <div class="example">
+            <p class="label">例题 12.1</p>
+            <p class="ask">一列波为 \(y=0.02\cos(4\pi x-20\pi t)\)（SI 单位）。求振幅、波长、周期、频率、波速与传播方向。</p>
+            <p class="sol-label">解</p>
+            <p>与 \(y=A\cos(kx-\omega t)\) 对比：\(A=0.02\,\mathrm m\)，\(k=4\pi\,\mathrm{rad/m}\)，\(\omega=20\pi\,\mathrm{rad/s}\)。于是</p>
+            \[ \lambda=\frac{2\pi}{k}=0.5\,\mathrm m,\qquad
+               T=\frac{2\pi}{\omega}=0.1\,\mathrm s,\qquad
+               f=\frac1T=10\,\mathrm{Hz},\qquad
+               v=\frac\omega k=5\,\mathrm{m/s}. \]
+            <p>\(kx-\omega t\) 中 \(x\) 与 \(t\) 的符号相反，表示波沿 \(+x\) 方向传播。</p>
+          </div>
+
+          <div class="remark">
+            <p><span class="label">要点</span>波函数中的 \(k\) 与 \(\omega\) 分别编码空间与时间周期性；\(v=\lambda f\) 是基本关系；横波与纵波的区别在振动方向；强度正比于振幅平方，球面波强度按 \(1/r^2\) 衰减。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" id="e-wave-superposition" data-toc="叠加、干涉、驻波与多普勒" data-terms="惠更斯原理|波的叠加原理|干涉·相干条件|驻波|半波损失|多普勒效应">
+        <p class="entry-meta">§ 12.2</p>
+        <h3 class="entry-title">叠加、干涉、驻波与多普勒</h3>
+        <p class="entry-en">Superposition, interference, standing waves, and Doppler</p>
+
+        <div class="prose">
+          <p>波相遇时不会相互“撞坏”，而是位移直接相加。这个线性叠加原理导致干涉与驻波；当波源与观察者相对运动时，接收频率发生改变，这就是多普勒效应。</p>
+
+          <h4>惠更斯原理与波的叠加原理</h4>
+          <p>惠更斯原理指出：波前上的每一点都可以看作新的子波源，这些子波的包络构成下一时刻的波前。它解释了衍射与折射的方向变化。</p>
+          <p>叠加原理指出：两列波在同一点引起的位移等于各自位移的矢量和。对简谐波，同频率、同振动方向、相位差恒定的两列波称为相干波；只有相干波才能形成稳定的干涉图样。</p>
+
+          <h4>干涉</h4>
+          <p>两个同相波源到某点的路程差为 \(\Delta r\) 时，相位差为</p>
+          \[ \Delta\varphi=\frac{2\pi\Delta r}{\lambda}. \]
+          <p>当 \(\Delta r=k\lambda\) 时加强（相长干涉），当 \(\Delta r=(k+\frac12)\lambda\) 时减弱（相消干涉）。干涉的本质是相位的“对齐”或“错开”，不是能量凭空产生或消失。</p>
+
+          <h4>驻波与半波损失</h4>
+          <p>两列振幅相同、传播方向相反的同频波叠加，形成驻波。设</p>
+          \[ y_1=A\sin(kx-\omega t),\qquad y_2=A\sin(kx+\omega t), \]
+          <p>则</p>
+          <div class="formula">\[ y=y_1+y_2=2A\sin(kx)\cos(\omega t). \]</div>
+          <p>空间部分 \(\sin(kx)\) 决定哪里振幅最大（波腹）、哪里始终为零（波节）；时间部分 \(\cos(\omega t)\) 只做整体振动。波节间距为 \(\lambda/2\)。</p>
+          <p>当波从波密介质反射时，反射波相位突变 \(\pi\)，称为半波损失。固定端反射的弦上，入射脉冲返回时上下颠倒，就是半波损失的直观表现。</p>
+
+          <h4>多普勒效应</h4>
+          <p>声源频率为 \(f\)，声速为 \(v\)，观察者速度为 \(v_o\)，声源速度为 \(v_s\)，则接收频率为</p>
+          \[ f'=f\frac{v\pm v_o}{v\mp v_s}, \]
+          <p>符号规则：观察者靠近声源取“+”，远离取“−”；声源靠近观察者时分母取“−”，远离取“+”。当声源接近时，前方波前被压缩，频率升高；远离时波前被拉长，频率降低。</p>
+          <p>光的多普勒效应需用相对论公式，但“靠近变蓝、远离变红”的定性结论相同。</p>
+
+          <div class="example">
+            <p class="label">例题 12.2</p>
+            <p class="ask">两列同频率、同相位的波在空间某点相遇，波长 \(\lambda=0.4\,\mathrm m\)。求路程差为 \(0.2\,\mathrm m\) 与 \(0.6\,\mathrm m\) 时的干涉结果。</p>
+            <p class="sol-label">解</p>
+            <p>\(\Delta r=0.2\,\mathrm m=\lambda/2\)，相位差为 \(\pi\)，两波相消；\(\Delta r=0.6\,\mathrm m=1.5\lambda=(1+\frac12)\lambda\)，同样是半波长的奇数倍，也相消。若路程差为 \(0.4\,\mathrm m\) 或 \(0.8\,\mathrm m\)，则是波长的整数倍，两波加强。</p>
+          </div>
+
+          <div class="remark">
+            <p><span class="label">要点</span>叠加是线性相加；相干需要同频、同振动方向、恒定相位差；驻波是两列反向波的叠加，波节间距为半波长；半波损失发生在波密介质反射；多普勒效应源于波前间距的变化。</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="chapter" id="ch-optics" data-num="13" data-title="光学">
+      <header class="chapter-head">
+        <span class="chapter-num">13</span>
+        <div>
+          <h2>光学</h2>
+          <p class="chapter-en">OPTICS</p>
+        </div>
+        <p class="chapter-count">2 篇</p>
+      </header>
+
+      <article class="entry" id="e-geometric-interference" data-toc="几何光学与干涉" data-terms="折射定律|全反射·临界角|光程·光程差|杨氏双缝干涉|劈尖·牛顿环">
+        <p class="entry-meta">§ 13.1</p>
+        <h3 class="entry-title">几何光学与干涉</h3>
+        <p class="entry-en">Geometric optics and interference</p>
+
+        <div class="prose">
+          <p>几何光学把光看作沿直线传播的射线，用折射与反射描述方向；波动光学则关心相位，用光程差解释干涉。两者在尺度远大于波长时一致，在微小尺度上必须用波动图像。</p>
+
+          <h4>折射定律与全反射</h4>
+          <p>光从介质 1 进入介质 2 时，满足斯涅尔定律</p>
+          <div class="formula">\[ n_1\sin\theta_1=n_2\sin\theta_2, \]</div>
+          <p>其中 \(n=c/v\) 是折射率。光从光密介质射向光疏介质（\(n_1>n_2\)）时，若入射角满足</p>
+          \[ \sin\theta_c=\frac{n_2}{n_1}, \]
+          <p>则折射角达到 \(90^\circ\)；超过临界角 \(\theta_c\) 后发生全反射，光全部返回原介质。光纤通信正是利用全反射把光限制在纤芯内。</p>
+
+          <h4>光程与光程差</h4>
+          <p>光在折射率为 \(n\) 的介质中走过的几何路程 \(s\)，对应的光程为 \(L=ns\)。光程的意义是把不同介质中的传播折算成真空中的等效路程：</p>
+          \[ \Delta\varphi=\frac{2\pi}{\lambda_0}\Delta L, \]
+          <p>其中 \(\lambda_0\) 是真空波长，\(\Delta L\) 是两束光的光程差。干涉条件最终都可以归结为光程差与波长的比较。</p>
+
+          <h4>杨氏双缝干涉</h4>
+          <p>两条相距 \(d\) 的狭缝发出相干光，在距离 \(D\) 的屏幕上形成干涉条纹。对屏幕上偏离中心 \(y\) 的点，路程差近似为</p>
+          \[ \Delta r=d\sin\theta\approx d\frac yD. \]
+          <p>明纹条件为 \(\Delta r=k\lambda\)，暗纹条件为 \(\Delta r=(k+\frac12)\lambda\)。相邻明纹间距为</p>
+          <div class="formula">\[ \Delta y=\frac{\lambda D}{d}. \]</div>
+          <p>条纹间距与波长成正比、与缝距成反比。用双缝干涉可以测量光的波长。</p>
+
+          <h4>薄膜干涉：劈尖与牛顿环</h4>
+          <p>光在薄膜上下表面反射后相遇，光程差为 \(2nd\cos\theta'\)。若存在半波损失，还要加上或减去 \(\lambda/2\)。当膜厚均匀变化时，等厚处形成同一级条纹：空气劈尖产生等间距直条纹；平凸透镜与平板之间的空气膜产生同心圆环，即牛顿环。</p>
+
+          <div class="example">
+            <p class="label">例题 13.1</p>
+            <p class="ask">双缝间距 \(d=0.2\,\mathrm{mm}\)，缝到屏的距离 \(D=1\,\mathrm m\)，入射光波长 \(\lambda=600\,\mathrm{nm}\)。求相邻明纹间距。</p>
+            <p class="sol-label">解</p>
+            <p>直接代入</p>
+            \[ \Delta y=\frac{\lambda D}{d}
+              =\frac{600\times10^{-9}\times1}{0.2\times10^{-3}}
+              =3\times10^{-3}\,\mathrm m=3\,\mathrm{mm}. \]
+            <p>在 \(1\,\mathrm m\) 外的屏上，条纹间距为 \(3\,\mathrm{mm}\)，肉眼可以清楚分辨。</p>
+          </div>
+
+          <div class="remark">
+            <p><span class="label">要点</span>折射由折射率与角度决定，临界角满足 \(\sin\theta_c=n_2/n_1\)；光程把介质中的路程折算为真空路程；双缝干涉的明暗由光程差决定；薄膜干涉的条纹是等厚线。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" id="e-diffraction-polarization" data-toc="衍射、分辨极限与偏振" data-terms="惠更斯-菲涅耳原理|单缝衍射|光栅衍射|分辨极限|偏振|马吕斯定律|布儒斯特角">
+        <p class="entry-meta">§ 13.2</p>
+        <h3 class="entry-title">衍射、分辨极限与偏振</h3>
+        <p class="entry-en">Diffraction, resolution, and polarization</p>
+
+        <div class="prose">
+          <p>当光遇到与波长相当的障碍或狭缝时，会绕到几何阴影中，这就是衍射。衍射决定了光学仪器的分辨极限，也解释了光栅把不同波长分开的能力。偏振则描述光振动方向的选择性。</p>
+
+          <h4>惠更斯—菲涅耳原理与单缝衍射</h4>
+          <p>惠更斯—菲涅耳原理指出：波前上每一点都是相干子波源，空间某点的光强由所有子波在该点的相干叠加决定。单缝衍射的暗纹条件为</p>
+          \[ a\sin\theta=k\lambda\qquad(k=\pm1,\pm2,\dots), \]
+          <p>其中 \(a\) 是缝宽。中央亮纹的角宽度约为 \(2\lambda/a\)。缝越窄，衍射越明显，中央亮纹越宽。</p>
+
+          <h4>光栅衍射与分辨极限</h4>
+          <p>光栅由大量等间距狭缝组成，主极大满足</p>
+          <div class="formula">\[ d\sin\theta=k\lambda, \]</div>
+          <p>其中 \(d\) 是光栅常数。缝数越多，主极大越锐利，色散能力越强。光栅是光谱仪的核心元件。</p>
+          <p>圆孔衍射使点光源成像为一个艾里斑，其角半径约为 \(1.22\lambda/D\)，\(D\) 为孔径。瑞利判据指出：当两个点光源的角距离小于 \(1.22\lambda/D\) 时，它们的像无法分辨。因此望远镜口径越大，分辨能力越强。</p>
+
+          <h4>偏振、马吕斯定律与布儒斯特角</h4>
+          <p>光是横波，电矢量垂直于传播方向。自然光在各个方向上振动均匀；偏振片只让某一方向的振动通过。强度为 \(I_0\) 的线偏振光通过检偏器后，</p>
+          <div class="formula">\[ I=I_0\cos^2\theta, \]</div>
+          <p>这就是马吕斯定律，其中 \(\theta\) 是振动方向与检偏器透振方向的夹角。自然光通过第一个偏振片后强度减半。</p>
+          <p>当自然光以布儒斯特角入射到两种介质界面时，反射光成为完全偏振光，且反射光与折射光垂直。布儒斯特角满足</p>
+          \[ \tan\theta_B=\frac{n_2}{n_1}. \]
+          <p>例如光从空气射向玻璃（\(n\approx1.5\)），\(\theta_B\approx56.3^\circ\)。摄影中常用偏振镜消除水面或玻璃表面的反射光，利用的正是这种偏振选择性。</p>
+
+          <div class="example">
+            <p class="label">例题 13.2</p>
+            <p class="ask">光栅每毫米有 \(500\) 条刻线，用波长 \(600\,\mathrm{nm}\) 的光垂直照射，求第一级主极大的衍射角。</p>
+            <p class="sol-label">解</p>
+            <p>光栅常数 \(d=1/(500\times10^3)\,\mathrm m=2\times10^{-6}\,\mathrm m\)。由 \(d\sin\theta=\lambda\)，</p>
+            \[ \sin\theta=\frac{600\times10^{-9}}{2\times10^{-6}}=0.3, \]
+            <p>故 \(\theta\approx17.5^\circ\)。第二级满足 \(\sin\theta=0.6\)，对应 \(\theta\approx36.9^\circ\)；第三级 \(\sin\theta=0.9\) 仍可见，更高阶则会超出 \(90^\circ\)。</p>
+          </div>
+
+          <div class="remark">
+            <p><span class="label">要点</span>单缝暗纹 \(a\sin\theta=k\lambda\)；光栅主极大 \(d\sin\theta=k\lambda\)；分辨极限由圆孔衍射与瑞利判据决定；马吕斯定律 \(I=I_0\cos^2\theta\)；布儒斯特角入射时反射光完全偏振。</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="chapter" id="ch-quantum" data-num="14" data-title="近代物理">
+      <header class="chapter-head">
+        <span class="chapter-num">14</span>
+        <div>
+          <h2>近代物理</h2>
+          <p class="chapter-en">MODERN PHYSICS</p>
+        </div>
+        <p class="chapter-count">3 篇</p>
+      </header>
+
+      <article class="entry" id="e-quantum-beginnings" data-toc="量子开端：黑体、光电效应与光子" data-terms="黑体辐射|普朗克常量·能量子|光电效应·逸出功·截止频率|光子|康普顿散射">
+        <p class="entry-meta">§ 14.1</p>
+        <h3 class="entry-title">量子开端：黑体、光电效应与光子</h3>
+        <p class="entry-en">The quantum hypothesis: blackbodies, photons, and Compton scattering</p>
+
+        <div class="prose">
+          <p>19 世纪末，经典物理在三个实验中碰壁：黑体辐射的紫外灾难、光电效应的频率阈值、康普顿散射的波长变化。普朗克、爱因斯坦与康普顿分别用“能量子”“光子”与“光子动量”解决了它们，量子力学由此开端。</p>
+
+          <h4>黑体辐射、普朗克常量与能量子</h4>
+          <p>黑体是能完全吸收并重新发射辐射的理想物体。实验发现，黑体辐射的能量按波长分布，温度越高，峰值波长越短。经典理论预言短波端能量趋于无穷，称为紫外灾难。普朗克假设能量只能以离散的“能量子”发射或吸收：</p>
+          <div class="formula">\[ E=h\nu, \]</div>
+          <p>其中 \(h=6.626\times10^{-34}\,\mathrm{J\cdot s}\) 是普朗克常量。由此得到与实验完全符合的普朗克公式。能量不连续，是量子概念的第一个明确信号。</p>
+
+          <h4>光电效应与光子</h4>
+          <p>光电效应中，光照射金属表面使电子逸出。实验事实是：存在截止频率 \(\nu_0\)，低于它无论光多强都没有电子；光强只影响电子数量，不影响最大动能。爱因斯坦用光子解释：</p>
+          <div class="formula">\[ h\nu=W+E_{k,\max}, \]</div>
+          <p>其中 \(W\) 是逸出功，\(E_{k,\max}\) 是光电子的最大初动能。截止频率满足 \(h\nu_0=W\)。光子还携带动量</p>
+          \[ p=\frac{h}{\lambda}. \]
+          <p>光既是波又是粒子，这就是波粒二象性。</p>
+
+          <h4>康普顿散射</h4>
+          <p>X 射线被电子散射后，散射光的波长变长。康普顿用光子与电子的弹性碰撞解释，得到</p>
+          <div class="formula">\[ \Delta\lambda=\frac{h}{m_ec}(1-\cos\theta), \]</div>
+          <p>其中 \(m_e\) 是电子质量，\(\theta\) 是散射角。\(h/(m_ec)=2.43\times10^{-12}\,\mathrm m\) 称为康普顿波长。波长变化说明光子确实有动量，光子的粒子性不再是比喻。</p>
+
+          <div class="example">
+            <p class="label">例题 14.1</p>
+            <p class="ask">某金属的逸出功为 \(2.2\,\mathrm{eV}\)。用波长 \(400\,\mathrm{nm}\) 的光照射，能否产生光电效应？若能，求最大初动能。</p>
+            <p class="sol-label">解</p>
+            <p>光子能量为</p>
+            \[ E=\frac{hc}{\lambda}=\frac{1240\,\mathrm{eV\cdot nm}}{400\,\mathrm{nm}}=3.1\,\mathrm{eV}. \]
+            <p>因为 \(3.1\,\mathrm{eV}>2.2\,\mathrm{eV}\)，可以产生光电子。最大初动能为</p>
+            \[ E_{k,\max}=3.1-2.2=0.9\,\mathrm{eV}. \]
+            <p>截止波长满足 \(hc/\lambda_0=2.2\,\mathrm{eV}\)，即 \(\lambda_0\approx564\,\mathrm{nm}\)。</p>
+          </div>
+
+          <div class="remark">
+            <p><span class="label">要点</span>能量量子化是量子力学的起点；光电效应说明光的能量与频率相关，与强度无关；光子能量 \(h\nu\)、动量 \(h/\lambda\)；康普顿散射证明光子有动量，波长变化由散射角决定。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" id="e-quantum-mechanics" data-toc="德布罗意波、波函数与薛定谔方程" data-terms="德布罗意波·波粒二象性|不确定性原理|波函数|概率密度·归一化|薛定谔方程·定态|势阱|势垒·隧穿效应">
+        <p class="entry-meta">§ 14.2</p>
+        <h3 class="entry-title">德布罗意波、波函数与薛定谔方程</h3>
+        <p class="entry-en">Matter waves, wavefunctions, and the Schrödinger equation</p>
+
+        <div class="prose">
+          <p>如果光既是波又是粒子，德布罗意反问：实物粒子是否也有波？答案是肯定的。量子力学用波函数描述粒子，用薛定谔方程决定波函数如何演化，用概率解释测量结果。</p>
+
+          <h4>德布罗意波与不确定性原理</h4>
+          <p>德布罗意提出</p>
+          <div class="formula">\[ \lambda=\frac hp=\frac{h}{mv}. \]</div>
+          <p>宏观物体的波长极小，因此看不到波动性；电子等微观粒子的波长与原子尺度相当，可以观察到衍射。海森堡不确定性原理进一步指出：</p>
+          \[ \Delta x\,\Delta p\ge\frac\hbar2, \]
+          <p>位置与动量不能同时精确确定。这不是仪器精度问题，而是波粒二象性的内在限制。</p>
+
+          <h4>波函数与概率密度</h4>
+          <p>量子态由波函数 \(\psi(\mathbf r,t)\) 描述。波函数本身一般是复数，不是直接可观测量；\(|\psi|^2\) 是概率密度，表示在某处找到粒子的概率密度。归一化条件为</p>
+          <div class="formula">\[ \int_{\mathbb R^3}|\psi|^2\,\mathrm dV=1. \]</div>
+          <p>测量某物理量时，结果按概率分布出现；波函数在测量后发生“坍缩”，但薛定谔方程本身是决定性的。</p>
+
+          <h4>薛定谔方程与定态</h4>
+          <p>非相对论量子力学的基本方程是</p>
+          \[ i\hbar\frac{\partial\psi}{\partial t}
+             =-\frac{\hbar^2}{2m}\nabla^2\psi+V(\mathbf r)\psi. \]
+          <p>若势能 \(V\) 不显含时间，可以分离变量得到定态薛定谔方程</p>
+          <div class="formula">\[ -\frac{\hbar^2}{2m}\nabla^2\psi+V\psi=E\psi. \]</div>
+          <p>定态的能量 \(E\) 确定，概率密度不随时间变化。解定态方程通常得到离散的能级，这是量子化的来源。</p>
+
+          <h4>势阱与隧穿</h4>
+          <p>一维无限深势阱中，粒子被限制在 \(0&lt;x&lt;L\)，边界波函数为零，解为</p>
+          \[ \psi_n(x)=\sqrt{\frac2L}\sin\frac{n\pi x}{L},\qquad
+             E_n=\frac{n^2\pi^2\hbar^2}{2mL^2},\quad n=1,2,\dots \]
+          <p>能量只能取离散值，且最低能量不为零。这是“被束缚”的直接后果。</p>
+          <p>若势垒高度有限、宽度为 \(a\)，即使粒子能量低于势垒，波函数也会在垒内指数衰减，并在另一侧保留非零振幅，这就是隧穿效应。透射概率近似为</p>
+          \[ T\sim e^{-2\kappa a},\qquad \kappa=\frac{\sqrt{2m(V_0-E)}}{\hbar}. \]
+          <p>扫描隧道显微镜与核聚变中的隧穿都以这一效应为基础。</p>
+
+          <div class="example">
+            <p class="label">例题 14.2</p>
+            <p class="ask">电子被限制在宽 \(L=1\,\mathrm{nm}\) 的一维无限深势阱中，求基态能量。</p>
+            <p class="sol-label">解</p>
+            <p>利用 \(E_1=\dfrac{\pi^2\hbar^2}{2mL^2}\)，代入 \(\hbar c=197\,\mathrm{eV\cdot nm}\)、\(mc^2=0.511\times10^6\,\mathrm{eV}\)，可得</p>
+            \[ E_1\approx\frac{h^2}{8mL^2}=\frac{(1240\,\mathrm{eV\cdot nm})^2}
+              {8\times0.511\times10^6\,\mathrm{eV}\times(1\,\mathrm{nm})^2}
+              \approx0.376\,\mathrm{eV}. \]
+            <p>与原子中的电子能量同数量级，这正是量子效应在纳米尺度显著的原因。</p>
+          </div>
+
+          <div class="remark">
+            <p><span class="label">要点</span>德布罗意波把动量与波长联系起来；不确定性原理限制同时精确测量；波函数平方是概率密度，必须归一化；薛定谔方程决定波函数演化；束缚态能量离散，隧穿是波函数进入经典禁区的结果。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" id="e-atoms-lasers" data-toc="原子结构、泡利原理与激光" data-terms="量子数|泡利不相容原理|受激辐射|粒子数反转|激光">
+        <p class="entry-meta">§ 14.3</p>
+        <h3 class="entry-title">原子结构、泡利原理与激光</h3>
+        <p class="entry-en">Atomic structure, Pauli exclusion, and lasers</p>
+
+        <div class="prose">
+          <p>原子中电子的状态由一组量子数标记；泡利原理决定了电子如何填充能级，从而解释元素周期表。受激辐射与粒子数反转则把量子跃迁变成一束高度相干的激光。</p>
+
+          <h4>量子数与泡利不相容原理</h4>
+          <p>氢原子中电子的状态由四个量子数描述：主量子数 \(n=1,2,\dots\) 决定能级；角量子数 \(l=0,1,\dots,n-1\) 决定角动量大小；磁量子数 \(m_l=-l,\dots,l\) 决定角动量方向；自旋量子数 \(m_s=\pm\frac12\)。泡利不相容原理指出：同一原子中不能有两个电子占据完全相同的四个量子数。</p>
+          <p>因此每个空间轨道最多容纳两个自旋相反的电子。电子按能量从低到高填充，形成壳层结构，元素周期表的周期正是壳层填充的结果。</p>
+
+          <h4>受激辐射与粒子数反转</h4>
+          <p>原子从激发态跃迁到低能态时会发光。若一个能量为 \(h\nu=E_2-E_1\) 的光子经过激发态原子，会诱发它发出一个同频率、同相位、同方向的光子，这就是受激辐射。一个光子变成两个，实现光放大。</p>
+          <p>但正常情况下低能级粒子数多于高能级，吸收会占主导。只有实现粒子数反转——高能级粒子数多于低能级——才能获得净增益。这需要外部泵浦不断把粒子从低能级抽运到高能级。</p>
+
+          <h4>激光</h4>
+          <p>激光器由增益介质、泵浦源和光学谐振腔组成。光子在两面反射镜之间来回传播，每次经过介质都被受激辐射放大；当增益超过损耗时，形成自持振荡，输出激光。激光具有单色性好、方向性强、相干性高的特点。</p>
+
+          <div class="example">
+            <p class="label">例题 14.3</p>
+            <p class="ask">某激光器发出波长 \(620\,\mathrm{nm}\) 的光，求对应光子的能量。</p>
+            <p class="sol-label">解</p>
+            <p>用 \(E=hc/\lambda\)：</p>
+            \[ E=\frac{1240\,\mathrm{eV\cdot nm}}{620\,\mathrm{nm}}\approx2.0\,\mathrm{eV}. \]
+            <p>这对应于半导体或染料分子中常见的电子跃迁能量，因此可以选用对应的材料实现该波长的激光输出。</p>
+          </div>
+
+          <div class="remark">
+            <p><span class="label">要点</span>四个量子数标记电子状态；泡利原理限制每个态最多一个费米子；受激辐射产生同频同相的光子；粒子数反转是激光增益的前提；谐振腔提供反馈与模式选择。</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="chapter" id="ch-relativity" data-num="15" data-title="相对论">
+      <header class="chapter-head">
+        <span class="chapter-num">15</span>
+        <div>
+          <h2>相对论</h2>
+          <p class="chapter-en">RELATIVITY</p>
+        </div>
+        <p class="chapter-count">2 篇</p>
+      </header>
+
+      <article class="entry" id="e-special-relativity" data-toc="狭义相对论：时空与同时性" data-terms="光速不变原理·相对性原理|洛伦兹变换|同时性的相对性|时间膨胀|长度收缩">
+        <p class="entry-meta">§ 15.1</p>
+        <h3 class="entry-title">狭义相对论：时空与同时性</h3>
+        <p class="entry-en">Special relativity: spacetime and simultaneity</p>
+
+        <div class="prose">
+          <p>狭义相对论只有两条公设：相对性原理与光速不变原理。它们推翻了绝对时间与绝对空间，把时间与空间编织成统一的时空。</p>
+
+          <h4>两条公设：光速不变与相对性原理</h4>
+          <p>相对性原理：一切惯性系中物理规律形式相同。光速不变原理：真空中光速在所有惯性系中都等于 \(c\)，与光源和观察者的运动无关。</p>
+          <p>若惯性系 \(S'\) 相对 \(S\) 以速度 \(v\) 沿 \(x\) 轴运动，则洛伦兹变换为</p>
+          <div class="formula">\[ x'=\gamma(x-vt),\quad t'=\gamma\left(t-\frac{vx}{c^2}\right),\qquad
+          \gamma=\frac1{\sqrt{1-v^2/c^2}}. \]</div>
+          <p>当 \(v\ll c\) 时 \(\gamma\approx1\)，回到伽利略变换。洛伦兹变换保持光速不变：若 \(x=ct\)，代入得 \(x'=ct'\)。</p>
+
+          <h4>同时性的相对性</h4>
+          <p>在 \(S\) 系中同时发生的两个异地事件，在 \(S'\) 系中一般不同时。由 \(t'=\gamma(t-vx/c^2)\)，即使 \(t_1=t_2\)，只要 \(x_1\ne x_2\)，就有 \(t_1'\ne t_2'\)。因此“同时”不是绝对的，而是依赖参考系。</p>
+
+          <h4>时间膨胀与长度收缩</h4>
+          <p>对同一地点发生的两个事件，在相对运动的参考系中测得的时间间隔更长：</p>
+          <div class="formula">\[ \Delta t=\gamma\Delta\tau, \]</div>
+          <p>其中 \(\Delta\tau\) 是固有时间（随物体一起运动的钟测得的时间）。运动的钟走得慢。</p>
+          <p>对沿运动方向放置的尺子，其长度在运动参考系中变短：</p>
+          <div class="formula">\[ L=\frac{L_0}{\gamma}, \]</div>
+          <p>\(L_0\) 是固有长度。时间膨胀与长度收缩是同一套洛伦兹变换的两个侧面，不能把它们当作独立的“物理变形”。</p>
+
+          <div class="example">
+            <p class="label">例题 15.1</p>
+            <p class="ask">μ 子的固有寿命为 \(2.2\,\mu s\)。若它以 \(0.99c\) 运动，求实验室系中的寿命与飞行距离。</p>
+            <p class="sol-label">解</p>
+            <p>先算洛伦兹因子：</p>
+            \[ \gamma=\frac1{\sqrt{1-0.99^2}}\approx7.09. \]
+            <p>实验室系寿命 \(\Delta t=\gamma\tau\approx7.09\times2.2\,\mu s\approx15.6\,\mu s\)。飞行距离</p>
+            \[ d=v\Delta t\approx0.99\times3\times10^8\times15.6\times10^{-6}
+              \approx4.6\times10^3\,\mathrm m. \]
+            <p>如果没有时间膨胀，μ 子只能飞约 \(650\,\mathrm m\)，无法到达地面；实验观测到的 μ 子数量支持相对论的预言。</p>
+          </div>
+
+          <div class="remark">
+            <p><span class="label">要点</span>光速不变是公设，不是推导结果；洛伦兹变换混合时间与空间；同时性依赖参考系；时间膨胀与长度收缩都由 \(\gamma\) 控制；低速时回到经典力学。</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" id="e-relativistic-energy" data-toc="相对论能量与质能方程" data-terms="相对论质量·动量·能量|质能方程">
+        <p class="entry-meta">§ 15.2</p>
+        <h3 class="entry-title">相对论能量与质能方程</h3>
+        <p class="entry-en">Relativistic energy and mass–energy equivalence</p>
+
+        <div class="prose">
+          <p>相对论修正了动量与能量。动量仍写成 \(p=mv\) 的形式，但质量必须理解为随速度变化的相对论质量，或者把 \(m\) 保留为静止质量，写成 \(p=\gamma m v\)。</p>
+
+          <h4>相对论动量与能量</h4>
+          <p>总能量定义为</p>
+          <div class="formula">\[ E=\gamma mc^2, \]</div>
+          <p>静止能量为 \(E_0=mc^2\)。动能是总能量减去静止能量：</p>
+          \[ E_k=(\gamma-1)mc^2. \]
+          <p>当 \(v\ll c\) 时，\(\gamma\approx1+\frac12v^2/c^2\)，于是 \(E_k\approx\frac12mv^2\)，回到经典结果。</p>
+          <p>能量、动量与静止质量满足</p>
+          <div class="formula">\[ E^2=p^2c^2+m^2c^4. \]</div>
+          <p>光子静止质量为零，因此 \(E=pc\)；对光子，\(p=h/\lambda\) 与 \(E=h\nu\) 一致。</p>
+
+          <h4>质能方程</h4>
+          <p>爱因斯坦的质能方程</p>
+          <div class="formula">\[ E=mc^2 \]</div>
+          <p>说明质量与能量是同一枚硬币的两面。核反应中的质量亏损 \(\Delta m\) 会释放能量 \(\Delta E=\Delta mc^2\)。太阳的核聚变、核电站与核武器都遵循这一关系。</p>
+
+          <div class="example">
+            <p class="label">例题 15.2</p>
+            <p class="ask">电子静止能量为 \(0.511\,\mathrm{MeV}\)。当它以 \(0.8c\) 运动时，求总能量与动能。</p>
+            <p class="sol-label">解</p>
+            <p>\(\gamma=\dfrac1{\sqrt{1-0.8^2}}=\dfrac1{0.6}=\dfrac53\)。总能量为</p>
+            \[ E=\frac53\times0.511\,\mathrm{MeV}\approx0.852\,\mathrm{MeV}. \]
+            <p>动能为</p>
+            \[ E_k=E-E_0\approx0.852-0.511=0.341\,\mathrm{MeV}. \]
+            <p>若用经典公式 \(\frac12mv^2\) 估算，会得到约 \(0.164\,\mathrm{MeV}\)，明显偏小；速度越大，相对论修正越重要。</p>
+          </div>
+
+          <div class="remark">
+            <p><span class="label">要点</span>总能量 \(E=\gamma mc^2\)；静止能量 \(mc^2\)；动能是总能量与静止能量之差；能量—动量关系 \(E^2=p^2c^2+m^2c^4\)；质能等价把所有质量变化与能量变化联系起来。</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+
+    <section class="chapter" id="term-index" data-num="索引" data-title="术语索引">
+      <header class="chapter-head">
+        <span class="chapter-num">术语</span>
+        <div>
+          <h2>术语索引</h2>
+          <p class="chapter-en">INDEX OF TERMS</p>
+        </div>
+      </header>
+      <div id="term-index-body" class="term-index"></div>
+      <p class="index-note">共 208 个术语，按章节排列。点击任一术语可跳到对应笔记；也可使用顶部检索框按概念查找。</p>
+    </section>
+  </main>
+</div>
+
+<footer class="colophon">
+  <p>数理读本 · 第一版 · 二〇二六年</p>
+  <p>用定义、例题与证明理解概念，用动画看见结构。</p>
+  <p class="backtop"><a href="#top">↑ 回到顶部</a></p>
+</footer>
+
+<div class="viz-modal" id="viz-modal" hidden>
+  <div class="viz-backdrop" data-viz-close></div>
+  <div class="viz-sheet" role="dialog" aria-modal="true" aria-labelledby="viz-title">
+    <button class="viz-close" data-viz-close aria-label="关闭">×</button>
+    <p class="viz-kicker" id="viz-kicker"></p>
+    <h2 class="viz-title" id="viz-title"></h2>
+    <p class="viz-en" id="viz-en"></p>
+    <div class="viz-plate"><canvas id="viz-canvas" aria-hidden="true"></canvas></div>
+    <p class="viz-d" id="viz-d"></p>
+    <div class="viz-formula" id="viz-formula" hidden></div>
+    <p class="viz-cap" id="viz-cap"></p>
+  </div>
+</div>
+
+<script src="vendor/katex/katex.min.js"></script>
+<script src="vendor/katex/auto-render.min.js"></script>
+<script src="js/reader.js"></script>
+<script src="js/term-data.js"></script>
+<script src="js/formulas.js"></script>
+<script src="js/helpers.js"></script>
+<script src="js/scenes-math-a.js"></script>
+<script src="js/scenes-math-b.js"></script>
+<script src="js/scenes-math-c.js"></script>
+<script src="js/scenes-physics-a.js"></script>
+<script src="js/scenes-physics-b.js"></script>
+<script src="js/scenes-physics-c.js"></script>
+<script src="js/figures.js"></script>
+</body>
+</html>
