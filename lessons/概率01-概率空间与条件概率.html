@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>概率论 · 第 01 课：概率空间与条件概率</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --quote-bg: #f6f8fa;
+  --code-bg: #eff2f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --border: #30363d;
+    --accent: #4493f8;
+    --quote-bg: #161b22;
+    --code-bg: #1f242c;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; font-weight: 650; }
+h1 { font-size: 2rem; margin: 0 0 .8em; padding-bottom: .35em; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 2.2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.2rem; margin: 1.8em 0 .55em; }
+p { margin: .85em 0; }
+a { color: var(--accent); }
+blockquote {
+  margin: 1em 0;
+  padding: .6em 1em;
+  border-left: 4px solid var(--accent);
+  background: var(--quote-bg);
+  color: var(--muted);
+  border-radius: 4px;
+}
+blockquote p { margin: .25em 0; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: .96em;
+  overflow: hidden;
+}
+th, td { border: 1px solid var(--border); padding: .45em .7em; text-align: left; vertical-align: top; }
+th { background: var(--quote-bg); font-weight: 600; }
+details {
+  margin: 1.2em 0;
+  padding: .8em 1em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--quote-bg);
+}
+summary { cursor: pointer; font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+ul, ol { padding-left: 1.7em; }
+li { margin: .3em 0; }
+.math-block {
+  margin: 1.15em 0;
+  padding: .7em .9em;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--quote-bg);
+  border-radius: 6px;
+}
+math { font-size: 1.14em; line-height: 1.2; }
+math[display="inline"] { font-size: 1.05em; vertical-align: baseline; }
+.math-block math { font-size: 1.24em; }
+.math-fallback, .math-fallback-block {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .08em .3em;
+  border-radius: 3px;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .12em .35em;
+  border-radius: 3px;
+  font-size: .92em;
+}
+pre code { display: block; padding: .8em 1em; overflow-x: auto; }
+.lesson-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .8em 1.4em;
+  justify-content: space-between;
+  margin: 2.4em 0 0;
+  padding-top: 1.1em;
+  border-top: 1px solid var(--border);
+  font-size: .95em;
+}
+footer { margin-top: 2.2em; color: var(--muted); font-size: .85em; text-align: center; }
+@media print {
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  .math-block { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>概率论 · 第 01 课：概率空间与条件概率</h1>
+<blockquote>
+<p><strong>本课目标</strong>：理解样本空间、事件与概率公理，掌握条件概率、全概率公式、贝叶斯公式和独立性。</p>
+<p><strong>使用方法</strong>：先读讲解 → 做练习 → 对答案。错题 72 小时内重做。</p>
+</blockquote>
+<hr>
+<h2>目录</h2>
+<ol>
+<li>样本空间与事件</li>
+<li>概率公理与基本性质</li>
+<li>古典概型与计数</li>
+<li>条件概率</li>
+<li>全概率公式与贝叶斯公式</li>
+<li>独立性</li>
+<li>工程视角：传感器与故障诊断</li>
+<li>练习</li>
+<li>答案与简解</li>
+</ol>
+<hr>
+<h2>1. 样本空间与事件</h2>
+<p>概率论研究随机现象。一次试验所有可能结果的集合叫<strong>样本空间</strong>，记作 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A9;</mi></mrow></math>。样本空间中的每个结果叫<strong>样本点</strong>，记作 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C9;</mi></mrow></math>。</p>
+<p>例如掷一枚骰子：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x003A9;</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x0007B;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>3</mn><mo>&#x0002C;</mo><mn>4</mn><mo>&#x0002C;</mo><mn>5</mn><mo>&#x0002C;</mo><mn>6</mn><mo stretchy="false">&#x0007D;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p><strong>事件</strong>是样本空间的子集。例如“点数为偶数”是事件</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>A</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x0007B;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>4</mn><mo>&#x0002C;</mo><mn>6</mn><mo stretchy="false">&#x0007D;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>事件之间可以做集合运算：</p>
+<table>
+<thead>
+<tr>
+<th>记号</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi><mo>&#x0222A;</mo><mi>B</mi></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi></mrow></math> 或 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>B</mi></mrow></math> 至少发生一个</td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi><mo>&#x02229;</mo><mi>B</mi></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi></mrow></math> 与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>B</mi></mrow></math> 同时发生</td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>A</mi><mi>c</mi></msup></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi></mrow></math> 不发生（对立事件）</td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi><mi>&#x029F5;</mi><mi>B</mi></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi></mrow></math> 发生但 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>B</mi></mrow></math> 不发生</td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02205;</mo></mrow></math></td>
+<td>不可能事件</td>
+</tr>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A9;</mi></mrow></math></td>
+<td>必然事件</td>
+</tr>
+</tbody>
+</table>
+<p>若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi><mo>&#x02229;</mo><mi>B</mi><mo>&#x0003D;</mo><mo>&#x02205;</mo></mrow></math>，称 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi></mrow></math> 与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>B</mi></mrow></math> <strong>互斥</strong>，即不能同时发生。</p>
+<hr>
+<h2>2. 概率公理与基本性质</h2>
+<p>概率是定义在事件上的函数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi></mrow></math>，满足三条公理：</p>
+<ol>
+<li><strong>非负性</strong>：对任意事件 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02265;</mo><mn>0</mn></mrow></math>；</li>
+<li><strong>规范性</strong>：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>&#x003A9;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn></mrow></math>；</li>
+<li><strong>可列可加性</strong>：若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>A</mi><mn>1</mn></msub><mo>&#x0002C;</mo><msub><mi>A</mi><mn>2</mn></msub><mo>&#x0002C;</mo><mo>&#x02026;</mo></mrow></math> 两两互斥，则</li>
+</ol>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><msubsup><mo>&#x022C3;</mo><mrow><mi>i</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mo>&#x0221E;</mo></msubsup><msub><mi>A</mi><mi>i</mi></msub><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>i</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mo>&#x0221E;</mo></munderover><mi>P</mi><mo stretchy="false">&#x00028;</mo><msub><mi>A</mi><mi>i</mi></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>由此推出常用性质：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mo>&#x02205;</mo><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn><mo>&#x0002C;</mo><mspace width="2em" /><mi>P</mi><mo stretchy="false">&#x00028;</mo><msup><mi>A</mi><mi>c</mi></msup><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn><mo>&#x02212;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo>&#x0222A;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo>&#x02229;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo></mrow></math></div>
+<p>若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi><mo>&#x02286;</mo><mi>B</mi></mrow></math>，则 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02264;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+<p>三个事件的容斥公式：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo>&#x0222A;</mo><mi>B</mi><mo>&#x0222A;</mo><mi>C</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mrow /><mi>&</mi><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>C</mi><mo stretchy="false">&#x00029;</mo><mspace linebreak="newline" /><mi>&</mi><mo>&#x02212;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo>&#x02229;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo>&#x02229;</mo><mi>C</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>B</mi><mo>&#x02229;</mo><mi>C</mi><mo stretchy="false">&#x00029;</mo><mspace linebreak="newline" /><mi>&</mi><mo>&#x0002B;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo>&#x02229;</mo><mi>B</mi><mo>&#x02229;</mo><mi>C</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></mrow></math></div>
+<blockquote>
+<p><strong>注意</strong>：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math> 不代表 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi></mrow></math> 不可能发生。连续型随机变量取某个具体值的概率就是 0，但这件事并非不可能。概率为 0 与“不可能”只有在离散、有限的情形下才容易混为一谈。</p>
+</blockquote>
+<hr>
+<h2>3. 古典概型与计数</h2>
+<p>若样本空间有限，且每个样本点等可能，则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><mo stretchy="false">&#x0007C;</mo><mi>A</mi><mo stretchy="false">&#x0007C;</mo></mrow><mrow><mo stretchy="false">&#x0007C;</mo><mi>&#x003A9;</mi><mo stretchy="false">&#x0007C;</mo></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mtext>有利结果数</mtext></mrow><mrow><mtext>总结果数</mtext></mrow></mfrac><mo>&#x0002E;</mo></mrow></math></div>
+<p>计数常用两个工具：</p>
+<p><strong>排列</strong>：从 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math> 个不同元素中取 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>k</mi></mrow></math> 个排成一列，有</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo>&#x0002C;</mo><mi>k</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><mi>n</mi><mo>&#x00021;</mo></mrow><mrow><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo>&#x02212;</mo><mi>k</mi><mo stretchy="false">&#x00029;</mo><mo>&#x00021;</mo></mrow></mfrac></mrow></math></div>
+<p>种。若允许重复，则是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>n</mi><mi>k</mi></msup></mrow></math> 种。</p>
+<p><strong>组合</strong>：从 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math> 个不同元素中取 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>k</mi></mrow></math> 个，不计顺序，有</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo minsize="2.047em" maxsize="2.047em">&#x00028;</mo><mfrac linethickness="0"><mrow><mi>n</mi></mrow><mrow><mi>k</mi></mrow></mfrac><mo minsize="2.047em" maxsize="2.047em">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><mi>n</mi><mo>&#x00021;</mo></mrow><mrow><mi>k</mi><mo>&#x00021;</mo><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo>&#x02212;</mo><mi>k</mi><mo stretchy="false">&#x00029;</mo><mo>&#x00021;</mo></mrow></mfrac></mrow></math></div>
+<p>种。</p>
+<p><strong>例 1.1</strong>　从 52 张扑克牌中随机抽 5 张，求恰好有 2 张 A 的概率。</p>
+<p>总数为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo minsize="2.047em" maxsize="2.047em">&#x00028;</mo><mfrac linethickness="0"><mrow><mn>52</mn></mrow><mrow><mn>5</mn></mrow></mfrac><mo minsize="2.047em" maxsize="2.047em">&#x00029;</mo></mrow></math>。有利情形：从 4 张 A 中选 2 张，再从其余 48 张中选 3 张：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo>&#x0003D;</mo><mfrac><mrow><mo minsize="2.047em" maxsize="2.047em">&#x00028;</mo><mfrac linethickness="0"><mrow><mn>4</mn></mrow><mrow><mn>2</mn></mrow></mfrac><mo minsize="2.047em" maxsize="2.047em">&#x00029;</mo><mo minsize="2.047em" maxsize="2.047em">&#x00028;</mo><mfrac linethickness="0"><mrow><mn>48</mn></mrow><mrow><mn>3</mn></mrow></mfrac><mo minsize="2.047em" maxsize="2.047em">&#x00029;</mo></mrow><mrow><mo minsize="2.047em" maxsize="2.047em">&#x00028;</mo><mfrac linethickness="0"><mrow><mn>52</mn></mrow><mrow><mn>5</mn></mrow></mfrac><mo minsize="2.047em" maxsize="2.047em">&#x00029;</mo></mrow></mfrac><mo>&#x0002E;</mo></mrow></math></div>
+<p>不需要算出具体数值，组合数表达式已经足够。</p>
+<hr>
+<h2>4. 条件概率</h2>
+<p>已知事件 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>B</mi></mrow></math> 发生，事件 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi></mrow></math> 发生的<strong>条件概率</strong>定义为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo>&#x02223;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo>&#x02229;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo></mrow><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo></mrow></mfrac><mo>&#x0002C;</mo><mspace width="2em" /><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003E;</mo><mn>0</mn><mo>&#x0002E;</mo></mrow></math></div>
+<p>它把样本空间从 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A9;</mi></mrow></math> 缩小到 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>B</mi></mrow></math>，再在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>B</mi></mrow></math> 中计算 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi></mrow></math> 的比例。</p>
+<p>由定义立刻得到<strong>乘法公式</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo>&#x02229;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo>&#x02223;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>B</mi><mo>&#x02223;</mo><mi>A</mi><mo stretchy="false">&#x00029;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>多个事件的情形：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo>&#x02229;</mo><mi>B</mi><mo>&#x02229;</mo><mi>C</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo stretchy="false">&#x00029;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>B</mi><mo>&#x02223;</mo><mi>A</mi><mo stretchy="false">&#x00029;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>C</mi><mo>&#x02223;</mo><mi>A</mi><mo>&#x02229;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p><strong>例 1.2</strong>　一副牌去掉大小王，已知抽到的是红桃，求它是 A 的概率。</p>
+<p>红桃有 13 张，其中 A 有 1 张，所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mtext>A</mtext><mo>&#x02223;</mo><mtext>红桃</mtext><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>13</mn></mrow></mfrac><mo>&#x0002E;</mo></mrow></math></div>
+<p>用公式验证：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mtext>A</mtext><mo>&#x02229;</mo><mtext>红桃</mtext><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002F;</mo><mn>52</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mtext>红桃</mtext><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>13</mn><mo>&#x0002F;</mo><mn>52</mn></mrow></math>，相除得 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn><mo>&#x0002F;</mo><mn>13</mn></mrow></math>。</p>
+<blockquote>
+<p><strong>易错点</strong>：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo>&#x02223;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>B</mi><mo>&#x02223;</mo><mi>A</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 一般不同。“检测阳性的人里患病比例”和“患病的人里检测阳性比例”是两件事，后者是灵敏度，前者还受患病率影响。</p>
+</blockquote>
+<hr>
+<h2>5. 全概率公式与贝叶斯公式</h2>
+<p>若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>B</mi><mn>1</mn></msub><mo>&#x0002C;</mo><mo>&#x02026;</mo><mo>&#x0002C;</mo><msub><mi>B</mi><mi>n</mi></msub></mrow></math> 两两互斥，且并集为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003A9;</mi></mrow></math>，称为一个<strong>划分</strong>。对任意事件 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi></mrow></math>，</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>i</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mi>n</mi></munderover><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo>&#x02223;</mo><msub><mi>B</mi><mi>i</mi></msub><mo stretchy="false">&#x00029;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><msub><mi>B</mi><mi>i</mi></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>这就是<strong>全概率公式</strong>：把 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi></mrow></math> 按不同“来源”拆开，分别算再相加。</p>
+<p>由条件概率定义和全概率公式，得到<strong>贝叶斯公式</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><msub><mi>B</mi><mi>j</mi></msub><mo>&#x02223;</mo><mi>A</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo>&#x02223;</mo><msub><mi>B</mi><mi>j</mi></msub><mo stretchy="false">&#x00029;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><msub><mi>B</mi><mi>j</mi></msub><mo stretchy="false">&#x00029;</mo></mrow><mrow><msubsup><mo>&#x02211;</mo><mrow><mi>i</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mi>n</mi></msubsup><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo>&#x02223;</mo><msub><mi>B</mi><mi>i</mi></msub><mo stretchy="false">&#x00029;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><msub><mi>B</mi><mi>i</mi></msub><mo stretchy="false">&#x00029;</mo></mrow></mfrac><mo>&#x0002E;</mo></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><msub><mi>B</mi><mi>j</mi></msub><mo stretchy="false">&#x00029;</mo></mrow></math> 叫先验概率，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo>&#x02223;</mo><msub><mi>B</mi><mi>j</mi></msub><mo stretchy="false">&#x00029;</mo></mrow></math> 叫似然，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><msub><mi>B</mi><mi>j</mi></msub><mo>&#x02223;</mo><mi>A</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 叫后验概率。贝叶斯公式做的事是：看到证据 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi></mrow></math> 后，更新对 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>B</mi><mi>j</mi></msub></mrow></math> 的信念。</p>
+<p><strong>例 1.3</strong>　某种疾病的患病率为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn><mi>&#x00025;</mi></mrow></math>。检测的灵敏度为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>99</mn><mi>&#x00025;</mi></mrow></math>（患病者检测阳性），特异度为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>95</mn><mi>&#x00025;</mi></mrow></math>（健康者检测阴性）。某人检测阳性，求他实际患病的概率。</p>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>D</mi></mrow></math> 为患病，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x0002B;</mo></mrow></math> 为检测阳性。已知</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>D</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0.01</mn><mo>&#x0002C;</mo><mspace width="1em" /><mi>P</mi><mo stretchy="false">&#x00028;</mo><mo>&#x0002B;</mo><mo>&#x02223;</mo><mi>D</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0.99</mn><mo>&#x0002C;</mo><mspace width="1em" /><mi>P</mi><mo stretchy="false">&#x00028;</mo><mo>&#x0002B;</mo><mo>&#x02223;</mo><msup><mi>D</mi><mi>c</mi></msup><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0.05</mn><mo>&#x0002E;</mo></mrow></math></div>
+<p>由贝叶斯公式：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>D</mi><mo>&#x02223;</mo><mo>&#x0002B;</mo><mo stretchy="false">&#x00029;</mo><mi>&</mi><mo>&#x0003D;</mo><mfrac><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mo>&#x0002B;</mo><mo>&#x02223;</mo><mi>D</mi><mo stretchy="false">&#x00029;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>D</mi><mo stretchy="false">&#x00029;</mo></mrow><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mo>&#x0002B;</mo><mo>&#x02223;</mo><mi>D</mi><mo stretchy="false">&#x00029;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>D</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mo>&#x0002B;</mo><mo>&#x02223;</mo><msup><mi>D</mi><mi>c</mi></msup><mo stretchy="false">&#x00029;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><msup><mi>D</mi><mi>c</mi></msup><mo stretchy="false">&#x00029;</mo></mrow></mfrac><mspace linebreak="newline" /><mi>&</mi><mo>&#x0003D;</mo><mfrac><mrow><mn>0.99</mn><mo>&#x000D7;</mo><mn>0.01</mn></mrow><mrow><mn>0.99</mn><mo>&#x000D7;</mo><mn>0.01</mn><mo>&#x0002B;</mo><mn>0.05</mn><mo>&#x000D7;</mo><mn>0.99</mn></mrow></mfrac><mspace linebreak="newline" /><mi>&</mi><mo>&#x0003D;</mo><mfrac><mrow><mn>0.0099</mn></mrow><mrow><mn>0.0099</mn><mo>&#x0002B;</mo><mn>0.0495</mn></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>6</mn></mrow></mfrac><mo>&#x02248;</mo><mn>0.167</mn><mo>&#x0002E;</mo></mrow></mrow></math></div>
+<p>尽管检测看起来很准，阳性者真正患病的概率只有约 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>16.7</mn><mi>&#x00025;</mi></mrow></math>。原因是健康人基数大，假阳性数量超过了真阳性。这个例子说明：<strong>先验很重要，不能只看检测准确率。</strong></p>
+<hr>
+<h2>6. 独立性</h2>
+<p>若</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo>&#x02229;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo stretchy="false">&#x00029;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo></mrow></math></div>
+<p>称 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi></mrow></math> 与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>B</mi></mrow></math> <strong>相互独立</strong>。等价地，当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003E;</mo><mn>0</mn></mrow></math> 时，</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo>&#x02223;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo></mrow></math></div>
+<p>即 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>B</mi></mrow></math> 是否发生不影响 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi></mrow></math> 的概率。</p>
+<p>多个事件相互独立，要求对任意子集都成立乘积关系。特别地，三个事件相互独立需要</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo>&#x02229;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo><mi>&</mi><mo>&#x0003D;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo stretchy="false">&#x00029;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mspace linebreak="newline" /><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo>&#x02229;</mo><mi>C</mi><mo stretchy="false">&#x00029;</mo><mi>&</mi><mo>&#x0003D;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo stretchy="false">&#x00029;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>C</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mspace linebreak="newline" /><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>B</mi><mo>&#x02229;</mo><mi>C</mi><mo stretchy="false">&#x00029;</mo><mi>&</mi><mo>&#x0003D;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>C</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mspace linebreak="newline" /><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo>&#x02229;</mo><mi>B</mi><mo>&#x02229;</mo><mi>C</mi><mo stretchy="false">&#x00029;</mo><mi>&</mi><mo>&#x0003D;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo stretchy="false">&#x00029;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>C</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></mrow></math></div>
+<p>前三条都成立只叫<strong>两两独立</strong>，不足以推出相互独立。考试和工程中要特别注意这个区别。</p>
+<hr>
+<h2>7. 工程视角：传感器与故障诊断</h2>
+<p>概率论在无人机和具身智能里最先用到的，就是“带噪声的观测”：</p>
+<ul>
+<li><strong>传感器模型</strong>：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>z</mi><mo>&#x02223;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 描述在真实状态 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math> 下观测到 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>z</mi></mrow></math> 的概率，是滤波和 SLAM 的核心；</li>
+<li><strong>故障诊断</strong>：多个传感器给出报警，用贝叶斯公式融合，避免被单个假阳性误导；</li>
+<li><strong>可靠性</strong>：系统由多个部件串联/并联，用独立性计算整体失效概率；</li>
+<li><strong>分类器</strong>：朴素贝叶斯假设特征在给定类别下条件独立，直接套用贝叶斯公式。</li>
+</ul>
+<blockquote>
+<p><strong>工程直觉</strong>：不要问“这个检测准不准”，要问“在这个先验下，看到这个结果后，我该相信什么”。前者是似然，后者是后验。</p>
+</blockquote>
+<hr>
+<h2>8. 练习</h2>
+<ol>
+<li>
+<p>掷两枚公平骰子，求点数之和为 7 的概率。</p>
+</li>
+<li>
+<p>从 1 到 10 中随机取一个数，已知它是偶数，求它大于 5 的概率。</p>
+</li>
+<li>
+<p>甲、乙两台机器生产同一种零件，产量分别占 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>60</mn><mi>&#x00025;</mi></mrow></math> 和 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>40</mn><mi>&#x00025;</mi></mrow></math>，次品率分别为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mi>&#x00025;</mi></mrow></math> 和 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>5</mn><mi>&#x00025;</mi></mrow></math>。随机取一个零件，求它是次品的概率；若已知是次品，求它来自甲机器的概率。</p>
+</li>
+<li>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0.4</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0.5</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo>&#x0222A;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0.7</mn></mrow></math>。求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo>&#x02229;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo></mrow></math>，并判断 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi><mo>&#x0002C;</mo><mi>B</mi></mrow></math> 是否独立。</p>
+</li>
+<li>
+<p>三个事件两两独立，是否一定相互独立？举例或说明理由。</p>
+</li>
+</ol>
+<hr>
+<h2>9. 答案与简解</h2>
+<details>
+<summary>点击展开（做完再看）</summary>
+
+**1.** 总结果 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>36</mn></mrow></math> 种，和为 7 的有 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>6</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>5</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mo stretchy="false">&#x00028;</mo><mn>3</mn><mo>&#x0002C;</mo><mn>4</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mo stretchy="false">&#x00028;</mo><mn>4</mn><mo>&#x0002C;</mo><mn>3</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mo stretchy="false">&#x00028;</mo><mn>5</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mo stretchy="false">&#x00028;</mo><mn>6</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 共 6 种，概率为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>6</mn><mo>&#x0002F;</mo><mn>36</mn><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002F;</mo><mn>6</mn></mrow></math>。
+
+**2.** 偶数有 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mo>&#x0002C;</mo><mn>4</mn><mo>&#x0002C;</mo><mn>6</mn><mo>&#x0002C;</mo><mn>8</mn><mo>&#x0002C;</mo><mn>10</mn></mrow></math> 共 5 个，其中大于 5 的有 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>6</mn><mo>&#x0002C;</mo><mn>8</mn><mo>&#x0002C;</mo><mn>10</mn></mrow></math> 共 3 个，概率为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>3</mn><mo>&#x0002F;</mo><mn>5</mn></mrow></math>。
+
+**3.** 设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi></mrow></math> 为甲机器，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>B</mi></mrow></math> 为乙机器，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>D</mi></mrow></math> 为次品。
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>D</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0.6</mn><mo>&#x000D7;</mo><mn>0.02</mn><mo>&#x0002B;</mo><mn>0.4</mn><mo>&#x000D7;</mo><mn>0.05</mn><mo>&#x0003D;</mo><mn>0.012</mn><mo>&#x0002B;</mo><mn>0.02</mn><mo>&#x0003D;</mo><mn>0.032</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+由贝叶斯公式：
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo>&#x02223;</mo><mi>D</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><mn>0.6</mn><mo>&#x000D7;</mo><mn>0.02</mn></mrow><mrow><mn>0.032</mn></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>0.012</mn></mrow><mrow><mn>0.032</mn></mrow></mfrac><mo>&#x0003D;</mo><mn>0.375</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+**4.** 由容斥公式：
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo>&#x02229;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo>&#x0222A;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0.4</mn><mo>&#x0002B;</mo><mn>0.5</mn><mo>&#x02212;</mo><mn>0.7</mn><mo>&#x0003D;</mo><mn>0.2</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+而 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo stretchy="false">&#x00029;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0.4</mn><mo>&#x000D7;</mo><mn>0.5</mn><mo>&#x0003D;</mo><mn>0.2</mn></mrow></math>，所以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi><mo>&#x0002C;</mo><mi>B</mi></mrow></math> 独立。
+
+**5.** 不一定。经典反例：掷两枚公平硬币，令 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi></mrow></math> 为第一枚正面，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>B</mi></mrow></math> 为第二枚正面，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>C</mi></mrow></math> 为两枚结果相同。可以验证 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi><mo>&#x0002C;</mo><mi>B</mi><mo>&#x0002C;</mo><mi>C</mi></mrow></math> 两两独立，但
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo>&#x02229;</mo><mi>B</mi><mo>&#x02229;</mo><mi>C</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>4</mn></mfrac><mo>&#x02260;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo stretchy="false">&#x00029;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>C</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>8</mn></mfrac><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+所以两两独立不能推出相互独立。
+
+</details>
+
+<hr>
+<h2>下节预告</h2>
+<p><strong>第 02 课：随机变量与常见分布</strong></p>
+<ul>
+<li>随机变量与分布函数</li>
+<li>离散型与连续型</li>
+<li>伯努利、二项、泊松、均匀、指数、正态</li>
+<li>随机变量变换</li>
+</ul>
+<hr>
+<h2>自查清单</h2>
+<ul>
+<li>[ ] 能写出样本空间和事件</li>
+<li>[ ] 记得概率的三条公理和容斥公式</li>
+<li>[ ] 会算条件概率和贝叶斯后验</li>
+<li>[ ] 能区分 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo>&#x02223;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>B</mi><mo>&#x02223;</mo><mi>A</mi><mo stretchy="false">&#x00029;</mo></mrow></math></li>
+<li>[ ] 知道两两独立不等于相互独立</li>
+</ul>
+<nav class="lesson-nav"><span><a href="../index.html">课程主页</a></span><span><a href="概率02-随机变量与常见分布.html">下一课 &rarr;</a></span></nav>
+<footer>概率论 · 数学公式使用 MathML 渲染，建议使用 Chrome / Edge / Firefox 打开</footer>
+</main>
+</body>
+</html>

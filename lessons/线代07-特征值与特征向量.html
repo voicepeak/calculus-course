@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>线性代数 · 第 07 课：特征值与特征向量</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --quote-bg: #f6f8fa;
+  --code-bg: #eff2f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --border: #30363d;
+    --accent: #4493f8;
+    --quote-bg: #161b22;
+    --code-bg: #1f242c;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; font-weight: 650; }
+h1 { font-size: 2rem; margin: 0 0 .8em; padding-bottom: .35em; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 2.2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.2rem; margin: 1.8em 0 .55em; }
+p { margin: .85em 0; }
+a { color: var(--accent); }
+blockquote {
+  margin: 1em 0;
+  padding: .6em 1em;
+  border-left: 4px solid var(--accent);
+  background: var(--quote-bg);
+  color: var(--muted);
+  border-radius: 4px;
+}
+blockquote p { margin: .25em 0; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: .96em;
+  overflow: hidden;
+}
+th, td { border: 1px solid var(--border); padding: .45em .7em; text-align: left; vertical-align: top; }
+th { background: var(--quote-bg); font-weight: 600; }
+details {
+  margin: 1.2em 0;
+  padding: .8em 1em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--quote-bg);
+}
+summary { cursor: pointer; font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+ul, ol { padding-left: 1.7em; }
+li { margin: .3em 0; }
+.math-block {
+  margin: 1.15em 0;
+  padding: .7em .9em;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--quote-bg);
+  border-radius: 6px;
+}
+math { font-size: 1.14em; line-height: 1.2; }
+math[display="inline"] { font-size: 1.05em; vertical-align: baseline; }
+.math-block math { font-size: 1.24em; }
+.math-fallback, .math-fallback-block {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .08em .3em;
+  border-radius: 3px;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .12em .35em;
+  border-radius: 3px;
+  font-size: .92em;
+}
+pre code { display: block; padding: .8em 1em; overflow-x: auto; }
+.lesson-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .8em 1.4em;
+  justify-content: space-between;
+  margin: 2.4em 0 0;
+  padding-top: 1.1em;
+  border-top: 1px solid var(--border);
+  font-size: .95em;
+}
+footer { margin-top: 2.2em; color: var(--muted); font-size: .85em; text-align: center; }
+@media print {
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  .math-block { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>线性代数 · 第 07 课：特征值与特征向量</h1>
+<blockquote>
+<p><strong>本课目标</strong>：理解特征值与特征向量的含义，会求特征多项式和对角化，能用特征值分析动力系统。</p>
+<p><strong>使用方法</strong>：先读讲解 → 做练习 → 对答案。错题 72 小时内重做。</p>
+</blockquote>
+<hr>
+<h2>目录</h2>
+<ol>
+<li>特征值与特征向量</li>
+<li>特征多项式</li>
+<li>特征空间与重数</li>
+<li>对角化</li>
+<li>矩阵幂与动力系统</li>
+<li>复特征值与旋转</li>
+<li>工程视角：稳定性、模态与 PCA</li>
+<li>练习</li>
+<li>答案与简解</li>
+</ol>
+<hr>
+<h2>1. 特征值与特征向量</h2>
+<p>矩阵 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 作用在向量 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D42F;</mi></mrow></math> 上，通常会改变它的方向和长度。但有些特殊方向，变换后方向不变，只是被拉伸或压缩。这些方向就是特征向量。</p>
+<p>若存在非零向量 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D42F;</mi></mrow></math> 和数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BB;</mi></mrow></math>，使得</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mi>&#x1D42F;</mi><mo>&#x0003D;</mo><mi>&#x003BB;</mi><mi>&#x1D42F;</mi><mo>&#x0002C;</mo></mrow></math></div>
+<p>则称 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BB;</mi></mrow></math> 是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 的<strong>特征值</strong>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D42F;</mi></mrow></math> 是对应的<strong>特征向量</strong>。</p>
+<p>注意 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D42F;</mi><mo>&#x02260;</mo><mrow><mn mathvariant="bold">0</mn></mrow></mrow></math>：零向量对任何 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BB;</mi></mrow></math> 都满足，没有信息量。<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BB;</mi></mrow></math> 可以是 0、负数，也可以是复数。</p>
+<p>几何上，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 在特征向量方向上只做缩放，缩放比例就是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BB;</mi></mrow></math>。若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x0007C;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x0007C;</mo><mo>&#x0003E;</mo><mn>1</mn></mrow></math>，该方向被拉长；<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x0007C;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x0007C;</mo><mo>&#x0003C;</mo><mn>1</mn></mrow></math>，被压缩；<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BB;</mi><mo>&#x0003C;</mo><mn>0</mn></mrow></math>，方向反转。</p>
+<hr>
+<h2>2. 特征多项式</h2>
+<p>把定义改写：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mi>&#x1D42F;</mi><mo>&#x0003D;</mo><mi>&#x003BB;</mi><mi>&#x1D42F;</mi><mspace width="1em" /><mi>&#x027FA;</mi><mspace width="1em" /><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo>&#x02212;</mo><mi>&#x003BB;</mi><mi>&#x1D408;</mi><mo stretchy="false">&#x00029;</mo><mi>&#x1D42F;</mi><mo>&#x0003D;</mo><mrow><mn mathvariant="bold">0</mn></mrow><mo>&#x0002E;</mo></mrow></math></div>
+<p>要使这个齐次方程有非零解，矩阵 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mo>&#x02212;</mo><mi>&#x003BB;</mi><mi>&#x1D408;</mi></mrow></math> 必须奇异，即</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo>&#x02212;</mo><mi>&#x003BB;</mi><mi>&#x1D408;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn><mo>&#x0002E;</mo></mrow></math></div>
+<p>左边是关于 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BB;</mi></mrow></math> 的 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math> 次多项式，叫<strong>特征多项式</strong>。它的根就是特征值。</p>
+<p><strong>例 7.1</strong>　求</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>2</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr></mtable><mo>&#x00029;</mo></mrow></math></div>
+<p>的特征值与特征向量。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo>&#x02212;</mo><mi>&#x003BB;</mi><mi>&#x1D408;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo>&#x0007C;</mo><mtable><mtr><mtd><mn>2</mn><mo>&#x02212;</mo><mi>&#x003BB;</mi></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn><mo>&#x02212;</mo><mi>&#x003BB;</mi></mtd></mtr></mtable><mo>&#x0007C;</mo><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo>&#x02212;</mo><mi>&#x003BB;</mi><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup><mo>&#x02212;</mo><mn>1</mn><mo>&#x0003D;</mo><msup><mi>&#x003BB;</mi><mn>2</mn></msup><mo>&#x02212;</mo><mn>4</mn><mi>&#x003BB;</mi><mo>&#x0002B;</mo><mn>3</mn><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo>&#x02212;</mo><mn>3</mn><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>特征值为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x003BB;</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mn>3</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x003BB;</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mn>1</mn></mrow></math>。</p>
+<p>对 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x003BB;</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mn>3</mn></mrow></math>，解 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo>&#x02212;</mo><mn>3</mn><mi>&#x1D408;</mi><mo stretchy="false">&#x00029;</mo><mi>&#x1D42F;</mi><mo>&#x0003D;</mo><mrow><mn mathvariant="bold">0</mn></mrow></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x00028;</mo><mtable><mtr><mtd><mo>&#x02212;</mo><mn>1</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mo>&#x02212;</mo><mn>1</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><msub><mi>v</mi><mn>1</mn></msub></mtd></mtr><mtr><mtd><msub><mi>v</mi><mn>2</mn></msub></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0003D;</mo><mrow><mn mathvariant="bold">0</mn></mrow><mspace width="1em" /><mi>&#x027F9;</mi><mspace width="1em" /><msub><mi>v</mi><mn>1</mn></msub><mo>&#x0003D;</mo><msub><mi>v</mi><mn>2</mn></msub><mo>&#x0002E;</mo></mrow></math></div>
+<p>取 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42F;</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mo>&#x022A4;</mo></msup></mrow></math>。</p>
+<p>对 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x003BB;</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mn>1</mn></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><msub><mi>v</mi><mn>1</mn></msub></mtd></mtr><mtr><mtd><msub><mi>v</mi><mn>2</mn></msub></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0003D;</mo><mrow><mn mathvariant="bold">0</mn></mrow><mspace width="1em" /><mi>&#x027F9;</mi><mspace width="1em" /><msub><mi>v</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mo>&#x02212;</mo><msub><mi>v</mi><mn>2</mn></msub><mo>&#x0002E;</mo></mrow></math></div>
+<p>取 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42F;</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mo>&#x022A4;</mo></msup></mrow></math>。</p>
+<hr>
+<h2>3. 特征空间与重数</h2>
+<p>固定特征值 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BB;</mi></mrow></math>，所有满足 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mi>&#x1D42F;</mi><mo>&#x0003D;</mo><mi>&#x003BB;</mi><mi>&#x1D42F;</mi></mrow></math> 的向量（包括零向量）组成<strong>特征空间</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>E</mi><mi>&#x003BB;</mi></msub><mo>&#x0003D;</mo><mi>N</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo>&#x02212;</mo><mi>&#x003BB;</mi><mi>&#x1D408;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>它是零空间，所以一定是子空间。特征空间的维数叫<strong>几何重数</strong>，等于 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mo>&#x02212;</mo><mo>rank</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo>&#x02212;</mo><mi>&#x003BB;</mi><mi>&#x1D408;</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+<p>特征值在特征多项式中的重根数叫<strong>代数重数</strong>。恒有</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>1</mn><mo>&#x02264;</mo><mtext>几何重数</mtext><mo>&#x02264;</mo><mtext>代数重数</mtext><mo>&#x0002E;</mo></mrow></math></div>
+<p>两者不一定相等。例如</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>1</mn></mtd></mtr></mtable><mo>&#x00029;</mo></mrow></math></div>
+<p>的特征多项式是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup></mrow></math>，代数重数为 2；但 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mo>&#x02212;</mo><mi>&#x1D408;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>0</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>0</mn></mtd></mtr></mtable><mo>&#x00029;</mo></mrow></math> 的秩为 1，几何重数为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mo>&#x02212;</mo><mn>1</mn><mo>&#x0003D;</mo><mn>1</mn></mrow></math>。这种矩阵不能对角化。</p>
+<hr>
+<h2>4. 对角化</h2>
+<p>若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 有 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math> 个线性无关的特征向量 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42F;</mi><mn>1</mn></msub><mo>&#x0002C;</mo><mo>&#x02026;</mo><mo>&#x0002C;</mo><msub><mi>&#x1D42F;</mi><mi>n</mi></msub></mrow></math>，把它们按列排成矩阵</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D40F;</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><msub><mi>&#x1D42F;</mi><mn>1</mn></msub><mtext>&#x000A0;</mtext><mo>&#x022EF;</mo><mtext>&#x000A0;</mtext><msub><mi>&#x1D42F;</mi><mi>n</mi></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo></mrow></math></div>
+<p>则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mi>&#x1D40F;</mi><mi>&#x1D403;</mi><msup><mi>&#x1D40F;</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup><mo>&#x0002C;</mo><mspace width="2em" /><mi>&#x1D403;</mi><mo>&#x0003D;</mo><mo>diag</mo><mo stretchy="false">&#x00028;</mo><msub><mi>&#x003BB;</mi><mn>1</mn></msub><mo>&#x0002C;</mo><mo>&#x02026;</mo><mo>&#x0002C;</mo><msub><mi>&#x003BB;</mi><mi>n</mi></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>这叫<strong>对角化</strong>。<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D40F;</mi></mrow></math> 的列是特征向量，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D403;</mi></mrow></math> 的对角线是对应特征值。</p>
+<p>对角化的条件：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 有 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math> 个线性无关的特征向量。充分条件包括：</p>
+<ul>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math> 个特征值互不相同；</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 是对称矩阵（第 08 课会证明一定可以正交对角化）。</li>
+</ul>
+<p>例 7.1 中</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D40F;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mo>&#x02212;</mo><mn>1</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mi>&#x1D403;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>3</mn></mtd><mtd><mn>0</mn></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>1</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>对角化的意义是换一组基。在这组特征向量基下，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 的作用只是各方向独立缩放，矩阵变成对角阵，计算大大简化。</p>
+<hr>
+<h2>5. 矩阵幂与动力系统</h2>
+<p>由 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mi>&#x1D40F;</mi><mi>&#x1D403;</mi><msup><mi>&#x1D40F;</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup></mrow></math> 得</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>&#x1D400;</mi><mi>k</mi></msup><mo>&#x0003D;</mo><mi>&#x1D40F;</mi><msup><mi>&#x1D403;</mi><mi>k</mi></msup><msup><mi>&#x1D40F;</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup><mo>&#x0002C;</mo><mspace width="2em" /><msup><mi>&#x1D403;</mi><mi>k</mi></msup><mo>&#x0003D;</mo><mo>diag</mo><mo stretchy="false">&#x00028;</mo><msubsup><mi>&#x003BB;</mi><mn>1</mn><mi>k</mi></msubsup><mo>&#x0002C;</mo><mo>&#x02026;</mo><mo>&#x0002C;</mo><msubsup><mi>&#x003BB;</mi><mi>n</mi><mi>k</mi></msubsup><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>求高次幂时，不需要连乘 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>k</mi></mrow></math> 次，只要把特征值取 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>k</mi></mrow></math> 次方。</p>
+<p>线性动力系统</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>&#x1D431;</mi><mrow><mi>k</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub><mo>&#x0003D;</mo><mi>&#x1D400;</mi><msub><mi>&#x1D431;</mi><mi>k</mi></msub></mrow></math></div>
+<p>的解为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>&#x1D431;</mi><mi>k</mi></msub><mo>&#x0003D;</mo><msup><mi>&#x1D400;</mi><mi>k</mi></msup><msub><mi>&#x1D431;</mi><mn>0</mn></msub><mo>&#x0003D;</mo><mi>&#x1D40F;</mi><msup><mi>&#x1D403;</mi><mi>k</mi></msup><msup><mi>&#x1D40F;</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup><msub><mi>&#x1D431;</mi><mn>0</mn></msub><mo>&#x0002E;</mo></mrow></math></div>
+<p>系统的长期行为由特征值决定：</p>
+<ul>
+<li>所有 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x0007C;</mo><msub><mi>&#x003BB;</mi><mi>i</mi></msub><mo stretchy="false">&#x0007C;</mo><mo>&#x0003C;</mo><mn>1</mn></mrow></math>：状态趋于 0，系统稳定；</li>
+<li>存在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x0007C;</mo><msub><mi>&#x003BB;</mi><mi>i</mi></msub><mo stretchy="false">&#x0007C;</mo><mo>&#x0003E;</mo><mn>1</mn></mrow></math>：状态发散；</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x0007C;</mo><msub><mi>&#x003BB;</mi><mi>i</mi></msub><mo stretchy="false">&#x0007C;</mo><mo>&#x0003D;</mo><mn>1</mn></mrow></math>：可能振荡或保持有界。</li>
+</ul>
+<p>这就是控制理论中“稳定性看特征值”的来源。</p>
+<hr>
+<h2>6. 复特征值与旋转</h2>
+<p>实矩阵也可能有复特征值，复特征值成对出现。例如旋转矩阵</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D411;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>0</mn></mtd><mtd><mo>&#x02212;</mo><mn>1</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>0</mn></mtd></mtr></mtable><mo>&#x00029;</mo></mrow></math></div>
+<p>的特征多项式为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x003BB;</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>1</mn><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，特征值为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x000B1;</mi><mi>i</mi></mrow></math>。它没有实特征向量，因为旋转 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mn>90</mn><mo>&#x02218;</mo></msup></mrow></math> 会把任何实向量转离原来的方向。</p>
+<p>复特征值的模长仍然描述伸缩：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x0007C;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x0007C;</mo><mo>&#x0003D;</mo><mn>1</mn></mrow></math> 对应纯旋转，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x0007C;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x0007C;</mo><mo>&#x0003E;</mo><mn>1</mn></mrow></math> 对应螺旋式发散。在离散动力系统中，复特征值对应振荡。</p>
+<hr>
+<h2>7. 工程视角：稳定性、模态与 PCA</h2>
+<p>特征值在工程里几乎无处不在：</p>
+<ul>
+<li><strong>控制与动力学</strong>：无人机姿态的线性化模型，特征值决定模态是衰减、振荡还是发散；</li>
+<li><strong>振动分析</strong>：结构的固有频率与振型就是特征值和特征向量；</li>
+<li><strong>马尔可夫链</strong>：转移矩阵的特征值 1 对应平稳分布；</li>
+<li><strong>PCA</strong>：协方差矩阵的特征向量是主成分方向，特征值是对应方差；</li>
+<li><strong>PageRank</strong>：网页排序向量是转移矩阵特征值 1 的特征向量。</li>
+</ul>
+<blockquote>
+<p><strong>小实验</strong>：用 NumPy 求特征值，并验证 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mi>&#x1D42F;</mi><mo>&#x0003D;</mo><mi>&#x003BB;</mi><mi>&#x1D42F;</mi></mrow></math>。</p>
+</blockquote>
+<pre><code class="language-python">import numpy as np
+
+A = np.array([[2, 1], [1, 2]], dtype=float)
+vals, vecs = np.linalg.eig(A)
+print(vals)          # [3., 1.]
+print(A @ vecs[:, 0] - vals[0] * vecs[:, 0])  # 接近零向量
+</code></pre>
+<hr>
+<h2>8. 练习</h2>
+<ol>
+<li>
+<p>求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x00028;</mo><mtable><mtr><mtd><mn>4</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>2</mn></mtd><mtd><mn>3</mn></mtd></mtr></mtable><mo>&#x00029;</mo></mrow></math> 的特征值。</p>
+</li>
+<li>
+<p>求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>3</mn></mtd></mtr></mtable><mo>&#x00029;</mo></mrow></math> 的特征值。</p>
+</li>
+<li>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>3</mn><mo>&#x000D7;</mo><mn>3</mn></mrow></math> 矩阵的特征值为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mo>&#x0002C;</mo><mn>5</mn><mo>&#x0002C;</mo><mo>&#x02212;</mo><mn>1</mn></mrow></math>，求它的行列式与迹。</p>
+</li>
+<li>
+<p>证明旋转 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mn>90</mn><mo>&#x02218;</mo></msup></mrow></math> 的矩阵没有实特征值。</p>
+</li>
+<li>
+<p>若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 可逆，特征值为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x003BB;</mi><mn>1</mn></msub><mo>&#x0002C;</mo><mo>&#x02026;</mo><mo>&#x0002C;</mo><msub><mi>&#x003BB;</mi><mi>n</mi></msub></mrow></math>，求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x1D400;</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup></mrow></math> 的特征值。</p>
+</li>
+</ol>
+<hr>
+<h2>9. 答案与简解</h2>
+<details>
+<summary>点击展开（做完再看）</summary>
+
+**1.**
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo>&#x02212;</mo><mi>&#x003BB;</mi><mi>&#x1D408;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>4</mn><mo>&#x02212;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x00028;</mo><mn>3</mn><mo>&#x02212;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mn>2</mn><mo>&#x0003D;</mo><msup><mi>&#x003BB;</mi><mn>2</mn></msup><mo>&#x02212;</mo><mn>7</mn><mi>&#x003BB;</mi><mo>&#x0002B;</mo><mn>10</mn><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo>&#x02212;</mo><mn>5</mn><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo>&#x02212;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+特征值为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>5</mn></mrow></math> 和 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn></mrow></math>。
+
+**2.** 上三角矩阵的特征值就是对角线元素：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn></mrow></math> 和 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>3</mn></mrow></math>。
+
+**3.** 行列式等于特征值之积：
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo movablelimits="true">det</mo><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mn>2</mn><mo>&#x000B7;</mo><mn>5</mn><mo>&#x000B7;</mo><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>10</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+迹等于特征值之和：
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>tr</mo><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mn>2</mn><mo>&#x0002B;</mo><mn>5</mn><mo>&#x02212;</mo><mn>1</mn><mo>&#x0003D;</mo><mn>6</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+**4.** 旋转 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mn>90</mn><mo>&#x02218;</mo></msup></mrow></math> 的矩阵为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x00028;</mo><mtable><mtr><mtd><mn>0</mn></mtd><mtd><mo>&#x02212;</mo><mn>1</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>0</mn></mtd></mtr></mtable><mo>&#x00029;</mo></mrow></math>，特征多项式为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x003BB;</mi><mn>2</mn></msup><mo>&#x0002B;</mo><mn>1</mn><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，根为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x000B1;</mi><mi>i</mi></mrow></math>，不是实数。所以没有实特征值，也就没有实特征向量。
+
+**5.** 若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mi>&#x1D42F;</mi><mo>&#x0003D;</mo><mi>&#x003BB;</mi><mi>&#x1D42F;</mi></mrow></math> 且 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BB;</mi><mo>&#x02260;</mo><mn>0</mn></mrow></math>，两边左乘 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x1D400;</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup></mrow></math> 得
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D42F;</mi><mo>&#x0003D;</mo><mi>&#x003BB;</mi><msup><mi>&#x1D400;</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup><mi>&#x1D42F;</mi><mspace width="1em" /><mi>&#x027F9;</mi><mspace width="1em" /><msup><mi>&#x1D400;</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup><mi>&#x1D42F;</mi><mo>&#x0003D;</mo><mfrac><mn>1</mn><mi>&#x003BB;</mi></mfrac><mi>&#x1D42F;</mi><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+所以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x1D400;</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup></mrow></math> 的特征值是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn><mo>&#x0002F;</mo><msub><mi>&#x003BB;</mi><mn>1</mn></msub><mo>&#x0002C;</mo><mo>&#x02026;</mo><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002F;</mo><msub><mi>&#x003BB;</mi><mi>n</mi></msub></mrow></math>。
+
+</details>
+
+<hr>
+<h2>下节预告</h2>
+<p><strong>第 08 课：对称矩阵与二次型</strong></p>
+<ul>
+<li>谱定理与正交对角化</li>
+<li>二次型与正定性</li>
+<li>Rayleigh 商与椭球</li>
+<li>Hessian、凸性与协方差</li>
+</ul>
+<hr>
+<h2>自查清单</h2>
+<ul>
+<li>[ ] 能写出特征方程并求特征值</li>
+<li>[ ] 会求对应的特征向量</li>
+<li>[ ] 知道对角化的条件与公式</li>
+<li>[ ] 能用特征值判断动力系统稳定性</li>
+<li>[ ] 理解复特征值对应旋转/振荡</li>
+</ul>
+<nav class="lesson-nav"><span><a href="线代06-行列式.html">&larr; 上一课</a></span><span><a href="线代08-对称矩阵与二次型.html">下一课 &rarr;</a></span></nav>
+<footer>线性代数 · 数学公式使用 MathML 渲染，建议使用 Chrome / Edge / Firefox 打开</footer>
+</main>
+</body>
+</html>

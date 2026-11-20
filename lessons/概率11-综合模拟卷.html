@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>概率论 · 第 11 课：综合模拟卷</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --quote-bg: #f6f8fa;
+  --code-bg: #eff2f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --border: #30363d;
+    --accent: #4493f8;
+    --quote-bg: #161b22;
+    --code-bg: #1f242c;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; font-weight: 650; }
+h1 { font-size: 2rem; margin: 0 0 .8em; padding-bottom: .35em; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 2.2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.2rem; margin: 1.8em 0 .55em; }
+p { margin: .85em 0; }
+a { color: var(--accent); }
+blockquote {
+  margin: 1em 0;
+  padding: .6em 1em;
+  border-left: 4px solid var(--accent);
+  background: var(--quote-bg);
+  color: var(--muted);
+  border-radius: 4px;
+}
+blockquote p { margin: .25em 0; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: .96em;
+  overflow: hidden;
+}
+th, td { border: 1px solid var(--border); padding: .45em .7em; text-align: left; vertical-align: top; }
+th { background: var(--quote-bg); font-weight: 600; }
+details {
+  margin: 1.2em 0;
+  padding: .8em 1em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--quote-bg);
+}
+summary { cursor: pointer; font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+ul, ol { padding-left: 1.7em; }
+li { margin: .3em 0; }
+.math-block {
+  margin: 1.15em 0;
+  padding: .7em .9em;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--quote-bg);
+  border-radius: 6px;
+}
+math { font-size: 1.14em; line-height: 1.2; }
+math[display="inline"] { font-size: 1.05em; vertical-align: baseline; }
+.math-block math { font-size: 1.24em; }
+.math-fallback, .math-fallback-block {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .08em .3em;
+  border-radius: 3px;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .12em .35em;
+  border-radius: 3px;
+  font-size: .92em;
+}
+pre code { display: block; padding: .8em 1em; overflow-x: auto; }
+.lesson-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .8em 1.4em;
+  justify-content: space-between;
+  margin: 2.4em 0 0;
+  padding-top: 1.1em;
+  border-top: 1px solid var(--border);
+  font-size: .95em;
+}
+footer { margin-top: 2.2em; color: var(--muted); font-size: .85em; text-align: center; }
+@media print {
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  .math-block { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>概率论 · 第 11 课：综合模拟卷</h1>
+<blockquote>
+<p><strong>本课目标</strong>：用一份 90 分钟闭卷卷检查第 01–10 课的综合掌握情况。</p>
+<p><strong>使用方法</strong>：先限时完成，再对答案。错题回到对应课节复习，72 小时内重做。</p>
+</blockquote>
+<hr>
+<h2>说明</h2>
+<ul>
+<li>建议时间：90 分钟，闭卷。</li>
+<li>总分 100 分：第 1–10 题每题 8 分，第 11–12 题每题 10 分。</li>
+<li>允许使用纸笔和计算器；分布函数值可用近似。</li>
+</ul>
+<hr>
+<h2>目录</h2>
+<ol>
+<li>判断题</li>
+<li>条件概率与贝叶斯</li>
+<li>二项分布</li>
+<li>指数分布</li>
+<li>联合分布与独立性</li>
+<li>中心极限定理</li>
+<li>参数估计</li>
+<li>假设检验</li>
+<li>贝叶斯推断</li>
+<li>马尔可夫链</li>
+<li>熵与 KL 散度</li>
+<li>A/B 测试应用</li>
+</ol>
+<hr>
+<h2>1. 判断题（每题 1.6 分，共 8 分）</h2>
+<p>判断下列说法是否正确，并简述理由。</p>
+<ol>
+<li>对任意事件 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi><mo>&#x0002C;</mo><mi>B</mi></mrow></math>，都有 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo>&#x02223;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>B</mi><mo>&#x02223;</mo><mi>A</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。</li>
+<li>若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi></mrow></math> 独立，则 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>Cov</mo><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math>。</li>
+<li>若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>Cov</mo><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，则 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi></mrow></math> 一定独立。</li>
+<li>最大似然估计一定是无偏估计。</li>
+<li>95% 置信区间的意思是“参数有 95% 的概率落在该区间内”。</li>
+</ol>
+<hr>
+<h2>2. 条件概率与贝叶斯（8 分）</h2>
+<p>某疾病患病率为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mi>&#x00025;</mi></mrow></math>。检测灵敏度为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>90</mn><mi>&#x00025;</mi></mrow></math>，特异度为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>95</mn><mi>&#x00025;</mi></mrow></math>。某人检测阳性，求他实际患病的概率。</p>
+<hr>
+<h2>3. 二项分布（8 分）</h2>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi><mi>&#x0007E;</mi><mi>B</mi><mo stretchy="false">&#x00028;</mo><mn>20</mn><mo>&#x0002C;</mo><mn>0.1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><mi>X</mi><mo stretchy="false">]</mo></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>Var</mo><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo stretchy="false">&#x00029;</mo></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0003D;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 和 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x02265;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+<hr>
+<h2>4. 指数分布（8 分）</h2>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi><mi>&#x0007E;</mi><mrow><mi mathvariant="normal">E</mi><mi mathvariant="normal">x</mi><mi mathvariant="normal">p</mi></mrow><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo>&#x0003D;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><mi>X</mi><mo stretchy="false">]</mo></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>Var</mo><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo stretchy="false">&#x00029;</mo></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><msup><mi>X</mi><mn>2</mn></msup><mo stretchy="false">]</mo></mrow></math> 和 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0003E;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+<hr>
+<h2>5. 联合分布与独立性（8 分）</h2>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi></mrow></math> 的联合 PMF 为</p>
+<table>
+<thead>
+<tr>
+<th><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi><mi>&#x0005C;</mi><mi>Y</mi></mrow></math></th>
+<th>0</th>
+<th>1</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>0.1</td>
+<td>0.2</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0.3</td>
+<td>0.4</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>求边缘分布 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 和 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>Y</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。</li>
+<li>判断 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi></mrow></math> 是否独立。</li>
+<li>求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>Cov</mo><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。</li>
+</ol>
+<hr>
+<h2>6. 中心极限定理（8 分）</h2>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>X</mi><mn>1</mn></msub><mo>&#x0002C;</mo><mo>&#x02026;</mo><mo>&#x0002C;</mo><msub><mi>X</mi><mrow><mn>64</mn></mrow></msub></mrow></math> 独立同分布，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><msub><mi>X</mi><mi>i</mi></msub><mo stretchy="false">]</mo><mo>&#x0003D;</mo><mn>10</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>Var</mo><mo stretchy="false">&#x00028;</mo><msub><mi>X</mi><mi>i</mi></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>16</mn></mrow></math>。用 CLT 近似</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mo stretchy="false">&#x0007C;</mo><mover><mi>X</mi><mo stretchy="true">&#x000AF;</mo></mover><mo>&#x02212;</mo><mn>10</mn><mo stretchy="false">&#x0007C;</mo><mo>&#x02264;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<hr>
+<h2>7. 参数估计（8 分）</h2>
+<p>抛硬币 50 次，出现 30 次正面。</p>
+<ol>
+<li>求正面概率 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi></mrow></math> 的 MLE。</li>
+<li>求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi></mrow></math> 的近似 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>95</mn><mi>&#x00025;</mi></mrow></math> 置信区间。</li>
+</ol>
+<hr>
+<h2>8. 假设检验（8 分）</h2>
+<p>某传感器标称均值 50。抽 25 次，样本均值 51，样本标准差 5。检验 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>H</mi><mn>0</mn></msub><mi>:</mi><mi>&#x003BC;</mi><mo>&#x0003D;</mo><mn>50</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>H</mi><mn>1</mn></msub><mi>:</mi><mi>&#x003BC;</mi><mo>&#x02260;</mo><mn>50</mn></mrow></math>，取 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003B1;</mi><mo>&#x0003D;</mo><mn>0.05</mn></mrow></math>。写出检验统计量、自由度和结论。</p>
+<hr>
+<h2>9. 贝叶斯推断（8 分）</h2>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi></mrow></math> 的先验为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mi mathvariant="normal">B</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">t</mi><mi mathvariant="normal">a</mi></mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，观测 10 次抛硬币有 8 次正面。</p>
+<ol>
+<li>求后验分布。</li>
+<li>求后验均值和后验众数。</li>
+<li>若再做一次抛掷，预测正面的后验概率。</li>
+</ol>
+<hr>
+<h2>10. 马尔可夫链（8 分）</h2>
+<p>设两状态马尔可夫链的转移矩阵为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D40F;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>0.9</mn></mtd><mtd><mn>0.1</mn></mtd></mtr><mtr><mtd><mn>0.5</mn></mtd><mtd><mn>0.5</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<ol>
+<li>求平稳分布。</li>
+<li>若当前处于状态 1，求两步后仍处于状态 1 的概率。</li>
+</ol>
+<hr>
+<h2>11. 熵与 KL 散度（10 分）</h2>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>0.5</mn><mo>&#x0002C;</mo><mn>0.5</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>Q</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>0.75</mn><mo>&#x0002C;</mo><mn>0.25</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+<ol>
+<li>求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。</li>
+<li>求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>D</mi><mrow><mrow><mi mathvariant="normal">K</mi><mi mathvariant="normal">L</mi></mrow></mrow></msub><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo>&#x02225;</mo><mi>Q</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。</li>
+<li>求交叉熵 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo>&#x0002C;</mo><mi>Q</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。</li>
+</ol>
+<hr>
+<h2>12. A/B 测试应用（10 分）</h2>
+<p>两个版本的转化率：A 版 1000 次访问 120 次转化，B 版 1000 次访问 150 次转化。</p>
+<ol>
+<li>写出原假设和备择假设。</li>
+<li>计算两比例检验的 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>z</mi></mrow></math> 统计量。</li>
+<li>取 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003B1;</mi><mo>&#x0003D;</mo><mn>0.05</mn></mrow></math>，给出结论并说明理由。</li>
+</ol>
+<hr>
+<h2>答案与简解</h2>
+<details>
+<summary>点击展开（做完再看）</summary>
+
+### 1. 判断题
+
+1. **错**。<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>A</mi><mo>&#x02223;</mo><mi>B</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>B</mi><mo>&#x02223;</mo><mi>A</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 一般不同，前者是“<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>B</mi></mrow></math> 中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi></mrow></math> 的比例”，后者是“<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi></mrow></math> 中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>B</mi></mrow></math> 的比例”。
+2. **对**。独立推出不相关，协方差为 0。
+3. **错**。不相关只说明没有线性关系，仍可能有非线性依赖。
+4. **错**。MLE 在大样本下渐近无偏，但有限样本可能有偏，例如正态方差的 MLE 分母是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math>。
+5. **错**。置信区间是频率学派概念：重复抽样时约 95% 的区间覆盖固定参数，而不是参数落入当前区间的概率。
+
+### 2. 条件概率与贝叶斯
+
+设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>D</mi></mrow></math> 为患病，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x0002B;</mo></mrow></math> 为阳性。
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>D</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0.02</mn><mo>&#x0002C;</mo><mspace width="1em" /><mi>P</mi><mo stretchy="false">&#x00028;</mo><mo>&#x0002B;</mo><mo>&#x02223;</mo><mi>D</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0.9</mn><mo>&#x0002C;</mo><mspace width="1em" /><mi>P</mi><mo stretchy="false">&#x00028;</mo><mo>&#x0002B;</mo><mo>&#x02223;</mo><msup><mi>D</mi><mi>c</mi></msup><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0.05</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+由贝叶斯公式：
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>D</mi><mo>&#x02223;</mo><mo>&#x0002B;</mo><mo stretchy="false">&#x00029;</mo><mi>&</mi><mo>&#x0003D;</mo><mfrac><mrow><mn>0.9</mn><mo>&#x000D7;</mo><mn>0.02</mn></mrow><mrow><mn>0.9</mn><mo>&#x000D7;</mo><mn>0.02</mn><mo>&#x0002B;</mo><mn>0.05</mn><mo>&#x000D7;</mo><mn>0.98</mn></mrow></mfrac><mspace linebreak="newline" /><mi>&</mi><mo>&#x0003D;</mo><mfrac><mrow><mn>0.018</mn></mrow><mrow><mn>0.018</mn><mo>&#x0002B;</mo><mn>0.049</mn></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>0.018</mn></mrow><mrow><mn>0.067</mn></mrow></mfrac><mo>&#x02248;</mo><mn>0.269</mn><mo>&#x0002E;</mo></mrow></mrow></math></div>
+
+
+
+约为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>26.9</mn><mi>&#x00025;</mi></mrow></math>。
+
+### 3. 二项分布
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><mi>X</mi><mo stretchy="false">]</mo><mo>&#x0003D;</mo><mi>n</mi><mi>p</mi><mo>&#x0003D;</mo><mn>2</mn><mo>&#x0002C;</mo><mspace width="2em" /><mo>Var</mo><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>n</mi><mi>p</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><mi>p</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>20</mn><mo>&#x000D7;</mo><mn>0.1</mn><mo>&#x000D7;</mo><mn>0.9</mn><mo>&#x0003D;</mo><mn>1.8</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0003D;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mn>0.9</mn><mrow><mn>20</mn></mrow></msup><mo>&#x02248;</mo><mn>0.1216</mn><mo>&#x0002C;</mo></mrow></math></div>
+
+
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x02265;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn><mo>&#x02212;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0003D;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x02248;</mo><mn>0.8784</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+### 4. 指数分布
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><mi>X</mi><mo stretchy="false">]</mo><mo>&#x0003D;</mo><mfrac><mn>1</mn><mi>&#x003BB;</mi></mfrac><mo>&#x0003D;</mo><mn>0.5</mn><mo>&#x0002C;</mo><mspace width="2em" /><mo>Var</mo><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mn>1</mn><mrow><msup><mi>&#x003BB;</mi><mn>2</mn></msup></mrow></mfrac><mo>&#x0003D;</mo><mn>0.25</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><msup><mi>X</mi><mn>2</mn></msup><mo stretchy="false">]</mo><mo>&#x0003D;</mo><mo>Var</mo><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D53C;</mi><mi>X</mi><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup><mo>&#x0003D;</mo><mn>0.25</mn><mo>&#x0002B;</mo><mn>0.25</mn><mo>&#x0003D;</mo><mn>0.5</mn><mo>&#x0002C;</mo></mrow></math></div>
+
+
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0003E;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mn>2</mn></mrow></msup><mo>&#x02248;</mo><mn>0.1353</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+### 5. 联合分布与独立性
+
+1. 边缘分布：
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0003D;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0.1</mn><mo>&#x0002B;</mo><mn>0.2</mn><mo>&#x0003D;</mo><mn>0.3</mn><mo>&#x0002C;</mo><mspace width="1em" /><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0003D;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0.7</mn><mo>&#x0002C;</mo></mrow></math></div>
+
+
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>Y</mi><mo>&#x0003D;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0.1</mn><mo>&#x0002B;</mo><mn>0.3</mn><mo>&#x0003D;</mo><mn>0.4</mn><mo>&#x0002C;</mo><mspace width="1em" /><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>Y</mi><mo>&#x0003D;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0.6</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+2. <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0003D;</mo><mn>0</mn><mo>&#x0002C;</mo><mi>Y</mi><mo>&#x0003D;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0.1</mn></mrow></math>，而 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0003D;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>Y</mi><mo>&#x0003D;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0.3</mn><mo>&#x000D7;</mo><mn>0.4</mn><mo>&#x0003D;</mo><mn>0.12</mn></mrow></math>，不相等，所以不独立。
+
+3. <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><mi>X</mi><mo stretchy="false">]</mo><mo>&#x0003D;</mo><mn>0.7</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><mi>Y</mi><mo stretchy="false">]</mo><mo>&#x0003D;</mo><mn>0.6</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><mi>X</mi><mi>Y</mi><mo stretchy="false">]</mo><mo>&#x0003D;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002C;</mo><mi>Y</mi><mo>&#x0003D;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0.4</mn></mrow></math>，所以
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>Cov</mo><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0.4</mn><mo>&#x02212;</mo><mn>0.7</mn><mo>&#x000D7;</mo><mn>0.6</mn><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>0.02</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+### 6. 中心极限定理
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mover><mi>X</mi><mo stretchy="true">&#x000AF;</mo></mover><mo>&#x02248;</mo><mi>N</mi><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mn>10</mn><mo>&#x0002C;</mo><mfrac><mrow><mn>16</mn></mrow><mrow><mn>64</mn></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0003D;</mo><mi>N</mi><mo stretchy="false">&#x00028;</mo><mn>10</mn><mo>&#x0002C;</mo><mn>0.25</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo></mrow></math></div>
+
+
+
+标准差为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0.5</mn></mrow></math>。所以
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mo stretchy="false">&#x0007C;</mo><mover><mi>X</mi><mo stretchy="true">&#x000AF;</mo></mover><mo>&#x02212;</mo><mn>10</mn><mo stretchy="false">&#x0007C;</mo><mo>&#x02264;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x02248;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mo stretchy="false">&#x0007C;</mo><mi>Z</mi><mo stretchy="false">&#x0007C;</mo><mo>&#x02264;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo><mo>&#x02248;</mo><mn>0.9545</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+### 7. 参数估计
+
+1. <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover accent="true"><mi>p</mi><mo>&#x0005E;</mo></mover><mo>&#x0003D;</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><mn>30</mn></mrow><mrow><mn>50</mn></mrow></mfrac></mstyle><mo>&#x0003D;</mo><mn>0.6</mn></mrow></math>。
+
+2. 标准误
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msqrt><mrow><mfrac><mrow><mn>0.6</mn><mo>&#x000D7;</mo><mn>0.4</mn></mrow><mrow><mn>50</mn></mrow></mfrac></mrow></msqrt><mo>&#x0003D;</mo><msqrt><mrow><mn>0.0048</mn></mrow></msqrt><mo>&#x02248;</mo><mn>0.0693</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+近似 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>95</mn><mi>&#x00025;</mi></mrow></math> 区间为
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>0.6</mn><mi>&#x000B1;</mi><mn>1.96</mn><mo>&#x000D7;</mo><mn>0.0693</mn><mo>&#x02248;</mo><mo stretchy="false">&#x00028;</mo><mn>0.464</mn><mo>&#x0002C;</mo><mtext>&#x000A0;</mtext><mn>0.736</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+### 8. 假设检验
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>t</mi><mo>&#x0003D;</mo><mfrac><mrow><mover><mi>X</mi><mo stretchy="true">&#x000AF;</mo></mover><mo>&#x02212;</mo><mn>50</mn></mrow><mrow><mi>s</mi><mo>&#x0002F;</mo><msqrt><mi>n</mi></msqrt></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>51</mn><mo>&#x02212;</mo><mn>50</mn></mrow><mrow><mn>5</mn><mo>&#x0002F;</mo><msqrt><mrow><mn>25</mn></mrow></msqrt></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>1</mn></mrow></mfrac><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+自由度 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mo>&#x02212;</mo><mn>1</mn><mo>&#x0003D;</mo><mn>24</mn></mrow></math>。双侧 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi><mo>&#x02248;</mo><mn>0.327</mn><mo>&#x0003E;</mo><mn>0.05</mn></mrow></math>，不拒绝 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>H</mi><mn>0</mn></msub></mrow></math>，没有足够证据说明均值偏离 50。
+
+### 9. 贝叶斯推断
+
+1. Beta–二项共轭：
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>p</mi><mo>&#x02223;</mo><mi>&#x1D49F;</mi><mi>&#x0007E;</mi><mrow><mi mathvariant="normal">B</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">t</mi><mi mathvariant="normal">a</mi></mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002B;</mo><mn>8</mn><mo>&#x0002C;</mo><mtext>&#x000A0;</mtext><mn>1</mn><mo>&#x0002B;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mrow><mi mathvariant="normal">B</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">t</mi><mi mathvariant="normal">a</mi></mrow><mo stretchy="false">&#x00028;</mo><mn>9</mn><mo>&#x0002C;</mo><mn>3</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+2. 后验均值：
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mn>9</mn></mrow><mrow><mn>9</mn><mo>&#x0002B;</mo><mn>3</mn></mrow></mfrac><mo>&#x0003D;</mo><mn>0.75</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+后验众数（<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>a</mi><mo>&#x0002C;</mo><mi>b</mi><mo>&#x0003E;</mo><mn>1</mn></mrow></math>）：
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mi>a</mi><mo>&#x02212;</mo><mn>1</mn></mrow><mrow><mi>a</mi><mo>&#x0002B;</mo><mi>b</mi><mo>&#x02212;</mo><mn>2</mn></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>8</mn></mrow><mrow><mn>10</mn></mrow></mfrac><mo>&#x0003D;</mo><mn>0.8</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+3. 后验预测概率等于后验均值，即 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0.75</mn></mrow></math>。
+
+### 10. 马尔可夫链
+
+1. 设平稳分布为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><msub><mi>&#x003C0;</mi><mn>1</mn></msub><mo>&#x0002C;</mo><msub><mi>&#x003C0;</mi><mn>2</mn></msub><mo stretchy="false">&#x00029;</mo></mrow></math>：
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007B;</mo><mtable><mtr><mtd columnalign="left"><mn>0.9</mn><msub><mi>&#x003C0;</mi><mn>1</mn></msub><mo>&#x0002B;</mo><mn>0.5</mn><msub><mi>&#x003C0;</mi><mn>2</mn></msub><mo>&#x0003D;</mo><msub><mi>&#x003C0;</mi><mn>1</mn></msub><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><msub><mi>&#x003C0;</mi><mn>1</mn></msub><mo>&#x0002B;</mo><msub><mi>&#x003C0;</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002E;</mo></mtd></mtr></mtable></mrow></mrow></math></div>
+
+
+
+第一式得 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0.1</mn><msub><mi>&#x003C0;</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mn>0.5</mn><msub><mi>&#x003C0;</mi><mn>2</mn></msub></mrow></math>，即 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x003C0;</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mn>5</mn><msub><mi>&#x003C0;</mi><mn>2</mn></msub></mrow></math>。结合归一化：
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>&#x003C0;</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mfrac><mn>5</mn><mn>6</mn></mfrac><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>&#x003C0;</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>6</mn></mfrac><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+2. 两步转移：
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo stretchy="false">&#x00028;</mo><msup><mi>&#x1D40F;</mi><mn>2</mn></msup><msub><mo stretchy="false">&#x00029;</mo><mrow><mn>11</mn></mrow></msub><mo>&#x0003D;</mo><mn>0.9</mn><mo>&#x000D7;</mo><mn>0.9</mn><mo>&#x0002B;</mo><mn>0.1</mn><mo>&#x000D7;</mo><mn>0.5</mn><mo>&#x0003D;</mo><mn>0.81</mn><mo>&#x0002B;</mo><mn>0.05</mn><mo>&#x0003D;</mo><mn>0.86</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+### 11. 熵与 KL 散度
+
+1.
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>0.5</mn><mi>ln</mi><mn>0.5</mn><mo>&#x02212;</mo><mn>0.5</mn><mi>ln</mi><mn>0.5</mn><mo>&#x0003D;</mo><mi>ln</mi><mn>2</mn><mo>&#x02248;</mo><mn>0.693</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+2.
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><msub><mi>D</mi><mrow><mrow><mi mathvariant="normal">K</mi><mi mathvariant="normal">L</mi></mrow></mrow></msub><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo>&#x02225;</mo><mi>Q</mi><mo stretchy="false">&#x00029;</mo><mi>&</mi><mo>&#x0003D;</mo><mn>0.5</mn><mi>ln</mi><mfrac><mrow><mn>0.5</mn></mrow><mrow><mn>0.75</mn></mrow></mfrac><mo>&#x0002B;</mo><mn>0.5</mn><mi>ln</mi><mfrac><mrow><mn>0.5</mn></mrow><mrow><mn>0.25</mn></mrow></mfrac><mspace linebreak="newline" /><mi>&</mi><mo>&#x0003D;</mo><mn>0.5</mn><mi>ln</mi><mfrac><mn>2</mn><mn>3</mn></mfrac><mo>&#x0002B;</mo><mn>0.5</mn><mi>ln</mi><mn>2</mn><mspace linebreak="newline" /><mi>&</mi><mo>&#x0003D;</mo><mn>0.5</mn><mi>ln</mi><mfrac><mn>4</mn><mn>3</mn></mfrac><mo>&#x02248;</mo><mn>0.144</mn><mo>&#x0002E;</mo></mrow></mrow></math></div>
+
+
+
+3.
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo>&#x0002C;</mo><mi>Q</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><msub><mi>D</mi><mrow><mrow><mi mathvariant="normal">K</mi><mi mathvariant="normal">L</mi></mrow></mrow></msub><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo>&#x02225;</mo><mi>Q</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02248;</mo><mn>0.693</mn><mo>&#x0002B;</mo><mn>0.144</mn><mo>&#x0003D;</mo><mn>0.837</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+也可直接算：
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo>&#x0002C;</mo><mi>Q</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>0.5</mn><mi>ln</mi><mn>0.75</mn><mo>&#x02212;</mo><mn>0.5</mn><mi>ln</mi><mn>0.25</mn><mo>&#x02248;</mo><mn>0.837</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+### 12. A/B 测试应用
+
+1. 设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>p</mi><mi>A</mi></msub><mo>&#x0002C;</mo><msub><mi>p</mi><mi>B</mi></msub></mrow></math> 为两版转化率：
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>H</mi><mn>0</mn></msub><mi>:</mi><msub><mi>p</mi><mi>A</mi></msub><mo>&#x0003D;</mo><msub><mi>p</mi><mi>B</mi></msub><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>H</mi><mn>1</mn></msub><mi>:</mi><msub><mi>p</mi><mi>A</mi></msub><mo>&#x02260;</mo><msub><mi>p</mi><mi>B</mi></msub><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+2. 样本比例 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mover accent="true"><mi>p</mi><mo>&#x0005E;</mo></mover><mi>A</mi></msub><mo>&#x0003D;</mo><mn>0.12</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mover accent="true"><mi>p</mi><mo>&#x0005E;</mo></mover><mi>B</mi></msub><mo>&#x0003D;</mo><mn>0.15</mn></mrow></math>。合并比例
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mover accent="true"><mi>p</mi><mo>&#x0005E;</mo></mover><mo>&#x0003D;</mo><mfrac><mrow><mn>120</mn><mo>&#x0002B;</mo><mn>150</mn></mrow><mrow><mn>2000</mn></mrow></mfrac><mo>&#x0003D;</mo><mn>0.135</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+标准误
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>S</mi><mi>E</mi><mo>&#x0003D;</mo><msqrt><mrow><mover accent="true"><mi>p</mi><mo>&#x0005E;</mo></mover><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><mover accent="true"><mi>p</mi><mo>&#x0005E;</mo></mover><mo stretchy="false">&#x00029;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mn>1</mn><mrow><mn>1000</mn></mrow></mfrac><mo>&#x0002B;</mo><mfrac><mn>1</mn><mrow><mn>1000</mn></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow></mrow></msqrt><mo>&#x0003D;</mo><msqrt><mrow><mn>0.135</mn><mo>&#x000D7;</mo><mn>0.865</mn><mo>&#x000D7;</mo><mn>0.002</mn></mrow></msqrt><mo>&#x02248;</mo><mn>0.0153</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+检验统计量
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>z</mi><mo>&#x0003D;</mo><mfrac><mrow><mn>0.15</mn><mo>&#x02212;</mo><mn>0.12</mn></mrow><mrow><mn>0.0153</mn></mrow></mfrac><mo>&#x02248;</mo><mn>1.96</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+3. 双侧 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi><mo>&#x02248;</mo><mn>0.05</mn></mrow></math>，处于临界。若严格取 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003B1;</mi><mo>&#x0003D;</mo><mn>0.05</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi></mrow></math> 略大于或约等于 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0.05</mn></mrow></math>，结论不稳健；实际应报告效应量（约 3 个百分点）和置信区间，并考虑增大样本量。不能只凭“接近显著”就下强结论。
+
+</details>
+
+<hr>
+<h2>复习建议</h2>
+<ul>
+<li>错在概率计算：重做第 01、02 课例题。</li>
+<li>错在分布与期望：重读第 02、03 课，背熟常见分布的均值和方差。</li>
+<li>错在推断：回到第 06、07、08 课，把 MLE、检验、后验各推一遍。</li>
+<li>错在过程与信息论：重读第 09、10 课的定义和例子。</li>
+<li>若总分低于 60，建议按 01 → 03 → 06 → 08 的顺序复习；高于 80 可以进入最优化或控制与估计。</li>
+</ul>
+<hr>
+<h2>自查清单</h2>
+<ul>
+<li>[ ] 能在 90 分钟内完成整卷</li>
+<li>[ ] 计算题步骤完整、结果正确</li>
+<li>[ ] 能正确解释 p 值、置信区间和可信区间</li>
+<li>[ ] 错题已经回到对应课节复习</li>
+<li>[ ] 能独立完成一次贝叶斯更新</li>
+</ul>
+<nav class="lesson-nav"><span><a href="概率10-信息论与KL散度.html">&larr; 上一课</a></span><span><a href="../index.html">返回课程主页</a></span></nav>
+<footer>概率论 · 数学公式使用 MathML 渲染，建议使用 Chrome / Edge / Firefox 打开</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>线性代数 · 第 05 课：正交投影与最小二乘</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --quote-bg: #f6f8fa;
+  --code-bg: #eff2f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --border: #30363d;
+    --accent: #4493f8;
+    --quote-bg: #161b22;
+    --code-bg: #1f242c;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; font-weight: 650; }
+h1 { font-size: 2rem; margin: 0 0 .8em; padding-bottom: .35em; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 2.2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.2rem; margin: 1.8em 0 .55em; }
+p { margin: .85em 0; }
+a { color: var(--accent); }
+blockquote {
+  margin: 1em 0;
+  padding: .6em 1em;
+  border-left: 4px solid var(--accent);
+  background: var(--quote-bg);
+  color: var(--muted);
+  border-radius: 4px;
+}
+blockquote p { margin: .25em 0; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: .96em;
+  overflow: hidden;
+}
+th, td { border: 1px solid var(--border); padding: .45em .7em; text-align: left; vertical-align: top; }
+th { background: var(--quote-bg); font-weight: 600; }
+details {
+  margin: 1.2em 0;
+  padding: .8em 1em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--quote-bg);
+}
+summary { cursor: pointer; font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+ul, ol { padding-left: 1.7em; }
+li { margin: .3em 0; }
+.math-block {
+  margin: 1.15em 0;
+  padding: .7em .9em;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--quote-bg);
+  border-radius: 6px;
+}
+math { font-size: 1.14em; line-height: 1.2; }
+math[display="inline"] { font-size: 1.05em; vertical-align: baseline; }
+.math-block math { font-size: 1.24em; }
+.math-fallback, .math-fallback-block {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .08em .3em;
+  border-radius: 3px;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .12em .35em;
+  border-radius: 3px;
+  font-size: .92em;
+}
+pre code { display: block; padding: .8em 1em; overflow-x: auto; }
+.lesson-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .8em 1.4em;
+  justify-content: space-between;
+  margin: 2.4em 0 0;
+  padding-top: 1.1em;
+  border-top: 1px solid var(--border);
+  font-size: .95em;
+}
+footer { margin-top: 2.2em; color: var(--muted); font-size: .85em; text-align: center; }
+@media print {
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  .math-block { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>线性代数 · 第 05 课：正交投影与最小二乘</h1>
+<blockquote>
+<p><strong>本课目标</strong>：掌握内积、范数、正交投影，理解最小二乘的几何意义，能推导并求解正规方程。</p>
+<p><strong>使用方法</strong>：先读讲解 → 做练习 → 对答案。错题 72 小时内重做。</p>
+</blockquote>
+<hr>
+<h2>目录</h2>
+<ol>
+<li>内积、范数与夹角</li>
+<li>正交与标准正交基</li>
+<li>投影到直线与子空间</li>
+<li>Gram–Schmidt 与 QR</li>
+<li>最小二乘与正规方程</li>
+<li>工程视角：标定、SLAM 与过定系统</li>
+<li>练习</li>
+<li>答案与简解</li>
+</ol>
+<hr>
+<h2>1. 内积、范数与夹角</h2>
+<p>两个 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math> 维向量的<strong>内积</strong>定义为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D41A;</mi><mo>&#x000B7;</mo><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><msup><mi>&#x1D41A;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>i</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mi>n</mi></munderover><msub><mi>a</mi><mi>i</mi></msub><msub><mi>b</mi><mi>i</mi></msub><mo>&#x0002E;</mo></mrow></math></div>
+<p>它是标量，不是向量。内积满足对称性和线性性：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D41A;</mi><mo>&#x000B7;</mo><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><mi>&#x1D41B;</mi><mo>&#x000B7;</mo><mi>&#x1D41A;</mi><mo>&#x0002C;</mo><mspace width="2em" /><mi>&#x1D41A;</mi><mo>&#x000B7;</mo><mo stretchy="false">&#x00028;</mo><mi>c</mi><mi>&#x1D41B;</mi><mo>&#x0002B;</mo><mi>d</mi><mi>&#x1D41C;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>c</mi><mspace width="0.167em" /><mi>&#x1D41A;</mi><mo>&#x000B7;</mo><mi>&#x1D41B;</mi><mo>&#x0002B;</mo><mi>d</mi><mspace width="0.167em" /><mi>&#x1D41A;</mi><mo>&#x000B7;</mo><mi>&#x1D41C;</mi><mo>&#x0002E;</mo></mrow></math></div>
+<p>由内积定义<strong>范数</strong>（长度）：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo fence="false" stretchy="false">&#x02016;</mo><mi>&#x1D41A;</mi><mo fence="false" stretchy="false">&#x02016;</mo><mo>&#x0003D;</mo><msqrt><mrow><mi>&#x1D41A;</mi><mo>&#x000B7;</mo><mi>&#x1D41A;</mi></mrow></msqrt><mo>&#x0003D;</mo><msqrt><mrow><msubsup><mi>a</mi><mn>1</mn><mn>2</mn></msubsup><mo>&#x0002B;</mo><mo>&#x022EF;</mo><mo>&#x0002B;</mo><msubsup><mi>a</mi><mi>n</mi><mn>2</mn></msubsup></mrow></msqrt><mo>&#x0002E;</mo></mrow></math></div>
+<p>两个非零向量的夹角 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003B8;</mi></mrow></math> 满足</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>cos</mi><mi>&#x003B8;</mi><mo>&#x0003D;</mo><mfrac><mrow><mi>&#x1D41A;</mi><mo>&#x000B7;</mo><mi>&#x1D41B;</mi></mrow><mrow><mo fence="false" stretchy="false">&#x02016;</mo><mi>&#x1D41A;</mi><mo fence="false" stretchy="false">&#x02016;</mo><mo fence="false" stretchy="false">&#x02016;</mo><mi>&#x1D41B;</mi><mo fence="false" stretchy="false">&#x02016;</mo></mrow></mfrac><mo>&#x0002E;</mo></mrow></math></div>
+<p><strong>Cauchy–Schwarz 不等式</strong>给出</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo stretchy="false">&#x0007C;</mo><mi>&#x1D41A;</mi><mo>&#x000B7;</mo><mi>&#x1D41B;</mi><mo stretchy="false">&#x0007C;</mo><mo>&#x02264;</mo><mo fence="false" stretchy="false">&#x02016;</mo><mi>&#x1D41A;</mi><mo fence="false" stretchy="false">&#x02016;</mo><mo fence="false" stretchy="false">&#x02016;</mo><mi>&#x1D41B;</mi><mo fence="false" stretchy="false">&#x02016;</mo><mo>&#x0002C;</mo></mrow></math></div>
+<p>所以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x0007C;</mo><mi>cos</mi><mi>&#x003B8;</mi><mo stretchy="false">&#x0007C;</mo><mo>&#x02264;</mo><mn>1</mn></mrow></math>，夹角定义是自洽的。</p>
+<blockquote>
+<p><strong>注意</strong>：不要把内积和逐元素乘积混淆。逐元素乘积 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>a</mi><mi>i</mi></msub><msub><mi>b</mi><mi>i</mi></msub></mrow></math> 仍是一个向量，内积要把所有分量加起来。</p>
+</blockquote>
+<hr>
+<h2>2. 正交与标准正交基</h2>
+<p>若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41A;</mi><mo>&#x000B7;</mo><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，称两向量<strong>正交</strong>，记作 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41A;</mi><mi>&#x027C2;</mi><mi>&#x1D41B;</mi></mrow></math>。几何上就是夹角为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mn>90</mn><mo>&#x02218;</mo></msup></mrow></math>。</p>
+<p>一组向量若两两正交，且每个向量长度为 1，称为<strong>标准正交组</strong>。若它们还能张成整个空间，就是<strong>标准正交基</strong>。</p>
+<p>标准正交基的最大好处是坐标容易求。若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42A;</mi><mn>1</mn></msub><mo>&#x0002C;</mo><mo>&#x02026;</mo><mo>&#x0002C;</mo><msub><mi>&#x1D42A;</mi><mi>n</mi></msub></mrow></math> 是标准正交基，则任意向量 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D42F;</mi></mrow></math> 可以写成</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D42F;</mi><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>i</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mi>n</mi></munderover><mo stretchy="false">&#x00028;</mo><msub><mi>&#x1D42A;</mi><mi>i</mi></msub><mo>&#x000B7;</mo><mi>&#x1D42F;</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><msub><mi>&#x1D42A;</mi><mi>i</mi></msub><mo>&#x0002E;</mo></mrow></math></div>
+<p>系数就是内积，不需要解方程组。这正是傅里叶级数、QR 分解和 PCA 都在寻找正交基的原因。</p>
+<hr>
+<h2>3. 投影到直线与子空间</h2>
+<p><strong>投影到直线</strong>：把 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D42F;</mi></mrow></math> 投影到非零向量 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D42E;</mi></mrow></math> 张成的直线上，投影点为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>proj</mo><mrow><mi>&#x1D42E;</mi></mrow></msub><mi>&#x1D42F;</mi><mo>&#x0003D;</mo><mfrac><mrow><mi>&#x1D42E;</mi><mo>&#x000B7;</mo><mi>&#x1D42F;</mi></mrow><mrow><mi>&#x1D42E;</mi><mo>&#x000B7;</mo><mi>&#x1D42E;</mi></mrow></mfrac><mspace width="0.167em" /><mi>&#x1D42E;</mi><mo>&#x0002E;</mo></mrow></math></div>
+<p>标量系数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><mi>&#x1D42E;</mi><mo>&#x000B7;</mo><mi>&#x1D42F;</mi></mrow><mrow><mi>&#x1D42E;</mi><mo>&#x000B7;</mo><mi>&#x1D42E;</mi></mrow></mfrac></mstyle></mrow></math> 是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D42F;</mi></mrow></math> 在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D42E;</mi></mrow></math> 方向上的坐标。残差</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D42F;</mi><mo>&#x02212;</mo><msub><mo>proj</mo><mrow><mi>&#x1D42E;</mi></mrow></msub><mi>&#x1D42F;</mi></mrow></math></div>
+<p>与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D42E;</mi></mrow></math> 正交，这是投影的定义性质。</p>
+<p><strong>例 5.1</strong>　把 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D42F;</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>3</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 投影到 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D42E;</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 张成的直线上。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D42E;</mi><mo>&#x000B7;</mo><mi>&#x1D42F;</mi><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002B;</mo><mn>2</mn><mo>&#x0002B;</mo><mn>3</mn><mo>&#x0003D;</mo><mn>6</mn><mo>&#x0002C;</mo><mspace width="2em" /><mi>&#x1D42E;</mi><mo>&#x000B7;</mo><mi>&#x1D42E;</mi><mo>&#x0003D;</mo><mn>3</mn><mo>&#x0002C;</mo></mrow></math></div>
+<p>所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>proj</mo><mrow><mi>&#x1D42E;</mi></mrow></msub><mi>&#x1D42F;</mi><mo>&#x0003D;</mo><mfrac><mrow><mn>6</mn></mrow><mrow><mn>3</mn></mrow></mfrac><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>残差为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 的内积为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02212;</mo><mn>1</mn><mo>&#x0002B;</mo><mn>0</mn><mo>&#x0002B;</mo><mn>1</mn><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，确实正交。</p>
+<p><strong>投影到子空间</strong>：若子空间由矩阵 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 的列张成，且各列线性无关，则投影矩阵为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D40F;</mi><mo>&#x0003D;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00028;</mo><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><msup><mo stretchy="false">&#x00029;</mo><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mo>&#x0002E;</mo></mrow></math></div>
+<p>对任意 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41B;</mi></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D40F;</mi><mi>&#x1D41B;</mi></mrow></math> 是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41B;</mi></mrow></math> 在列空间中的正交投影。投影矩阵满足 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x1D40F;</mi><mn>2</mn></msup><mo>&#x0003D;</mo><mi>&#x1D40F;</mi></mrow></math> 和 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x1D40F;</mi><mo>&#x022A4;</mo></msup><mo>&#x0003D;</mo><mi>&#x1D40F;</mi></mrow></math>。</p>
+<hr>
+<h2>4. Gram–Schmidt 与 QR</h2>
+<p>给定一组线性无关的向量 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D41A;</mi><mn>1</mn></msub><mo>&#x0002C;</mo><mo>&#x02026;</mo><mo>&#x0002C;</mo><msub><mi>&#x1D41A;</mi><mi>n</mi></msub></mrow></math>，Gram–Schmidt 过程逐个构造正交基：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><msub><mi>&#x1D42A;</mi><mn>1</mn></msub><mi>&</mi><mo>&#x0003D;</mo><mfrac><mrow><msub><mi>&#x1D41A;</mi><mn>1</mn></msub></mrow><mrow><mo fence="false" stretchy="false">&#x02016;</mo><msub><mi>&#x1D41A;</mi><mn>1</mn></msub><mo fence="false" stretchy="false">&#x02016;</mo></mrow></mfrac><mo>&#x0002C;</mo><mspace linebreak="newline" /><msub><mi>&#x1D430;</mi><mn>2</mn></msub><mi>&</mi><mo>&#x0003D;</mo><msub><mi>&#x1D41A;</mi><mn>2</mn></msub><mo>&#x02212;</mo><mo stretchy="false">&#x00028;</mo><msub><mi>&#x1D42A;</mi><mn>1</mn></msub><mo>&#x000B7;</mo><msub><mi>&#x1D41A;</mi><mn>2</mn></msub><mo stretchy="false">&#x00029;</mo><msub><mi>&#x1D42A;</mi><mn>1</mn></msub><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>&#x1D42A;</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mfrac><mrow><msub><mi>&#x1D430;</mi><mn>2</mn></msub></mrow><mrow><mo fence="false" stretchy="false">&#x02016;</mo><msub><mi>&#x1D430;</mi><mn>2</mn></msub><mo fence="false" stretchy="false">&#x02016;</mo></mrow></mfrac><mo>&#x0002C;</mo><mspace linebreak="newline" /><msub><mi>&#x1D430;</mi><mn>3</mn></msub><mi>&</mi><mo>&#x0003D;</mo><msub><mi>&#x1D41A;</mi><mn>3</mn></msub><mo>&#x02212;</mo><mo stretchy="false">&#x00028;</mo><msub><mi>&#x1D42A;</mi><mn>1</mn></msub><mo>&#x000B7;</mo><msub><mi>&#x1D41A;</mi><mn>3</mn></msub><mo stretchy="false">&#x00029;</mo><msub><mi>&#x1D42A;</mi><mn>1</mn></msub><mo>&#x02212;</mo><mo stretchy="false">&#x00028;</mo><msub><mi>&#x1D42A;</mi><mn>2</mn></msub><mo>&#x000B7;</mo><msub><mi>&#x1D41A;</mi><mn>3</mn></msub><mo stretchy="false">&#x00029;</mo><msub><mi>&#x1D42A;</mi><mn>2</mn></msub><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>&#x1D42A;</mi><mn>3</mn></msub><mo>&#x0003D;</mo><mfrac><mrow><msub><mi>&#x1D430;</mi><mn>3</mn></msub></mrow><mrow><mo fence="false" stretchy="false">&#x02016;</mo><msub><mi>&#x1D430;</mi><mn>3</mn></msub><mo fence="false" stretchy="false">&#x02016;</mo></mrow></mfrac><mo>&#x0002E;</mo></mrow></mrow></math></div>
+<p>每一步都减去前面已经得到的正交方向上的分量，剩下的自然与前面的向量正交。</p>
+<p>把过程写成矩阵形式，就得到 <strong>QR 分解</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mi>&#x1D410;</mi><mi>&#x1D411;</mi><mo>&#x0002C;</mo></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D410;</mi></mrow></math> 的列是标准正交基，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D411;</mi></mrow></math> 是上三角矩阵。QR 分解比正规方程数值更稳定，是求解最小二乘的常用方法。</p>
+<hr>
+<h2>5. 最小二乘与正规方程</h2>
+<p>当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x0003D;</mo><mi>&#x1D41B;</mi></mrow></math> 无解时，我们退而求其次：找一个 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D431;</mi></mrow></math>，使残差</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D42B;</mi><mo>&#x0003D;</mo><mi>&#x1D41B;</mi><mo>&#x02212;</mo><mi>&#x1D400;</mi><mi>&#x1D431;</mi></mrow></math></div>
+<p>的范数最小。这就是<strong>最小二乘</strong>问题：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mover accent="true"><mrow><mi>&#x1D431;</mi></mrow><mo>&#x0005E;</mo></mover><mo>&#x0003D;</mo><mi>\arg</mi><msub><mo>min</mo><mrow><mi>&#x1D431;</mi></mrow></msub><mo fence="false" stretchy="false">&#x02016;</mo><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x02212;</mo><mi>&#x1D41B;</mi><msup><mo fence="false" stretchy="false">&#x02016;</mo><mn>2</mn></msup><mo>&#x0002E;</mo></mrow></math></div>
+<p>几何上，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mover accent="true"><mrow><mi>&#x1D431;</mi></mrow><mo>&#x0005E;</mo></mover></mrow></math> 是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41B;</mi></mrow></math> 在列空间 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>C</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 上的正交投影。因此残差 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41B;</mi><mo>&#x02212;</mo><mi>&#x1D400;</mi><mover accent="true"><mrow><mi>&#x1D431;</mi></mrow><mo>&#x0005E;</mo></mover></mrow></math> 必须与列空间正交：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mo stretchy="false">&#x00028;</mo><mi>&#x1D41B;</mi><mo>&#x02212;</mo><mi>&#x1D400;</mi><mover accent="true"><mrow><mi>&#x1D431;</mi></mrow><mo>&#x0005E;</mo></mover><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mrow><mn mathvariant="bold">0</mn></mrow><mo>&#x0002E;</mo></mrow></math></div>
+<p>整理得到<strong>正规方程</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><mspace width="0.167em" /><mover accent="true"><mrow><mi>&#x1D431;</mi></mrow><mo>&#x0005E;</mo></mover><mo>&#x0003D;</mo><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D41B;</mi><mo>&#x0002E;</mo></mrow></math></div>
+<p>若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 的列线性无关，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi></mrow></math> 可逆，解为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mover accent="true"><mrow><mi>&#x1D431;</mi></mrow><mo>&#x0005E;</mo></mover><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><msup><mo stretchy="false">&#x00029;</mo><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D41B;</mi><mo>&#x0002E;</mo></mrow></math></div>
+<p><strong>例 5.2</strong>　用直线 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>c</mi><mo>&#x0002B;</mo><mi>d</mi><mi>x</mi></mrow></math> 拟合三个点 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>4</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+<p>把模型写成矩阵形式：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>0</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>2</mn></mtd></mtr><mtr><mtd><mn>4</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mi>&#x1D431;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mi>c</mi></mtd></mtr><mtr><mtd><mi>d</mi></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>计算</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>3</mn></mtd><mtd><mn>3</mn></mtd></mtr><mtr><mtd><mn>3</mn></mtd><mtd><mn>5</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>7</mn></mtd></mtr><mtr><mtd><mn>10</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>正规方程为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007B;</mo><mtable><mtr><mtd columnalign="left"><mn>3</mn><mi>c</mi><mo>&#x0002B;</mo><mn>3</mn><mi>d</mi><mo>&#x0003D;</mo><mn>7</mn><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><mn>3</mn><mi>c</mi><mo>&#x0002B;</mo><mn>5</mn><mi>d</mi><mo>&#x0003D;</mo><mn>10</mn><mo>&#x0002E;</mo></mtd></mtr></mtable></mrow></mrow></math></div>
+<p>两式相减得 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mi>d</mi><mo>&#x0003D;</mo><mn>3</mn></mrow></math>，所以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>d</mi><mo>&#x0003D;</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>3</mn><mn>2</mn></mfrac></mstyle></mrow></math>，再得 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>c</mi><mo>&#x0003D;</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>5</mn><mn>6</mn></mfrac></mstyle></mrow></math>。拟合直线为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x0003D;</mo><mfrac><mn>5</mn><mn>6</mn></mfrac><mo>&#x0002B;</mo><mfrac><mn>3</mn><mn>2</mn></mfrac><mi>x</mi><mo>&#x0002E;</mo></mrow></math></div>
+<p>三个点的预测值约为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0.833</mn></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2.333</mn></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>3.833</mn></mrow></math>，残差为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0.167</mn></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02212;</mo><mn>0.333</mn></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0.167</mn></mrow></math>，满足残差与两列都正交。</p>
+<hr>
+<h2>6. 工程视角：标定、SLAM 与过定系统</h2>
+<p>最小二乘是工程里出现频率最高的数学工具之一：</p>
+<ul>
+<li><strong>传感器标定</strong>：用多组已知输入输出拟合校准参数，方程数多于未知数；</li>
+<li><strong>SLAM / 视觉里程计</strong>：大量观测约束同一个位姿，需要最小化重投影误差；</li>
+<li><strong>系统辨识</strong>：用实验数据估计动力学参数；</li>
+<li><strong>机器学习</strong>：线性回归、神经网络训练本质上都是最小化残差平方和；</li>
+<li><strong>信号处理</strong>：滤波、拟合、压缩感知都离不开投影。</li>
+</ul>
+<p>工程数据几乎总是“过定”的：方程比未知数多，而且有噪声。此时不要问“为什么无解”，而要问“哪个解让残差最小”。这就是最小二乘的出发点。</p>
+<blockquote>
+<p><strong>小实验</strong>：用 NumPy 解上面的拟合问题，并检查残差是否与列空间正交。</p>
+</blockquote>
+<pre><code class="language-python">import numpy as np
+
+A = np.array([[1, 0], [1, 1], [1, 2]], dtype=float)
+b = np.array([1, 2, 4], dtype=float)
+x, *_ = np.linalg.lstsq(A, b, rcond=None)
+print(x)                 # [0.8333, 1.5]
+print(A.T @ (b - A @ x)) # 接近 [0, 0]
+</code></pre>
+<hr>
+<h2>7. 练习</h2>
+<ol>
+<li>
+<p>求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41A;</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 的范数，以及它与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo>&#x0002C;</mo><mo>&#x02212;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 的夹角余弦。</p>
+</li>
+<li>
+<p>把 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D42F;</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>3</mn><mo>&#x0002C;</mo><mn>4</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 投影到 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D42E;</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 张成的直线上。</p>
+</li>
+<li>
+<p>用直线 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>c</mi><mo>&#x0002B;</mo><mi>d</mi><mi>x</mi></mrow></math> 拟合点 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>c</mi><mo>&#x0002C;</mo><mi>d</mi></mrow></math>。</p>
+</li>
+<li>
+<p>对 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D41A;</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D41A;</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 做 Gram–Schmidt，求标准正交基。</p>
+</li>
+<li>
+<p>解释为什么最小二乘的残差一定与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 的列空间正交。</p>
+</li>
+</ol>
+<hr>
+<h2>8. 答案与简解</h2>
+<details>
+<summary>点击展开（做完再看）</summary>
+
+**1.** <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo fence="false" stretchy="false">&#x02016;</mo><mi>&#x1D41A;</mi><mo fence="false" stretchy="false">&#x02016;</mo><mo>&#x0003D;</mo><msqrt><mrow><mn>1</mn><mo>&#x0002B;</mo><mn>4</mn><mo>&#x0002B;</mo><mn>4</mn></mrow></msqrt><mo>&#x0003D;</mo><mn>3</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41A;</mi><mo>&#x000B7;</mo><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><mn>2</mn><mo>&#x02212;</mo><mn>2</mn><mo>&#x0002B;</mo><mn>0</mn><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，所以夹角余弦为 0，两向量正交。
+
+**2.** 投影为 $\dfrac{\mathbf{u}\cdot\mathbf{v}}{\mathbf{u}\cdot\mathbf{u}}\mathbf{u}
+=\dfrac{3}{1}(1,0)=(3,0)$。
+
+**3.** <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>0</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr></mtable><mo>&#x00029;</mo></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><msup><mo stretchy="false">&#x00029;</mo><mo>&#x022A4;</mo></msup></mrow></math>。
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>3</mn></mtd><mtd><mn>3</mn></mtd></mtr><mtr><mtd><mn>3</mn></mtd><mtd><mn>5</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>3</mn></mtd></mtr><mtr><mtd><mn>5</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+解得 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>c</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>d</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math>，即 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>x</mi></mrow></math>。三个点正好共线，残差为零。
+
+**4.** <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42A;</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><mn>1</mn></mrow><mrow><msqrt><mn>2</mn></msqrt></mrow></mfrac></mstyle><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42A;</mi><mn>1</mn></msub><mo>&#x000B7;</mo><msub><mi>&#x1D41A;</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><mn>1</mn></mrow><mrow><msqrt><mn>2</mn></msqrt></mrow></mfrac></mstyle></mrow></math>，
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D430;</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mn>2</mn></mfrac></mstyle><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mn>2</mn></mfrac></mstyle><mo>&#x0002C;</mo><mo>&#x02212;</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mn>2</mn></mfrac></mstyle><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow></mrow></math>。
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo fence="false" stretchy="false">&#x02016;</mo><msub><mi>&#x1D430;</mi><mn>2</mn></msub><mo fence="false" stretchy="false">&#x02016;</mo><mo>&#x0003D;</mo><msqrt><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mn>4</mn></mfrac></mstyle><mo>&#x0002B;</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mn>4</mn></mfrac></mstyle><mo>&#x0002B;</mo><mn>1</mn></mrow></msqrt><mo>&#x0003D;</mo><msqrt><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>3</mn><mn>2</mn></mfrac></mstyle></mrow></msqrt></mrow></math>，
+所以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42A;</mi><mn>2</mn></msub><mo>&#x0003D;</mo><msqrt><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>2</mn><mn>3</mn></mfrac></mstyle></mrow></msqrt><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mn>2</mn></mfrac></mstyle><mo>&#x0002C;</mo><mo>&#x02212;</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mn>2</mn></mfrac></mstyle><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow></mrow></math>。
+
+**5.** 因为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mover accent="true"><mrow><mi>&#x1D431;</mi></mrow><mo>&#x0005E;</mo></mover></mrow></math> 是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41B;</mi></mrow></math> 在列空间上的正交投影，而残差是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41B;</mi></mrow></math> 减去投影，所以残差落在列空间的正交补中，与列空间中每个向量都正交。写成式子就是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mo stretchy="false">&#x00028;</mo><mi>&#x1D41B;</mi><mo>&#x02212;</mo><mi>&#x1D400;</mi><mover accent="true"><mrow><mi>&#x1D431;</mi></mrow><mo>&#x0005E;</mo></mover><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mrow><mn mathvariant="bold">0</mn></mrow></mrow></math>。
+
+</details>
+
+<hr>
+<h2>下节预告</h2>
+<p><strong>第 06 课：行列式</strong></p>
+<ul>
+<li>行列式是带符号的体积</li>
+<li>行列式的性质与行变换</li>
+<li>代数余子式展开</li>
+<li>可逆性、Cramer 法则与雅可比</li>
+</ul>
+<hr>
+<h2>自查清单</h2>
+<ul>
+<li>[ ] 会算内积、范数和夹角</li>
+<li>[ ] 记得投影公式和残差正交性</li>
+<li>[ ] 能写出投影矩阵 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D40F;</mi></mrow></math></li>
+<li>[ ] 会推导正规方程</li>
+<li>[ ] 知道 QR 比正规方程数值更稳定</li>
+</ul>
+<nav class="lesson-nav"><span><a href="线代04-四个基本子空间.html">&larr; 上一课</a></span><span><a href="线代06-行列式.html">下一课 &rarr;</a></span></nav>
+<footer>线性代数 · 数学公式使用 MathML 渲染，建议使用 Chrome / Edge / Firefox 打开</footer>
+</main>
+</body>
+</html>

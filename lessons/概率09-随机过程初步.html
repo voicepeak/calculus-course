@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>概率论 · 第 09 课：随机过程初步</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --quote-bg: #f6f8fa;
+  --code-bg: #eff2f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --border: #30363d;
+    --accent: #4493f8;
+    --quote-bg: #161b22;
+    --code-bg: #1f242c;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; font-weight: 650; }
+h1 { font-size: 2rem; margin: 0 0 .8em; padding-bottom: .35em; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 2.2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.2rem; margin: 1.8em 0 .55em; }
+p { margin: .85em 0; }
+a { color: var(--accent); }
+blockquote {
+  margin: 1em 0;
+  padding: .6em 1em;
+  border-left: 4px solid var(--accent);
+  background: var(--quote-bg);
+  color: var(--muted);
+  border-radius: 4px;
+}
+blockquote p { margin: .25em 0; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: .96em;
+  overflow: hidden;
+}
+th, td { border: 1px solid var(--border); padding: .45em .7em; text-align: left; vertical-align: top; }
+th { background: var(--quote-bg); font-weight: 600; }
+details {
+  margin: 1.2em 0;
+  padding: .8em 1em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--quote-bg);
+}
+summary { cursor: pointer; font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+ul, ol { padding-left: 1.7em; }
+li { margin: .3em 0; }
+.math-block {
+  margin: 1.15em 0;
+  padding: .7em .9em;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--quote-bg);
+  border-radius: 6px;
+}
+math { font-size: 1.14em; line-height: 1.2; }
+math[display="inline"] { font-size: 1.05em; vertical-align: baseline; }
+.math-block math { font-size: 1.24em; }
+.math-fallback, .math-fallback-block {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .08em .3em;
+  border-radius: 3px;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .12em .35em;
+  border-radius: 3px;
+  font-size: .92em;
+}
+pre code { display: block; padding: .8em 1em; overflow-x: auto; }
+.lesson-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .8em 1.4em;
+  justify-content: space-between;
+  margin: 2.4em 0 0;
+  padding-top: 1.1em;
+  border-top: 1px solid var(--border);
+  font-size: .95em;
+}
+footer { margin-top: 2.2em; color: var(--muted); font-size: .85em; text-align: center; }
+@media print {
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  .math-block { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>概率论 · 第 09 课：随机过程初步</h1>
+<blockquote>
+<p><strong>本课目标</strong>：理解随机过程、马尔可夫链、平稳分布、泊松过程，初步认识布朗运动与高斯过程。</p>
+<p><strong>使用方法</strong>：先读讲解 → 做练习 → 对答案。错题 72 小时内重做。</p>
+</blockquote>
+<hr>
+<h2>目录</h2>
+<ol>
+<li>随机过程</li>
+<li>马尔可夫链</li>
+<li>转移矩阵与 Chapman–Kolmogorov</li>
+<li>平稳分布与遍历性</li>
+<li>泊松过程</li>
+<li>布朗运动与高斯过程</li>
+<li>工程视角：定位、排队与强化学习</li>
+<li>练习</li>
+<li>答案与简解</li>
+</ol>
+<hr>
+<h2>1. 随机过程</h2>
+<p><strong>随机过程</strong>是一族随机变量 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x0007B;</mo><msub><mi>X</mi><mi>t</mi></msub><msub><mo stretchy="false">&#x0007D;</mo><mrow><mi>t</mi><mo>&#x02208;</mo><mi>T</mi></mrow></msub></mrow></math>，其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>t</mi></mrow></math> 通常表示时间。固定 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>t</mi></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>X</mi><mi>t</mi></msub></mrow></math> 是随机变量；固定一次试验，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>X</mi><mi>t</mi></msub></mrow></math> 是随时间变化的样本路径。</p>
+<p>按时间和状态空间分类：</p>
+<ul>
+<li>离散时间、离散状态：马尔可夫链；</li>
+<li>连续时间、离散状态：泊松过程；</li>
+<li>连续时间、连续状态：布朗运动、高斯过程。</li>
+</ul>
+<p>随机过程描述“随机系统如何随时间演化”，是滤波、排队、金融、强化学习的共同语言。</p>
+<hr>
+<h2>2. 马尔可夫链</h2>
+<p>若未来只依赖现在，与过去无关，称过程具有<strong>马尔可夫性</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><msub><mi>X</mi><mrow><mi>t</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub><mo>&#x0003D;</mo><mi>j</mi><mo>&#x02223;</mo><msub><mi>X</mi><mi>t</mi></msub><mo>&#x0003D;</mo><mi>i</mi><mo>&#x0002C;</mo><msub><mi>X</mi><mrow><mi>t</mi><mo>&#x02212;</mo><mn>1</mn></mrow></msub><mo>&#x0002C;</mo><mo>&#x02026;</mo><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><msub><mi>X</mi><mrow><mi>t</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub><mo>&#x0003D;</mo><mi>j</mi><mo>&#x02223;</mo><msub><mi>X</mi><mi>t</mi></msub><mo>&#x0003D;</mo><mi>i</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>离散时间、离散状态的马尔可夫过程叫<strong>马尔可夫链</strong>。转移概率</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>P</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>&#x0003D;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><msub><mi>X</mi><mrow><mi>t</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub><mo>&#x0003D;</mo><mi>j</mi><mo>&#x02223;</mo><msub><mi>X</mi><mi>t</mi></msub><mo>&#x0003D;</mo><mi>i</mi><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>排成矩阵 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D40F;</mi></mrow></math>，叫<strong>转移矩阵</strong>。它的每一行和为 1。</p>
+<p><strong>例 9.1</strong>　天气只有晴、雨两状态。晴天下一天晴的概率 0.8，下雨的概率 0.2；雨天下一天晴的概率 0.4，下雨的概率 0.6。转移矩阵为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D40F;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>0.8</mn></mtd><mtd><mn>0.2</mn></mtd></mtr><mtr><mtd><mn>0.4</mn></mtd><mtd><mn>0.6</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>若今天晴，明天晴的概率是 0.8，后天晴的概率是</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>0.8</mn><mo>&#x000D7;</mo><mn>0.8</mn><mo>&#x0002B;</mo><mn>0.2</mn><mo>&#x000D7;</mo><mn>0.4</mn><mo>&#x0003D;</mo><mn>0.72</mn><mo>&#x0002E;</mo></mrow></math></div>
+<hr>
+<h2>3. 转移矩阵与 Chapman–Kolmogorov</h2>
+<p><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math> 步转移矩阵是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x1D40F;</mi><mi>n</mi></msup></mrow></math>。<strong>Chapman–Kolmogorov 方程</strong>说：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>&#x1D40F;</mi><mrow><mi>m</mi><mo>&#x0002B;</mo><mi>n</mi></mrow></msup><mo>&#x0003D;</mo><msup><mi>&#x1D40F;</mi><mi>m</mi></msup><msup><mi>&#x1D40F;</mi><mi>n</mi></msup><mo>&#x0002E;</mo></mrow></math></div>
+<p>也就是说，先走 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>m</mi></mrow></math> 步再走 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math> 步，等价于一次走 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>m</mi><mo>&#x0002B;</mo><mi>n</mi></mrow></math> 步。矩阵乘法正好对应路径的拼接。</p>
+<p>若初始分布是行向量 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mrow><mi mathvariant="bold-italic">&#x003C0;</mi></mrow><mn>0</mn></msub></mrow></math>，则 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math> 步后的分布为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mrow><mi mathvariant="bold-italic">&#x003C0;</mi></mrow><mi>n</mi></msub><mo>&#x0003D;</mo><msub><mrow><mi mathvariant="bold-italic">&#x003C0;</mi></mrow><mn>0</mn></msub><msup><mi>&#x1D40F;</mi><mi>n</mi></msup><mo>&#x0002E;</mo></mrow></math></div>
+<p>这就是马尔可夫链的演化方程。</p>
+<hr>
+<h2>4. 平稳分布与遍历性</h2>
+<p>若分布 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mi mathvariant="bold-italic">&#x003C0;</mi></mrow></mrow></math> 满足</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mi mathvariant="bold-italic">&#x003C0;</mi></mrow><mi>&#x1D40F;</mi><mo>&#x0003D;</mo><mrow><mi mathvariant="bold-italic">&#x003C0;</mi></mrow><mo>&#x0002C;</mo><mspace width="2em" /><munder><mo>&#x02211;</mo><mi>i</mi></munder><msub><mi>&#x003C0;</mi><mi>i</mi></msub><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002C;</mo><mspace width="1em" /><msub><mi>&#x003C0;</mi><mi>i</mi></msub><mo>&#x02265;</mo><mn>0</mn><mo>&#x0002C;</mo></mrow></math></div>
+<p>称 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mi mathvariant="bold-italic">&#x003C0;</mi></mrow></mrow></math> 为<strong>平稳分布</strong>。一旦进入平稳分布，再转移分布不变。</p>
+<p>例 9.1 中设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mi mathvariant="bold-italic">&#x003C0;</mi></mrow><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><msub><mi>&#x003C0;</mi><mn>1</mn></msub><mo>&#x0002C;</mo><msub><mi>&#x003C0;</mi><mn>2</mn></msub><mo stretchy="false">&#x00029;</mo></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007B;</mo><mtable><mtr><mtd columnalign="left"><mn>0.8</mn><msub><mi>&#x003C0;</mi><mn>1</mn></msub><mo>&#x0002B;</mo><mn>0.4</mn><msub><mi>&#x003C0;</mi><mn>2</mn></msub><mo>&#x0003D;</mo><msub><mi>&#x003C0;</mi><mn>1</mn></msub><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><mn>0.2</mn><msub><mi>&#x003C0;</mi><mn>1</mn></msub><mo>&#x0002B;</mo><mn>0.6</mn><msub><mi>&#x003C0;</mi><mn>2</mn></msub><mo>&#x0003D;</mo><msub><mi>&#x003C0;</mi><mn>2</mn></msub><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><msub><mi>&#x003C0;</mi><mn>1</mn></msub><mo>&#x0002B;</mo><msub><mi>&#x003C0;</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002E;</mo></mtd></mtr></mtable></mrow></mrow></math></div>
+<p>第一式给出 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0.2</mn><msub><mi>&#x003C0;</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mn>0.4</mn><msub><mi>&#x003C0;</mi><mn>2</mn></msub></mrow></math>，即 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x003C0;</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mn>2</mn><msub><mi>&#x003C0;</mi><mn>2</mn></msub></mrow></math>。结合归一化得</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mi mathvariant="bold-italic">&#x003C0;</mi></mrow><mo>&#x0003D;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mn>2</mn><mn>3</mn></mfrac><mo>&#x0002C;</mo><mfrac><mn>1</mn><mn>3</mn></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0002E;</mo></mrow></math></div>
+<p>长期来看，约 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mn>2</mn><mn>3</mn></mfrac></mrow></math> 的时间是晴天。</p>
+<p><strong>遍历性</strong>：若从任意初始分布出发，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mrow><mi mathvariant="bold-italic">&#x003C0;</mi></mrow><mn>0</mn></msub><msup><mi>&#x1D40F;</mi><mi>n</mi></msup></mrow></math> 都收敛到同一个平稳分布，称链是遍历的。不可约、非周期、正常返是常用充分条件。吸收态则可能让过程永远停在某个状态。</p>
+<hr>
+<h2>5. 泊松过程</h2>
+<p>泊松过程描述“随机到达”：</p>
+<ul>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>N</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math>；</li>
+<li>独立增量：不重叠时间段内的到达数独立；</li>
+<li>在长度为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>t</mi></mrow></math> 的区间内，到达数服从</li>
+</ul>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>N</mi><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><mi>&#x0007E;</mi><mrow><mi mathvariant="normal">P</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">s</mi></mrow><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BB;</mi></mrow></math> 是到达率。到达间隔 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>T</mi><mi>i</mi></msub></mrow></math> 独立同分布，服从指数分布：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>T</mi><mi>i</mi></msub><mi>&#x0007E;</mi><mrow><mi mathvariant="normal">E</mi><mi mathvariant="normal">x</mi><mi mathvariant="normal">p</mi></mrow><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><msub><mi>T</mi><mi>i</mi></msub><mo stretchy="false">]</mo><mo>&#x0003D;</mo><mfrac><mn>1</mn><mi>&#x003BB;</mi></mfrac><mo>&#x0002E;</mo></mrow></math></div>
+<p><strong>例 9.2</strong>　某服务台平均每小时到达 2 人，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BB;</mi><mo>&#x0003D;</mo><mn>2</mn></mrow></math>。求一小时内到达 3 人的概率，以及相邻两人到达间隔超过 1 小时的概率。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>N</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>3</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><msup><mn>2</mn><mn>3</mn></msup><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mn>2</mn></mrow></msup></mrow><mrow><mn>3</mn><mo>&#x00021;</mo></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><mn>4</mn><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mn>2</mn></mrow></msup></mrow><mrow><mn>3</mn></mrow></mfrac><mo>&#x02248;</mo><mn>0.180</mn><mo>&#x0002C;</mo></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>T</mi><mo>&#x0003E;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mn>2</mn></mrow></msup><mo>&#x02248;</mo><mn>0.135</mn><mo>&#x0002E;</mo></mrow></math></div>
+<p>泊松过程的无记忆性来自指数分布：已经等了多久，不影响还要等多久。</p>
+<hr>
+<h2>6. 布朗运动与高斯过程</h2>
+<p><strong>布朗运动</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>B</mi><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 是最基本的连续时间随机过程：</p>
+<ul>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>B</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math>；</li>
+<li>独立增量；</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>B</mi><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mi>B</mi><mo stretchy="false">&#x00028;</mo><mi>s</mi><mo stretchy="false">&#x00029;</mo><mi>&#x0007E;</mi><mi>N</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mi>t</mi><mo>&#x02212;</mo><mi>s</mi><mo stretchy="false">&#x00029;</mo></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>t</mi><mo>&#x0003E;</mo><mi>s</mi></mrow></math>；</li>
+<li>样本路径连续但几乎处处不可导。</li>
+</ul>
+<p>它描述了粒子在流体中的随机游走，也是金融数学和扩散方程的基础。</p>
+<p><strong>高斯过程</strong>是布朗运动的推广：若对任意有限个时刻，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><msub><mi>t</mi><mn>1</mn></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mo>&#x02026;</mo><mo>&#x0002C;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><msub><mi>t</mi><mi>n</mi></msub><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x00029;</mo></mrow></math> 都服从多元正态，称 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi></mrow></math> 是高斯过程，记作</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>f</mi><mi>&#x0007E;</mi><mrow><mi mathvariant="script">G</mi><mi mathvariant="script">P</mi></mrow><mo stretchy="false">&#x00028;</mo><mi>m</mi><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mi>k</mi><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo>&#x0002C;</mo><msup><mi>t</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>m</mi></mrow></math> 是均值函数，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>k</mi></mrow></math> 是协方差核函数。核函数决定样本路径的平滑性、周期性等性质。</p>
+<p>高斯过程回归就是贝叶斯线性回归的非参数版本：用核函数定义先验，用观测做条件化，得到后验均值和方差。</p>
+<hr>
+<h2>7. 工程视角：定位、排队与强化学习</h2>
+<ul>
+<li><strong>定位与 SLAM</strong>：机器人的位姿随时间演化，马尔可夫链和隐马尔可夫模型描述状态转移；粒子滤波用大量样本近似后验；</li>
+<li><strong>排队系统</strong>：顾客到达常用泊松过程，服务时间常用指数分布，M/M/1 队列由此得名；</li>
+<li><strong>强化学习</strong>：环境被建模为马尔可夫决策过程（MDP），转移概率 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><msup><mi>s</mi><mi>&#x02032;</mi></msup><mo>&#x02223;</mo><mi>s</mi><mo>&#x0002C;</mo><mi>a</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 是核心；</li>
+<li><strong>高斯过程</strong>：用于贝叶斯优化、地形建模、传感器标定；</li>
+<li><strong>可靠性</strong>：设备失效过程、维修过程都可以用随机过程建模。</li>
+</ul>
+<blockquote>
+<p><strong>工程直觉</strong>：随机过程把“一次随机”升级成“一直随机”。你不再只关心一个分布，而是关心分布如何随时间变化。</p>
+</blockquote>
+<hr>
+<h2>8. 练习</h2>
+<ol>
+<li>
+<p>求例 9.1 中天气链的平稳分布。</p>
+</li>
+<li>
+<p>例 9.1 中若今天下雨，求两天后下雨的概率。</p>
+</li>
+<li>
+<p>设泊松过程到达率 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BB;</mi><mo>&#x0003D;</mo><mn>3</mn></mrow></math> 每小时，求两小时内没有到达的概率。</p>
+</li>
+<li>
+<p>泊松过程的到达间隔服从什么分布？期望是多少？</p>
+</li>
+<li>
+<p>布朗运动 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>B</mi><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 的均值和方差是什么？</p>
+</li>
+</ol>
+<hr>
+<h2>9. 答案与简解</h2>
+<details>
+<summary>点击展开（做完再看）</summary>
+
+**1.** 设平稳分布为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><msub><mi>&#x003C0;</mi><mn>1</mn></msub><mo>&#x0002C;</mo><msub><mi>&#x003C0;</mi><mn>2</mn></msub><mo stretchy="false">&#x00029;</mo></mrow></math>，解方程得
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>&#x003C0;</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mfrac><mn>2</mn><mn>3</mn></mfrac><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>&#x003C0;</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mfrac><mn>1</mn><mn>3</mn></mfrac><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+**2.** 从雨天出发，两步后仍为雨天的路径有雨→雨→雨和雨→晴→雨：
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>0.6</mn><mo>&#x000D7;</mo><mn>0.6</mn><mo>&#x0002B;</mo><mn>0.4</mn><mo>&#x000D7;</mo><mn>0.2</mn><mo>&#x0003D;</mo><mn>0.36</mn><mo>&#x0002B;</mo><mn>0.08</mn><mo>&#x0003D;</mo><mn>0.44</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+**3.** <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>N</mi><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo><mi>&#x0007E;</mi><mrow><mi mathvariant="normal">P</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">s</mi></mrow><mo stretchy="false">&#x00028;</mo><mn>6</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，所以
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>N</mi><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mn>6</mn></mrow></msup><mo>&#x02248;</mo><mn>0.00248</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+**4.** 到达间隔服从 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mi mathvariant="normal">E</mi><mi mathvariant="normal">x</mi><mi mathvariant="normal">p</mi></mrow><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x00029;</mo></mrow></math>，期望为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn><mo>&#x0002F;</mo><mi>&#x003BB;</mi></mrow></math>。
+
+**5.** <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><mi>B</mi><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="false">]</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>Var</mo><mo stretchy="false">&#x00028;</mo><mi>B</mi><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>t</mi></mrow></math>。
+
+</details>
+
+<hr>
+<h2>下节预告</h2>
+<p><strong>第 10 课：信息论与 KL 散度</strong></p>
+<ul>
+<li>熵、联合熵、条件熵</li>
+<li>互信息</li>
+<li>KL 散度与交叉熵</li>
+<li>最大似然与最小 KL</li>
+</ul>
+<hr>
+<h2>自查清单</h2>
+<ul>
+<li>[ ] 能写出马尔可夫性和转移矩阵</li>
+<li>[ ] 会算多步转移和平稳分布</li>
+<li>[ ] 知道泊松过程的到达数与到达间隔</li>
+<li>[ ] 理解布朗运动与高斯过程的关系</li>
+<li>[ ] 能把 MDP 与马尔可夫链联系起来</li>
+</ul>
+<nav class="lesson-nav"><span><a href="概率08-贝叶斯推断.html">&larr; 上一课</a></span><span><a href="概率10-信息论与KL散度.html">下一课 &rarr;</a></span></nav>
+<footer>概率论 · 数学公式使用 MathML 渲染，建议使用 Chrome / Edge / Firefox 打开</footer>
+</main>
+</body>
+</html>

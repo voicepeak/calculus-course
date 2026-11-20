@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>线性代数 · 第 04 课：四个基本子空间</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --quote-bg: #f6f8fa;
+  --code-bg: #eff2f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --border: #30363d;
+    --accent: #4493f8;
+    --quote-bg: #161b22;
+    --code-bg: #1f242c;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; font-weight: 650; }
+h1 { font-size: 2rem; margin: 0 0 .8em; padding-bottom: .35em; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 2.2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.2rem; margin: 1.8em 0 .55em; }
+p { margin: .85em 0; }
+a { color: var(--accent); }
+blockquote {
+  margin: 1em 0;
+  padding: .6em 1em;
+  border-left: 4px solid var(--accent);
+  background: var(--quote-bg);
+  color: var(--muted);
+  border-radius: 4px;
+}
+blockquote p { margin: .25em 0; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: .96em;
+  overflow: hidden;
+}
+th, td { border: 1px solid var(--border); padding: .45em .7em; text-align: left; vertical-align: top; }
+th { background: var(--quote-bg); font-weight: 600; }
+details {
+  margin: 1.2em 0;
+  padding: .8em 1em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--quote-bg);
+}
+summary { cursor: pointer; font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+ul, ol { padding-left: 1.7em; }
+li { margin: .3em 0; }
+.math-block {
+  margin: 1.15em 0;
+  padding: .7em .9em;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--quote-bg);
+  border-radius: 6px;
+}
+math { font-size: 1.14em; line-height: 1.2; }
+math[display="inline"] { font-size: 1.05em; vertical-align: baseline; }
+.math-block math { font-size: 1.24em; }
+.math-fallback, .math-fallback-block {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .08em .3em;
+  border-radius: 3px;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .12em .35em;
+  border-radius: 3px;
+  font-size: .92em;
+}
+pre code { display: block; padding: .8em 1em; overflow-x: auto; }
+.lesson-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .8em 1.4em;
+  justify-content: space-between;
+  margin: 2.4em 0 0;
+  padding-top: 1.1em;
+  border-top: 1px solid var(--border);
+  font-size: .95em;
+}
+footer { margin-top: 2.2em; color: var(--muted); font-size: .85em; text-align: center; }
+@media print {
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  .math-block { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>线性代数 · 第 04 课：四个基本子空间</h1>
+<blockquote>
+<p><strong>本课目标</strong>：理解列空间、零空间、行空间、左零空间及其维数关系，能用秩判断方程组可解性。</p>
+<p><strong>使用方法</strong>：先读讲解 → 做练习 → 对答案。错题 72 小时内重做。</p>
+</blockquote>
+<hr>
+<h2>目录</h2>
+<ol>
+<li>列空间</li>
+<li>零空间</li>
+<li>行空间与左零空间</li>
+<li>秩-零化度定理</li>
+<li>正交补与可解性</li>
+<li>工程视角：自由度与约束</li>
+<li>练习</li>
+<li>答案与简解</li>
+</ol>
+<hr>
+<h2>1. 列空间</h2>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>m</mi><mo>&#x000D7;</mo><mi>n</mi></mrow></math> 矩阵，列向量为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D41A;</mi><mn>1</mn></msub><mo>&#x0002C;</mo><mo>&#x02026;</mo><mo>&#x0002C;</mo><msub><mi>&#x1D41A;</mi><mi>n</mi></msub></mrow></math>。所有列的线性组合组成<strong>列空间</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>C</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo>span</mo><mo stretchy="false">&#x0007B;</mo><msub><mi>&#x1D41A;</mi><mn>1</mn></msub><mo>&#x0002C;</mo><mo>&#x02026;</mo><mo>&#x0002C;</mo><msub><mi>&#x1D41A;</mi><mi>n</mi></msub><mo stretchy="false">&#x0007D;</mo><mo>&#x0003D;</mo><mo stretchy="false">&#x0007B;</mo><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x02223;</mo><mi>&#x1D431;</mi><mo>&#x02208;</mo><msup><mi>&#x0211D;</mi><mi>n</mi></msup><mo stretchy="false">&#x0007D;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>列空间在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x0211D;</mi><mi>m</mi></msup></mrow></math> 中。它回答的问题是：<strong><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 能把输入变成哪些输出？</strong></p>
+<p>方程 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x0003D;</mo><mi>&#x1D41B;</mi></mrow></math> 有解，当且仅当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41B;</mi><mo>&#x02208;</mo><mi>C</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。这是最直接的可解性判据。</p>
+<p>列空间的维数等于 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 的秩 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>r</mi></mrow></math>。一组基可以取 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 中对应主元的那些列。注意：要取<strong>原矩阵</strong>的列，而不是消元后矩阵的列。行变换会改变列空间。</p>
+<hr>
+<h2>2. 零空间</h2>
+<p><strong>零空间</strong>是所有被 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 映成零的向量：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>N</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo stretchy="false">&#x0007B;</mo><mi>&#x1D431;</mi><mo>&#x02208;</mo><msup><mi>&#x0211D;</mi><mi>n</mi></msup><mo>&#x02223;</mo><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x0003D;</mo><mrow><mn mathvariant="bold">0</mn></mrow><mo stretchy="false">&#x0007D;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>零空间在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x0211D;</mi><mi>n</mi></msup></mrow></math> 中。它回答的问题是：<strong>哪些输入不会产生输出？</strong></p>
+<p>零空间一定包含零向量，所以永远不是空集。若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 的列线性无关，则 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>N</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo stretchy="false">&#x0007B;</mo><mrow><mn mathvariant="bold">0</mn></mrow><mo stretchy="false">&#x0007D;</mo></mrow></math>，映射是单射；若有非零向量被压成零，映射就丢失了信息。</p>
+<p>零空间的维数叫<strong>零化度</strong>，等于 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mo>&#x02212;</mo><mi>r</mi></mrow></math>。</p>
+<hr>
+<h2>3. 行空间与左零空间</h2>
+<p>把 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 转置，就得到另外两个子空间。</p>
+<p><strong>行空间</strong>是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 的行向量张成的空间，也就是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>C</mi><mo stretchy="false">&#x00028;</mo><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mo stretchy="false">&#x00029;</mo><mo>&#x02282;</mo><msup><mi>&#x0211D;</mi><mi>n</mi></msup></mrow></math>。行变换不改变行空间，所以行空间的一组基可以直接取 RREF 中的非零行。</p>
+<p><strong>左零空间</strong>是</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>N</mi><mo stretchy="false">&#x00028;</mo><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo stretchy="false">&#x0007B;</mo><mi>&#x1D432;</mi><mo>&#x02208;</mo><msup><mi>&#x0211D;</mi><mi>m</mi></msup><mo>&#x02223;</mo><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D432;</mi><mo>&#x0003D;</mo><mrow><mn mathvariant="bold">0</mn></mrow><mo stretchy="false">&#x0007D;</mo><mo>&#x0003D;</mo><mo stretchy="false">&#x0007B;</mo><mi>&#x1D432;</mi><mo>&#x02223;</mo><msup><mi>&#x1D432;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mrow><mn mathvariant="bold">0</mn></mrow><mo stretchy="false">&#x0007D;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>它由那些“左乘 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 得零”的向量组成，在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x0211D;</mi><mi>m</mi></msup></mrow></math> 中。它的维数是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>m</mi><mo>&#x02212;</mo><mi>r</mi></mrow></math>。</p>
+<p>四个子空间的位置和维数：</p>
+<table>
+<thead>
+<tr>
+<th>子空间</th>
+<th>所在空间</th>
+<th>维数</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>列空间 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>C</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x0211D;</mi><mi>m</mi></msup></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>r</mi></mrow></math></td>
+<td>能到达的输出</td>
+</tr>
+<tr>
+<td>左零空间 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>N</mi><mo stretchy="false">&#x00028;</mo><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mo stretchy="false">&#x00029;</mo></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x0211D;</mi><mi>m</mi></msup></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>m</mi><mo>&#x02212;</mo><mi>r</mi></mrow></math></td>
+<td>到达不了的方向</td>
+</tr>
+<tr>
+<td>行空间 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>C</mi><mo stretchy="false">&#x00028;</mo><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mo stretchy="false">&#x00029;</mo></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x0211D;</mi><mi>n</mi></msup></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>r</mi></mrow></math></td>
+<td>真正起作用的输入方向</td>
+</tr>
+<tr>
+<td>零空间 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>N</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x0211D;</mi><mi>n</mi></msup></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mo>&#x02212;</mo><mi>r</mi></mrow></math></td>
+<td>被压成零的输入方向</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2>4. 秩-零化度定理</h2>
+<p>由上面的表直接得到：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>dim</mi><mi>C</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><mi>dim</mi><mi>N</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>r</mi><mo>&#x0002B;</mo><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo>&#x02212;</mo><mi>r</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>n</mi><mo>&#x0002E;</mo></mrow></math></div>
+<p>这就是<strong>秩-零化度定理</strong>。对转置矩阵同样有</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>dim</mi><mi>C</mi><mo stretchy="false">&#x00028;</mo><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><mi>dim</mi><mi>N</mi><mo stretchy="false">&#x00028;</mo><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>r</mi><mo>&#x0002B;</mo><mo stretchy="false">&#x00028;</mo><mi>m</mi><mo>&#x02212;</mo><mi>r</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>m</mi><mo>&#x0002E;</mo></mrow></math></div>
+<p>它的直观含义是：输入空间 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x0211D;</mi><mi>n</mi></msup></mrow></math> 被分成两部分——一部分被 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 映成列空间中的非零输出，另一部分被压成零。两部分维数相加正好是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math>。</p>
+<p><strong>例 4.1</strong>　设</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd><mtd><mn>0</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>3</mn></mtd><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>第三行等于第一行加第二行，所以秩为 2。对 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 消元：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mtable><mtr><mtd columnalign="center"><mn>1</mn></mtd><mtd columnalign="center"><mn>2</mn></mtd><mtd columnalign="center"><mn>0</mn></mtd><mtd columnalign="center"><mn>1</mn></mtd></mtr><mtr><mtd columnalign="center"><mn>0</mn></mtd><mtd columnalign="center"><mn>1</mn></mtd><mtd columnalign="center"><mn>1</mn></mtd><mtd columnalign="center"><mn>1</mn></mtd></mtr><mtr><mtd columnalign="center"><mn>0</mn></mtd><mtd columnalign="center"><mn>0</mn></mtd><mtd columnalign="center"><mn>0</mn></mtd><mtd columnalign="center"><mn>0</mn></mtd></mtr></mtable><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mspace width="1em" /><mi>&#x027F6;</mi><mspace width="1em" /><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mtable><mtr><mtd columnalign="center"><mn>1</mn></mtd><mtd columnalign="center"><mn>0</mn></mtd><mtd columnalign="center"><mo>&#x02212;</mo><mn>2</mn></mtd><mtd columnalign="center"><mo>&#x02212;</mo><mn>1</mn></mtd></mtr><mtr><mtd columnalign="center"><mn>0</mn></mtd><mtd columnalign="center"><mn>1</mn></mtd><mtd columnalign="center"><mn>1</mn></mtd><mtd columnalign="center"><mn>1</mn></mtd></mtr><mtr><mtd columnalign="center"><mn>0</mn></mtd><mtd columnalign="center"><mn>0</mn></mtd><mtd columnalign="center"><mn>0</mn></mtd><mtd columnalign="center"><mn>0</mn></mtd></mtr></mtable><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0002E;</mo></mrow></math></div>
+<p>主元在第 1、2 列，所以：</p>
+<ul>
+<li>列空间维数 2，基取原矩阵第 1、2 列：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mo>&#x022A4;</mo></msup></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>3</mn><msup><mo stretchy="false">&#x00029;</mo><mo>&#x022A4;</mo></msup></mrow></math>；</li>
+<li>行空间维数 2，基取 RREF 的非零行：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>0</mn><mo>&#x0002C;</mo><mo>&#x02212;</mo><mn>2</mn><mo>&#x0002C;</mo><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>；</li>
+<li>零空间维数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>4</mn><mo>&#x02212;</mo><mn>2</mn><mo>&#x0003D;</mo><mn>2</mn></mrow></math>。由 RREF 得
+  <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>x</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mn>2</mn><msub><mi>x</mi><mn>3</mn></msub><mo>&#x0002B;</mo><msub><mi>x</mi><mn>4</mn></msub></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>x</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mo>&#x02212;</mo><msub><mi>x</mi><mn>3</mn></msub><mo>&#x02212;</mo><msub><mi>x</mi><mn>4</mn></msub></mrow></math>，所以</li>
+</ul>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>N</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo>span</mo><mo stretchy="false">&#x0007B;</mo><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo>&#x0002C;</mo><mo>&#x02212;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>0</mn><msup><mo stretchy="false">&#x00029;</mo><mo>&#x022A4;</mo></msup><mo>&#x0002C;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mo>&#x02212;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mo>&#x022A4;</mo></msup><mo stretchy="false">&#x0007D;</mo><mi>;</mi></mrow></math></div>
+<ul>
+<li>左零空间维数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>3</mn><mo>&#x02212;</mo><mn>2</mn><mo>&#x0003D;</mo><mn>1</mn></mrow></math>。因为第三行 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x0003D;</mo></mrow></math> 第一行 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x0002B;</mo></mrow></math> 第二行，取 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D432;</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mo>&#x022A4;</mo></msup></mrow></math>，则 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x1D432;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mrow><mn mathvariant="bold">0</mn></mrow></mrow></math>。</li>
+</ul>
+<hr>
+<h2>5. 正交补与可解性</h2>
+<p>两个子空间 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>U</mi><mo>&#x0002C;</mo><mi>V</mi></mrow></math> 称为<strong>正交补</strong>，如果 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>U</mi></mrow></math> 中每个向量都垂直于 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>V</mi></mrow></math> 中每个向量，且两者维数相加等于整个空间的维数。记作 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>V</mi><mo>&#x0003D;</mo><msup><mi>U</mi><mi>&#x027C2;</mi></msup></mrow></math>。</p>
+<p>四个基本子空间的核心关系是：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>N</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>C</mi><mo stretchy="false">&#x00028;</mo><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><msup><mo stretchy="false">&#x00029;</mo><mi>&#x027C2;</mi></msup><mo>&#x0002C;</mo><mspace width="2em" /><mi>N</mi><mo stretchy="false">&#x00028;</mo><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>C</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><msup><mo stretchy="false">&#x00029;</mo><mi>&#x027C2;</mi></msup><mo>&#x0002E;</mo></mrow></math></div>
+<p>用文字说：</p>
+<ul>
+<li>零空间与行空间正交补；</li>
+<li>左零空间与列空间正交补。</li>
+</ul>
+<p>为什么？若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D432;</mi><mo>&#x02208;</mo><mi>N</mi><mo stretchy="false">&#x00028;</mo><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mo stretchy="false">&#x00029;</mo></mrow></math>，则 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x1D432;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mrow><mn mathvariant="bold">0</mn></mrow></mrow></math>，即 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D432;</mi></mrow></math> 与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 的每一列都正交，所以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D432;</mi><mi>&#x027C2;</mi><mi>C</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。维数又正好互补，因此相等。</p>
+<p>由此得到可解性判据：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x0003D;</mo><mi>&#x1D41B;</mi><mtext>&#x000A0;有解</mtext><mspace width="1em" /><mi>&#x027FA;</mi><mspace width="1em" /><mi>&#x1D41B;</mi><mo>&#x02208;</mo><mi>C</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo><mspace width="1em" /><mi>&#x027FA;</mi><mspace width="1em" /><mi>&#x1D41B;</mi><mi>&#x027C2;</mi><mi>N</mi><mo stretchy="false">&#x00028;</mo><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>也就是说，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41B;</mi></mrow></math> 不能含有左零空间方向的分量。在例 4.1 中，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>N</mi><mo stretchy="false">&#x00028;</mo><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mo stretchy="false">&#x00029;</mo></mrow></math> 由 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mo>&#x022A4;</mo></msup></mrow></math> 张成，所以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><msub><mi>b</mi><mn>1</mn></msub><mo>&#x0002C;</mo><msub><mi>b</mi><mn>2</mn></msub><mo>&#x0002C;</mo><msub><mi>b</mi><mn>3</mn></msub><msup><mo stretchy="false">&#x00029;</mo><mo>&#x022A4;</mo></msup></mrow></math> 可解的条件是</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>b</mi><mn>1</mn></msub><mo>&#x0002B;</mo><msub><mi>b</mi><mn>2</mn></msub><mo>&#x02212;</mo><msub><mi>b</mi><mn>3</mn></msub><mo>&#x0003D;</mo><mn>0</mn><mo>&#x0002E;</mo></mrow></math></div>
+<p>这与“第三行 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x0003D;</mo></mrow></math> 第一行 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x0002B;</mo></mrow></math> 第二行”完全一致。</p>
+<hr>
+<h2>6. 工程视角：自由度与约束</h2>
+<p>四个子空间是理解“约束系统”的通用语言：</p>
+<ul>
+<li><strong>列空间</strong>是可实现的目标。无人机想达到某个加速度，它必须在电机推力能张成的列空间里。</li>
+<li><strong>零空间</strong>是不影响输出的输入组合。多个电机推力可以互不相同，但合力相同；这些差异就在零空间里。</li>
+<li><strong>行空间</strong>是真正影响输出的输入方向。</li>
+<li><strong>左零空间</strong>是传感器测量中“永远测不到”的方向，或者约束之间的冗余关系。</li>
+</ul>
+<p>在控制与估计中：</p>
+<ul>
+<li>可控性看输入矩阵的列空间是否覆盖状态空间；</li>
+<li>可观测性看观测矩阵的零空间是否只剩下零；</li>
+<li>最小二乘把无解的 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x0003D;</mo><mi>&#x1D41B;</mi></mrow></math> 投影到列空间上，丢掉左零空间分量。</li>
+</ul>
+<blockquote>
+<p><strong>一句话</strong>：列空间告诉你“能做到什么”，零空间告诉你“做了也白做”，左零空间告诉你“目标里哪些部分根本不可能”。</p>
+</blockquote>
+<hr>
+<h2>7. 练习</h2>
+<ol>
+<li>
+<p>对例 4.1 的矩阵 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math>，验证 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D432;</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mo>&#x022A4;</mo></msup></mrow></math> 在左零空间中。</p>
+</li>
+<li>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd><mtd><mn>3</mn></mtd></mtr><mtr><mtd><mn>2</mn></mtd><mtd><mn>4</mn></mtd><mtd><mn>6</mn></mtd></mtr></mtable><mo>&#x00029;</mo></mrow></math>，求列空间和零空间的维数。</p>
+</li>
+<li>
+<p>判断 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mo>&#x022A4;</mo></msup></mrow></math> 是否在例 4.1 的列空间中。</p>
+</li>
+<li>
+<p>一个 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>4</mn><mo>&#x000D7;</mo><mn>6</mn></mrow></math> 矩阵的秩为 3，求四个子空间的维数。</p>
+</li>
+<li>
+<p>若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>3</mn><mo>&#x000D7;</mo><mn>3</mn></mrow></math> 可逆矩阵，它的零空间和左零空间分别是什么？</p>
+</li>
+</ol>
+<hr>
+<h2>8. 答案与简解</h2>
+<details>
+<summary>点击展开（做完再看）</summary>
+
+**1.** 计算
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>&#x1D432;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd><mtd><mn>0</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>3</mn></mtd><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+所以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D432;</mi><mo>&#x02208;</mo><mi>N</mi><mo stretchy="false">&#x00028;</mo><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mo stretchy="false">&#x00029;</mo></mrow></math>。
+
+**2.** 第二行是第一行的 2 倍，秩为 1。列空间维数为 1，零空间维数为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>3</mn><mo>&#x02212;</mo><mn>1</mn><mo>&#x0003D;</mo><mn>2</mn></mrow></math>。
+
+**3.** 可解条件是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>b</mi><mn>1</mn></msub><mo>&#x0002B;</mo><msub><mi>b</mi><mn>2</mn></msub><mo>&#x02212;</mo><msub><mi>b</mi><mn>3</mn></msub><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，而 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn><mo>&#x0002B;</mo><mn>1</mn><mo>&#x02212;</mo><mn>1</mn><mo>&#x0003D;</mo><mn>1</mn><mo>&#x02260;</mo><mn>0</mn></mrow></math>，所以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41B;</mi></mrow></math> 不在列空间中。
+
+**4.** <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>r</mi><mo>&#x0003D;</mo><mn>3</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>m</mi><mo>&#x0003D;</mo><mn>4</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>6</mn></mrow></math>：
+
+- 列空间维数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>3</mn></mrow></math>；
+- 零空间维数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>6</mn><mo>&#x02212;</mo><mn>3</mn><mo>&#x0003D;</mo><mn>3</mn></mrow></math>；
+- 行空间维数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>3</mn></mrow></math>；
+- 左零空间维数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>4</mn><mo>&#x02212;</mo><mn>3</mn><mo>&#x0003D;</mo><mn>1</mn></mrow></math>。
+
+**5.** 可逆矩阵的列空间是整个 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x0211D;</mi><mn>3</mn></msup></mrow></math>，秩为 3。零空间只有零向量，左零空间也只有零向量，维数都是 0。
+
+</details>
+
+<hr>
+<h2>下节预告</h2>
+<p><strong>第 05 课：正交投影与最小二乘</strong></p>
+<ul>
+<li>内积、范数与夹角</li>
+<li>投影到直线与子空间</li>
+<li>Gram–Schmidt 与 QR</li>
+<li>最小二乘与正规方程</li>
+</ul>
+<hr>
+<h2>自查清单</h2>
+<ul>
+<li>[ ] 能说出四个子空间各自所在的空间和维数</li>
+<li>[ ] 会用秩-零化度定理</li>
+<li>[ ] 知道零空间与行空间互为正交补</li>
+<li>[ ] 能用左零空间判断 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x0003D;</mo><mi>&#x1D41B;</mi></mrow></math> 是否可解</li>
+<li>[ ] 能从 RREF 写出零空间和行空间的基</li>
+</ul>
+<nav class="lesson-nav"><span><a href="线代03-高斯消元与线性方程组.html">&larr; 上一课</a></span><span><a href="线代05-正交投影与最小二乘.html">下一课 &rarr;</a></span></nav>
+<footer>线性代数 · 数学公式使用 MathML 渲染，建议使用 Chrome / Edge / Firefox 打开</footer>
+</main>
+</body>
+</html>

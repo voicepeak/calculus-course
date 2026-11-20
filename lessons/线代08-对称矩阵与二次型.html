@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>线性代数 · 第 08 课：对称矩阵与二次型</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --quote-bg: #f6f8fa;
+  --code-bg: #eff2f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --border: #30363d;
+    --accent: #4493f8;
+    --quote-bg: #161b22;
+    --code-bg: #1f242c;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; font-weight: 650; }
+h1 { font-size: 2rem; margin: 0 0 .8em; padding-bottom: .35em; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 2.2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.2rem; margin: 1.8em 0 .55em; }
+p { margin: .85em 0; }
+a { color: var(--accent); }
+blockquote {
+  margin: 1em 0;
+  padding: .6em 1em;
+  border-left: 4px solid var(--accent);
+  background: var(--quote-bg);
+  color: var(--muted);
+  border-radius: 4px;
+}
+blockquote p { margin: .25em 0; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: .96em;
+  overflow: hidden;
+}
+th, td { border: 1px solid var(--border); padding: .45em .7em; text-align: left; vertical-align: top; }
+th { background: var(--quote-bg); font-weight: 600; }
+details {
+  margin: 1.2em 0;
+  padding: .8em 1em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--quote-bg);
+}
+summary { cursor: pointer; font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+ul, ol { padding-left: 1.7em; }
+li { margin: .3em 0; }
+.math-block {
+  margin: 1.15em 0;
+  padding: .7em .9em;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--quote-bg);
+  border-radius: 6px;
+}
+math { font-size: 1.14em; line-height: 1.2; }
+math[display="inline"] { font-size: 1.05em; vertical-align: baseline; }
+.math-block math { font-size: 1.24em; }
+.math-fallback, .math-fallback-block {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .08em .3em;
+  border-radius: 3px;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .12em .35em;
+  border-radius: 3px;
+  font-size: .92em;
+}
+pre code { display: block; padding: .8em 1em; overflow-x: auto; }
+.lesson-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .8em 1.4em;
+  justify-content: space-between;
+  margin: 2.4em 0 0;
+  padding-top: 1.1em;
+  border-top: 1px solid var(--border);
+  font-size: .95em;
+}
+footer { margin-top: 2.2em; color: var(--muted); font-size: .85em; text-align: center; }
+@media print {
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  .math-block { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>线性代数 · 第 08 课：对称矩阵与二次型</h1>
+<blockquote>
+<p><strong>本课目标</strong>：理解谱定理，掌握二次型的正定性判定，能用特征值分析椭球、凸性与协方差。</p>
+<p><strong>使用方法</strong>：先读讲解 → 做练习 → 对答案。错题 72 小时内重做。</p>
+</blockquote>
+<hr>
+<h2>目录</h2>
+<ol>
+<li>对称矩阵与谱定理</li>
+<li>正交对角化</li>
+<li>二次型</li>
+<li>正定、半正定与判定</li>
+<li>Rayleigh 商与椭球</li>
+<li>Hessian、凸性与协方差</li>
+<li>工程视角：优化与不确定性</li>
+<li>练习</li>
+<li>答案与简解</li>
+</ol>
+<hr>
+<h2>1. 对称矩阵与谱定理</h2>
+<p>若方阵满足 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mo>&#x0003D;</mo><mi>&#x1D400;</mi></mrow></math>，称它为<strong>对称矩阵</strong>。对称矩阵在工程中极其常见：协方差矩阵、Hessian 矩阵、图的邻接矩阵、刚度矩阵都是对称的。</p>
+<p><strong>谱定理</strong>：实对称矩阵一定可以正交对角化。也就是说，存在正交矩阵 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D410;</mi></mrow></math> 和对角矩阵 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mi mathvariant="bold-italic">&#x0039B;</mi></mrow></mrow></math>，使得</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mi>&#x1D410;</mi><mrow><mi mathvariant="bold-italic">&#x0039B;</mi></mrow><msup><mi>&#x1D410;</mi><mo>&#x022A4;</mo></msup><mo>&#x0002C;</mo></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D410;</mi></mrow></math> 的列是标准正交的特征向量，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mi mathvariant="bold-italic">&#x0039B;</mi></mrow></mrow></math> 的对角线是对应的实特征值。</p>
+<p>这个定理有三层含义：</p>
+<ol>
+<li>实对称矩阵的特征值全是实数；</li>
+<li>不同特征值对应的特征向量自动正交；</li>
+<li>即使有重特征值，也能选出一组标准正交的特征向量。</li>
+</ol>
+<p>因此对称矩阵是所有矩阵里“最听话”的一类，很多算法优先把问题化成对称形式。</p>
+<hr>
+<h2>2. 正交对角化</h2>
+<p>正交矩阵满足 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x1D410;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D410;</mi><mo>&#x0003D;</mo><mi>&#x1D408;</mi></mrow></math>，所以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x1D410;</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup><mo>&#x0003D;</mo><msup><mi>&#x1D410;</mi><mo>&#x022A4;</mo></msup></mrow></math>。正交对角化就是把普通对角化中的 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x1D40F;</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup></mrow></math> 换成 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x1D410;</mi><mo>&#x022A4;</mo></msup></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mi>&#x1D410;</mi><mrow><mi mathvariant="bold-italic">&#x0039B;</mi></mrow><msup><mi>&#x1D410;</mi><mo>&#x022A4;</mo></msup><mo>&#x0002E;</mo></mrow></math></div>
+<p>用特征向量展开，可以写成谱分解：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>i</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mi>n</mi></munderover><msub><mi>&#x003BB;</mi><mi>i</mi></msub><msub><mi>&#x1D42A;</mi><mi>i</mi></msub><msubsup><mi>&#x1D42A;</mi><mi>i</mi><mo>&#x022A4;</mo></msubsup><mo>&#x0002E;</mo></mrow></math></div>
+<p>每一项 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42A;</mi><mi>i</mi></msub><msubsup><mi>&#x1D42A;</mi><mi>i</mi><mo>&#x022A4;</mo></msubsup></mrow></math> 是向 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42A;</mi><mi>i</mi></msub></mrow></math> 方向投影的矩阵。所以对称矩阵的作用可以理解为：先旋转到特征基，沿各轴独立缩放，再旋转回来。</p>
+<hr>
+<h2>3. 二次型</h2>
+<p>形如</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>Q</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D431;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>&#x1D431;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x0003D;</mo><munder><mo>&#x02211;</mo><mrow><mi>i</mi><mo>&#x0002C;</mo><mi>j</mi></mrow></munder><msub><mi>a</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><msub><mi>x</mi><mi>i</mi></msub><msub><mi>x</mi><mi>j</mi></msub></mrow></math></div>
+<p>的函数叫<strong>二次型</strong>。它是关于 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>x</mi><mn>1</mn></msub><mo>&#x0002C;</mo><mo>&#x02026;</mo><mo>&#x0002C;</mo><msub><mi>x</mi><mi>n</mi></msub></mrow></math> 的二次齐次多项式。</p>
+<p>由于 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x1D431;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><mi>&#x1D431;</mi></mrow></math> 只依赖 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 的对称部分，总可以假设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 是对称矩阵。例如</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>&#x1D431;</mi><mo>&#x022A4;</mo></msup><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>1</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mi>&#x1D431;</mi><mo>&#x0003D;</mo><msubsup><mi>x</mi><mn>1</mn><mn>2</mn></msubsup><mo>&#x0002B;</mo><mn>2</mn><msub><mi>x</mi><mn>1</mn></msub><msub><mi>x</mi><mn>2</mn></msub><mo>&#x0002B;</mo><msubsup><mi>x</mi><mn>2</mn><mn>2</mn></msubsup><mo>&#x0003D;</mo><msup><mi>&#x1D431;</mi><mo>&#x022A4;</mo></msup><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mi>&#x1D431;</mi><mo>&#x0002E;</mo></mrow></math></div>
+<p>写成对称形式后，就可以用谱定理分析。</p>
+<p><strong>例 8.1</strong>　把</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>Q</mi><mo stretchy="false">&#x00028;</mo><msub><mi>x</mi><mn>1</mn></msub><mo>&#x0002C;</mo><msub><mi>x</mi><mn>2</mn></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>2</mn><msubsup><mi>x</mi><mn>1</mn><mn>2</mn></msubsup><mo>&#x0002B;</mo><mn>2</mn><msub><mi>x</mi><mn>1</mn></msub><msub><mi>x</mi><mn>2</mn></msub><mo>&#x0002B;</mo><mn>2</mn><msubsup><mi>x</mi><mn>2</mn><mn>2</mn></msubsup></mrow></math></div>
+<p>写成矩阵形式。</p>
+<p>交叉项 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><msub><mi>x</mi><mn>1</mn></msub><msub><mi>x</mi><mn>2</mn></msub></mrow></math> 对应矩阵的非对角元各取一半，所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>2</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mi>Q</mi><mo>&#x0003D;</mo><msup><mi>&#x1D431;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x0002E;</mo></mrow></math></div>
+<hr>
+<h2>4. 正定、半正定与判定</h2>
+<p>若对任意 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D431;</mi><mo>&#x02260;</mo><mrow><mn mathvariant="bold">0</mn></mrow></mrow></math> 都有</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>Q</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D431;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>&#x1D431;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x0003E;</mo><mn>0</mn><mo>&#x0002C;</mo></mrow></math></div>
+<p>称 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> <strong>正定</strong>，记作 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mo>&#x0227B;</mo><mn>0</mn></mrow></math>。若只要求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02265;</mo><mn>0</mn></mrow></math>，称<strong>半正定</strong>，记作 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mi>&#x02AB0;</mi><mn>0</mn></mrow></math>。类似地有负定、半负定和不定。</p>
+<p>判定方法：</p>
+<ol>
+<li><strong>特征值法</strong>：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 正定 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x027FA;</mi></mrow></math> 所有特征值 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x0003E;</mo><mn>0</mn></mrow></math>；半正定 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x027FA;</mi></mrow></math> 所有特征值 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02265;</mo><mn>0</mn></mrow></math>。</li>
+<li><strong>顺序主子式法</strong>（Sylvester 判据）：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 正定 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x027FA;</mi></mrow></math> 所有顺序主子式都 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x0003E;</mo><mn>0</mn></mrow></math>。</li>
+<li><strong>配方/Cholesky</strong>：能把二次型化成平方和且系数全正，则正定。</li>
+</ol>
+<p>例 8.1 的矩阵特征值为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>3</mn></mrow></math> 和 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn></mrow></math>，都大于 0，所以正定。事实上</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>Q</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><msub><mi>x</mi><mn>1</mn></msub><mo>&#x0002B;</mo><msub><mi>x</mi><mn>2</mn></msub><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup><mo>&#x0002B;</mo><msubsup><mi>x</mi><mn>1</mn><mn>2</mn></msubsup><mo>&#x0002B;</mo><msubsup><mi>x</mi><mn>2</mn><mn>2</mn></msubsup><mo>&#x0003E;</mo><mn>0</mn><mspace width="1em" /><mo stretchy="false">&#x00028;</mo><mi>&#x1D431;</mi><mo>&#x02260;</mo><mrow><mn mathvariant="bold">0</mn></mrow><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>而</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D401;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>0</mn></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mo>&#x02212;</mo><mn>1</mn></mtd></mtr></mtable><mo>&#x00029;</mo></mrow></math></div>
+<p>的特征值为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn></mrow></math> 和 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></math>，不定：沿 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>x</mi><mn>1</mn></msub></mrow></math> 方向为正，沿 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>x</mi><mn>2</mn></msub></mrow></math> 方向为负。</p>
+<hr>
+<h2>5. Rayleigh 商与椭球</h2>
+<p>对对称矩阵 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math>，定义 <strong>Rayleigh 商</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>R</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D431;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><msup><mi>&#x1D431;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><mi>&#x1D431;</mi></mrow><mrow><msup><mi>&#x1D431;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D431;</mi></mrow></mfrac><mo>&#x0002C;</mo><mspace width="2em" /><mi>&#x1D431;</mi><mo>&#x02260;</mo><mrow><mn mathvariant="bold">0</mn></mrow><mo>&#x0002E;</mo></mrow></math></div>
+<p>它的最大值是最大特征值 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x003BB;</mi><mrow><mo>max</mo></mrow></msub></mrow></math>，最小值是最小特征值 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x003BB;</mi><mrow><mo>min</mo></mrow></msub></mrow></math>，分别在对应的特征向量处取到。</p>
+<p>如果 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 正定，方程</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>&#x1D431;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math></div>
+<p>表示一个椭球。沿特征向量方向，椭球的半轴长度为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><msqrt><mrow><msub><mi>&#x003BB;</mi><mi>i</mi></msub></mrow></msqrt></mrow></mfrac><mo>&#x0002E;</mo></mrow></math></div>
+<p>特征值越大，该方向越短；特征值越小，该方向越长。这解释了为什么协方差矩阵的特征值小，表示那个方向的不确定性大。</p>
+<p><strong>例 8.2</strong>　对例 8.1 的 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math>，在单位圆 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msubsup><mi>x</mi><mn>1</mn><mn>2</mn></msubsup><mo>&#x0002B;</mo><msubsup><mi>x</mi><mn>2</mn><mn>2</mn></msubsup><mo>&#x0003D;</mo><mn>1</mn></mrow></math> 上，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>Q</mi></mrow></math> 的最大值为 3，在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42A;</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msqrt><mn>2</mn></msqrt></mrow></mfrac><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 处取到；最小值为 1，在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42A;</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><msqrt><mn>2</mn></msqrt></mrow></mfrac><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 处取到。</p>
+<hr>
+<h2>6. Hessian、凸性与协方差</h2>
+<p><strong>Hessian 矩阵</strong>是多元函数的二阶偏导数矩阵：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D407;</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D431;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mrow><msup><mo>&#x02202;</mo><mn>2</mn></msup><mi>f</mi></mrow><mrow><mo>&#x02202;</mo><msub><mi>x</mi><mi>i</mi></msub><mo>&#x02202;</mo><msub><mi>x</mi><mi>j</mi></msub></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0002E;</mo></mrow></math></div>
+<p>若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D407;</mi></mrow></math> 在定义域上处处半正定，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi></mrow></math> 是凸函数；若正定，严格凸。二阶泰勒展开的二次项就是</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mn>1</mn><mn>2</mn></mfrac><mi>&#x00394;</mi><msup><mi>&#x1D431;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D407;</mi><mi>&#x00394;</mi><mi>&#x1D431;</mi><mo>&#x0002C;</mo></mrow></math></div>
+<p>所以正定性决定了局部极小、极大还是鞍点。</p>
+<p><strong>协方差矩阵</strong></p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mi mathvariant="bold-italic">&#x003A3;</mi></mrow><mo>&#x0003D;</mo><mi>&#x1D53C;</mi><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D417;</mi><mo>&#x02212;</mo><mrow><mi mathvariant="bold-italic">&#x003BC;</mi></mrow><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D417;</mi><mo>&#x02212;</mo><mrow><mi mathvariant="bold-italic">&#x003BC;</mi></mrow><msup><mo stretchy="false">&#x00029;</mo><mo>&#x022A4;</mo></msup><mo stretchy="true" fence="true" form="postfix">]</mo></mrow></mrow></math></div>
+<p>一定是对称半正定的。对任意方向 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D42E;</mi></mrow></math>，方差</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>Var</mo><mo stretchy="false">&#x00028;</mo><msup><mi>&#x1D42E;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D417;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>&#x1D42E;</mi><mo>&#x022A4;</mo></msup><mrow><mi mathvariant="bold-italic">&#x003A3;</mi></mrow><mi>&#x1D42E;</mi><mo>&#x02265;</mo><mn>0</mn><mo>&#x0002E;</mo></mrow></math></div>
+<p>它的特征值就是各主方向的方差，特征向量就是主成分方向。</p>
+<blockquote>
+<p><strong>注意</strong>：正定要求对<strong>所有非零向量</strong>都严格大于 0。只检查几个方向不够，必须用特征值或顺序主子式。</p>
+</blockquote>
+<hr>
+<h2>7. 工程视角：优化与不确定性</h2>
+<ul>
+<li><strong>优化</strong>：梯度下降的收敛速度由 Hessian 的条件数决定；正定性保证牛顿方向是下降方向。</li>
+<li><strong>控制</strong>：Lyapunov 函数常取二次型 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>V</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D431;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>&#x1D431;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D40F;</mi><mi>&#x1D431;</mi></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D40F;</mi></mrow></math> 正定表示能量为正。</li>
+<li><strong>估计</strong>：卡尔曼滤波用协方差矩阵描述状态不确定性，置信椭球的形状由特征值决定。</li>
+<li><strong>机器学习</strong>：损失函数的 Hessian 正定意味着局部极小；高斯过程的核矩阵必须半正定。</li>
+<li><strong>结构力学</strong>：刚度矩阵正定意味着结构稳定，否则存在零能量变形模式。</li>
+</ul>
+<blockquote>
+<p><strong>小实验</strong>：用 NumPy 检查正定性并画特征方向。</p>
+</blockquote>
+<pre><code class="language-python">import numpy as np
+
+A = np.array([[2, 1], [1, 2]], dtype=float)
+vals, vecs = np.linalg.eigh(A)  # 对称矩阵专用，返回升序特征值
+print(vals)                     # [1., 3.]
+print(np.all(vals &gt; 0))         # True
+</code></pre>
+<hr>
+<h2>8. 练习</h2>
+<ol>
+<li>
+<p>写出二次型 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>Q</mi><mo>&#x0003D;</mo><mn>3</mn><msubsup><mi>x</mi><mn>1</mn><mn>2</mn></msubsup><mo>&#x0002B;</mo><mn>4</mn><msub><mi>x</mi><mn>1</mn></msub><msub><mi>x</mi><mn>2</mn></msub><mo>&#x0002B;</mo><msubsup><mi>x</mi><mn>2</mn><mn>2</mn></msubsup></mrow></math> 的对称矩阵。</p>
+</li>
+<li>
+<p>判断 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x00028;</mo><mtable><mtr><mtd><mn>2</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr></mtable><mo>&#x00029;</mo></mrow></math> 是否正定。</p>
+</li>
+<li>
+<p>判断 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr><mtr><mtd><mn>2</mn></mtd><mtd><mn>1</mn></mtd></mtr></mtable><mo>&#x00029;</mo></mrow></math> 的正定性。</p>
+</li>
+<li>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 正定，特征值为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn><mo>&#x0002C;</mo><mn>4</mn></mrow></math>。方程 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x1D431;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math> 的椭球半轴长度是多少？</p>
+</li>
+<li>
+<p>解释为什么协方差矩阵一定半正定。</p>
+</li>
+</ol>
+<hr>
+<h2>9. 答案与简解</h2>
+<details>
+<summary>点击展开（做完再看）</summary>
+
+**1.** 交叉项系数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>4</mn></mrow></math> 平分给两个非对角元：
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>3</mn></mtd><mtd><mn>2</mn></mtd></mtr><mtr><mtd><mn>2</mn></mtd><mtd><mn>1</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+**2.** 特征值为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>3</mn><mo>&#x0002C;</mo><mn>1</mn></mrow></math>，都大于 0，所以正定。
+
+**3.** 特征多项式为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><mi>&#x003BB;</mi><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup><mo>&#x02212;</mo><mn>4</mn><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo>&#x02212;</mo><mn>3</mn><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo>&#x0002B;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，特征值为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>3</mn><mo>&#x0002C;</mo><mo>&#x02212;</mo><mn>1</mn></mrow></math>，不定。
+
+**4.** 半轴长度为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn><mo>&#x0002F;</mo><msqrt><mrow><msub><mi>&#x003BB;</mi><mi>i</mi></msub></mrow></msqrt></mrow></math>，即 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn></mrow></math> 和 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mn>2</mn></mfrac></mstyle></mrow></math>。
+
+**5.** 对任意向量 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D42E;</mi></mrow></math>，
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>&#x1D42E;</mi><mo>&#x022A4;</mo></msup><mrow><mi mathvariant="bold-italic">&#x003A3;</mi></mrow><mi>&#x1D42E;</mi><mo>&#x0003D;</mo><mo>Var</mo><mo stretchy="false">&#x00028;</mo><msup><mi>&#x1D42E;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D417;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02265;</mo><mn>0</mn><mo>&#x0002C;</mo></mrow></math></div>
+
+
+
+方差不可能为负，所以二次型非负，协方差矩阵半正定。
+
+</details>
+
+<hr>
+<h2>下节预告</h2>
+<p><strong>第 09 课：SVD 与低秩近似</strong></p>
+<ul>
+<li>奇异值分解 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mi>&#x1D414;</mi><mrow><mi mathvariant="bold-italic">&#x003A3;</mi></mrow><msup><mi>&#x1D415;</mi><mo>&#x022A4;</mo></msup></mrow></math></li>
+<li>奇异值与秩、范数、条件数</li>
+<li>伪逆与最小二乘</li>
+<li>低秩近似与 PCA</li>
+</ul>
+<hr>
+<h2>自查清单</h2>
+<ul>
+<li>[ ] 能叙述谱定理</li>
+<li>[ ] 会把二次型写成对称矩阵</li>
+<li>[ ] 会用特征值或顺序主子式判断正定性</li>
+<li>[ ] 知道 Rayleigh 商与椭球半轴的关系</li>
+<li>[ ] 理解协方差矩阵半正定的原因</li>
+</ul>
+<nav class="lesson-nav"><span><a href="线代07-特征值与特征向量.html">&larr; 上一课</a></span><span><a href="线代09-SVD与低秩近似.html">下一课 &rarr;</a></span></nav>
+<footer>线性代数 · 数学公式使用 MathML 渲染，建议使用 Chrome / Edge / Firefox 打开</footer>
+</main>
+</body>
+</html>

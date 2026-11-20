@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>线性代数 · 第 09 课：SVD 与低秩近似</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --quote-bg: #f6f8fa;
+  --code-bg: #eff2f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --border: #30363d;
+    --accent: #4493f8;
+    --quote-bg: #161b22;
+    --code-bg: #1f242c;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; font-weight: 650; }
+h1 { font-size: 2rem; margin: 0 0 .8em; padding-bottom: .35em; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 2.2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.2rem; margin: 1.8em 0 .55em; }
+p { margin: .85em 0; }
+a { color: var(--accent); }
+blockquote {
+  margin: 1em 0;
+  padding: .6em 1em;
+  border-left: 4px solid var(--accent);
+  background: var(--quote-bg);
+  color: var(--muted);
+  border-radius: 4px;
+}
+blockquote p { margin: .25em 0; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: .96em;
+  overflow: hidden;
+}
+th, td { border: 1px solid var(--border); padding: .45em .7em; text-align: left; vertical-align: top; }
+th { background: var(--quote-bg); font-weight: 600; }
+details {
+  margin: 1.2em 0;
+  padding: .8em 1em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--quote-bg);
+}
+summary { cursor: pointer; font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+ul, ol { padding-left: 1.7em; }
+li { margin: .3em 0; }
+.math-block {
+  margin: 1.15em 0;
+  padding: .7em .9em;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--quote-bg);
+  border-radius: 6px;
+}
+math { font-size: 1.14em; line-height: 1.2; }
+math[display="inline"] { font-size: 1.05em; vertical-align: baseline; }
+.math-block math { font-size: 1.24em; }
+.math-fallback, .math-fallback-block {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .08em .3em;
+  border-radius: 3px;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .12em .35em;
+  border-radius: 3px;
+  font-size: .92em;
+}
+pre code { display: block; padding: .8em 1em; overflow-x: auto; }
+.lesson-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .8em 1.4em;
+  justify-content: space-between;
+  margin: 2.4em 0 0;
+  padding-top: 1.1em;
+  border-top: 1px solid var(--border);
+  font-size: .95em;
+}
+footer { margin-top: 2.2em; color: var(--muted); font-size: .85em; text-align: center; }
+@media print {
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  .math-block { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>线性代数 · 第 09 课：SVD 与低秩近似</h1>
+<blockquote>
+<p><strong>本课目标</strong>：理解奇异值分解的几何意义，掌握奇异值、伪逆、低秩近似与 PCA 的基本用法。</p>
+<p><strong>使用方法</strong>：先读讲解 → 做练习 → 对答案。错题 72 小时内重做。</p>
+</blockquote>
+<hr>
+<h2>目录</h2>
+<ol>
+<li>奇异值分解</li>
+<li>奇异值的几何意义</li>
+<li>秩、范数与条件数</li>
+<li>伪逆与最小二乘</li>
+<li>低秩近似</li>
+<li>PCA 与降维</li>
+<li>工程视角：压缩、去噪与数值稳定</li>
+<li>练习</li>
+<li>答案与简解</li>
+</ol>
+<hr>
+<h2>1. 奇异值分解</h2>
+<p>任意 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>m</mi><mo>&#x000D7;</mo><mi>n</mi></mrow></math> 实矩阵 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 都可以分解为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mi>&#x1D414;</mi><mrow><mi mathvariant="bold-italic">&#x003A3;</mi></mrow><msup><mi>&#x1D415;</mi><mo>&#x022A4;</mo></msup><mo>&#x0002C;</mo></mrow></math></div>
+<p>其中：</p>
+<ul>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D414;</mi></mrow></math> 是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>m</mi><mo>&#x000D7;</mo><mi>m</mi></mrow></math> 正交矩阵，列叫左奇异向量；</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D415;</mi></mrow></math> 是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mo>&#x000D7;</mo><mi>n</mi></mrow></math> 正交矩阵，列叫右奇异向量；</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mi mathvariant="bold-italic">&#x003A3;</mi></mrow></mrow></math> 是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>m</mi><mo>&#x000D7;</mo><mi>n</mi></mrow></math> 的“对角”矩阵，对角线元素
+  <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x003C3;</mi><mn>1</mn></msub><mo>&#x02265;</mo><msub><mi>&#x003C3;</mi><mn>2</mn></msub><mo>&#x02265;</mo><mo>&#x022EF;</mo><mo>&#x02265;</mo><msub><mi>&#x003C3;</mi><mi>r</mi></msub><mo>&#x0003E;</mo><mn>0</mn></mrow></math> 叫奇异值，其余为 0。</li>
+</ul>
+<p>SVD 对任何矩阵都存在，不要求方阵，也不要求可逆或对称。这是它比特征分解更通用的原因。</p>
+<p>对角化只适用于有足够特征向量的方阵；SVD 用两组正交基 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D414;</mi></mrow></math> 和 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D415;</mi></mrow></math>，把任意线性映射拆成“旋转—缩放—旋转”。</p>
+<hr>
+<h2>2. 奇异值的几何意义</h2>
+<p>对任意向量 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D431;</mi></mrow></math>，有</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo fence="false" stretchy="false">&#x02016;</mo><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo fence="false" stretchy="false">&#x02016;</mo><mo>&#x0003D;</mo><mo fence="false" stretchy="false">&#x02016;</mo><mrow><mi mathvariant="bold-italic">&#x003A3;</mi></mrow><msup><mi>&#x1D415;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D431;</mi><mo fence="false" stretchy="false">&#x02016;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>因为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x1D415;</mi><mo>&#x022A4;</mo></msup></mrow></math> 不改变长度，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mi mathvariant="bold-italic">&#x003A3;</mi></mrow></mrow></math> 只是沿坐标轴缩放，所以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 把单位球映射成一个椭球，半轴长度正好是奇异值。</p>
+<p>最大奇异值 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x003C3;</mi><mn>1</mn></msub></mrow></math> 是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 对向量长度的最大放大倍数：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>&#x003C3;</mi><mn>1</mn></msub><mo>&#x0003D;</mo><msub><mo>max</mo><mrow><mo fence="false" stretchy="false">&#x02016;</mo><mi>&#x1D431;</mi><mo fence="false" stretchy="false">&#x02016;</mo><mo>&#x0003D;</mo><mn>1</mn></mrow></msub><mo fence="false" stretchy="false">&#x02016;</mo><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo fence="false" stretchy="false">&#x02016;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>最小非零奇异值描述最“弱”的方向。若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x003C3;</mi><mi>r</mi></msub></mrow></math> 很小，矩阵在该方向几乎把信息压没，数值求逆会非常不稳定。</p>
+<p>奇异值与特征值的关系：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>&#x003C3;</mi><mi>i</mi></msub><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msqrt><mrow><msub><mi>&#x003BB;</mi><mi>i</mi></msub><mo stretchy="false">&#x00028;</mo><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo></mrow></msqrt><mo>&#x0003D;</mo><msqrt><mrow><msub><mi>&#x003BB;</mi><mi>i</mi></msub><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mo stretchy="false">&#x00029;</mo></mrow></msqrt><mo>&#x0002E;</mo></mrow></math></div>
+<p>右奇异向量是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi></mrow></math> 的特征向量，左奇异向量是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup></mrow></math> 的特征向量。</p>
+<hr>
+<h2>3. 秩、范数与条件数</h2>
+<p>SVD 把矩阵的很多性质直接暴露出来：</p>
+<ul>
+<li><strong>秩</strong>：非零奇异值的个数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>r</mi></mrow></math>；</li>
+<li><strong>谱范数</strong>：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo fence="false" stretchy="false">&#x02016;</mo><mi>&#x1D400;</mi><msub><mo fence="false" stretchy="false">&#x02016;</mo><mn>2</mn></msub><mo>&#x0003D;</mo><msub><mi>&#x003C3;</mi><mn>1</mn></msub></mrow></math>；</li>
+<li><strong>Frobenius 范数</strong>：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo fence="false" stretchy="false">&#x02016;</mo><mi>&#x1D400;</mi><msub><mo fence="false" stretchy="false">&#x02016;</mo><mi>F</mi></msub><mo>&#x0003D;</mo><msqrt><mrow><msubsup><mi>&#x003C3;</mi><mn>1</mn><mn>2</mn></msubsup><mo>&#x0002B;</mo><mo>&#x022EF;</mo><mo>&#x0002B;</mo><msubsup><mi>&#x003C3;</mi><mi>r</mi><mn>2</mn></msubsup></mrow></msqrt></mrow></math>；</li>
+<li><strong>条件数</strong>：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BA;</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><msub><mi>&#x003C3;</mi><mn>1</mn></msub></mrow><mrow><msub><mi>&#x003C3;</mi><mi>r</mi></msub></mrow></mfrac></mstyle></mrow></math>（可逆方阵）。</li>
+</ul>
+<p>条件数衡量“输入小扰动会被放大多少倍”。<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BA;</mi></mrow></math> 接近 1，矩阵良态；<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BA;</mi></mrow></math> 很大，矩阵病态。病态矩阵求逆时，舍入误差会被急剧放大。</p>
+<blockquote>
+<p><strong>注意</strong>：行列式小不等于病态。对角矩阵 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>diag</mo><mo stretchy="false">&#x00028;</mo><msup><mn>10</mn><mrow><mo>&#x02212;</mo><mn>6</mn></mrow></msup><mo>&#x0002C;</mo><msup><mn>10</mn><mrow><mo>&#x02212;</mo><mn>6</mn></mrow></msup><mo stretchy="false">&#x00029;</mo></mrow></math> 的行列式是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mn>10</mn><mrow><mo>&#x02212;</mo><mn>12</mn></mrow></msup></mrow></math>，但条件数为 1，求逆很稳定。判断数值稳定性要看条件数，不要只看行列式。</p>
+</blockquote>
+<hr>
+<h2>4. 伪逆与最小二乘</h2>
+<p>若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 不是方阵或不可逆，普通逆矩阵不存在。此时可以用 <strong>Moore–Penrose 伪逆</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>&#x1D400;</mi><mo>&#x0002B;</mo></msup><mo>&#x0003D;</mo><mi>&#x1D415;</mi><msup><mrow><mi mathvariant="bold-italic">&#x003A3;</mi></mrow><mo>&#x0002B;</mo></msup><msup><mi>&#x1D414;</mi><mo>&#x022A4;</mo></msup><mo>&#x0002C;</mo></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mrow><mi mathvariant="bold-italic">&#x003A3;</mi></mrow><mo>&#x0002B;</mo></msup></mrow></math> 把非零奇异值取倒数，再转置。</p>
+<p>伪逆给出最小二乘问题的解：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mover accent="true"><mrow><mi>&#x1D431;</mi></mrow><mo>&#x0005E;</mo></mover><mo>&#x0003D;</mo><msup><mi>&#x1D400;</mi><mo>&#x0002B;</mo></msup><mi>&#x1D41B;</mi><mo>&#x0002E;</mo></mrow></math></div>
+<p>当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 列满秩时，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x1D400;</mi><mo>&#x0002B;</mo></msup><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><msup><mo stretchy="false">&#x00029;</mo><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup></mrow></math>，与正规方程一致；当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 列不满秩时，伪逆给出最小范数解，这比正规方程更稳健。</p>
+<hr>
+<h2>5. 低秩近似</h2>
+<p>把 SVD 写成外积和：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>i</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mi>r</mi></munderover><msub><mi>&#x003C3;</mi><mi>i</mi></msub><msub><mi>&#x1D42E;</mi><mi>i</mi></msub><msubsup><mi>&#x1D42F;</mi><mi>i</mi><mo>&#x022A4;</mo></msubsup><mo>&#x0002E;</mo></mrow></math></div>
+<p>每一项是一个秩 1 矩阵。截断到前 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>k</mi></mrow></math> 项：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>&#x1D400;</mi><mi>k</mi></msub><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>i</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mi>k</mi></munderover><msub><mi>&#x003C3;</mi><mi>i</mi></msub><msub><mi>&#x1D42E;</mi><mi>i</mi></msub><msubsup><mi>&#x1D42F;</mi><mi>i</mi><mo>&#x022A4;</mo></msubsup><mo>&#x0002E;</mo></mrow></math></div>
+<p><strong>Eckart–Young 定理</strong>：在所有秩不超过 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>k</mi></mrow></math> 的矩阵中，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D400;</mi><mi>k</mi></msub></mrow></math> 在 Frobenius 范数和谱范数下都最接近 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math>，误差为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo fence="false" stretchy="false">&#x02016;</mo><mi>&#x1D400;</mi><mo>&#x02212;</mo><msub><mi>&#x1D400;</mi><mi>k</mi></msub><msub><mo fence="false" stretchy="false">&#x02016;</mo><mi>F</mi></msub><mo>&#x0003D;</mo><msqrt><mrow><msubsup><mi>&#x003C3;</mi><mrow><mi>k</mi><mo>&#x0002B;</mo><mn>1</mn></mrow><mn>2</mn></msubsup><mo>&#x0002B;</mo><mo>&#x022EF;</mo><mo>&#x0002B;</mo><msubsup><mi>&#x003C3;</mi><mi>r</mi><mn>2</mn></msubsup></mrow></msqrt><mo>&#x0002E;</mo></mrow></math></div>
+<p>也就是说，丢掉最小的奇异值，信息损失最小。这是数据压缩、去噪、降维的共同基础。</p>
+<p><strong>例 9.1</strong>　设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>diag</mo><mo stretchy="false">&#x00028;</mo><mn>5</mn><mo>&#x0002C;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>0.5</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。最佳秩 1 近似是</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>&#x1D400;</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mo>diag</mo><mo stretchy="false">&#x00028;</mo><mn>5</mn><mo>&#x0002C;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo></mrow></math></div>
+<p>误差为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msqrt><mrow><msup><mn>2</mn><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mn>0.5</mn><mn>2</mn></msup></mrow></msqrt><mo>&#x0003D;</mo><msqrt><mrow><mn>4.25</mn></mrow></msqrt><mo>&#x02248;</mo><mn>2.06</mn></mrow></math>。</p>
+<hr>
+<h2>6. PCA 与降维</h2>
+<p>主成分分析（PCA）可以看成 SVD 的直接应用。</p>
+<p>给定数据中心化后的数据矩阵 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D417;</mi></mrow></math>（每行一个样本，每列一个特征），做 SVD：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D417;</mi><mo>&#x0003D;</mo><mi>&#x1D414;</mi><mrow><mi mathvariant="bold-italic">&#x003A3;</mi></mrow><msup><mi>&#x1D415;</mi><mo>&#x022A4;</mo></msup><mo>&#x0002E;</mo></mrow></math></div>
+<ul>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D415;</mi></mrow></math> 的列是主成分方向；</li>
+<li>奇异值的平方与各主成分的方差成正比；</li>
+<li>前 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>k</mi></mrow></math> 个主成分张成的子空间，是保留最多方差的 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>k</mi></mrow></math> 维子空间。</li>
+</ul>
+<p>把数据投影到前 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>k</mi></mrow></math> 个主成分上：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D419;</mi><mo>&#x0003D;</mo><mi>&#x1D417;</mi><msub><mi>&#x1D415;</mi><mi>k</mi></msub><mo>&#x0002C;</mo></mrow></math></div>
+<p>就完成了降维。PCA 不关心类别标签，只关心方差最大的方向，因此是无监督方法。</p>
+<hr>
+<h2>7. 工程视角：压缩、去噪与数值稳定</h2>
+<ul>
+<li><strong>图像压缩</strong>：图像矩阵的奇异值衰减很快，保留前几十个奇异值就能保留大部分视觉信息；</li>
+<li><strong>推荐系统</strong>：用户—物品评分矩阵做低秩近似，补全缺失值；</li>
+<li><strong>去噪</strong>：小幅度的奇异值往往对应噪声，截断即可；</li>
+<li><strong>SLAM / 视觉</strong>：本质矩阵、基础矩阵的估计依赖 SVD；</li>
+<li><strong>机器学习</strong>：PCA 降维、特征白化、潜在语义分析；</li>
+<li><strong>数值计算</strong>：伪逆和截断 SVD 是求解病态最小二乘的常用手段。</li>
+</ul>
+<p>工程中经常遇到“数据矩阵很大，但有效秩很低”的情况。SVD 告诉你：真正重要的方向只有少数几个，其余方向可以压缩掉。</p>
+<blockquote>
+<p><strong>小实验</strong>：用 NumPy 做 SVD 和秩 2 近似。</p>
+</blockquote>
+<pre><code class="language-python">import numpy as np
+
+A = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=float)
+U, s, Vt = np.linalg.svd(A)
+print(s)  # 奇异值，最后一个接近 0
+A2 = U[:, :2] @ np.diag(s[:2]) @ Vt[:2, :]
+print(np.linalg.matrix_rank(A2))  # 2
+</code></pre>
+<hr>
+<h2>8. 练习</h2>
+<ol>
+<li>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>diag</mo><mo stretchy="false">&#x00028;</mo><mn>3</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，写出它的奇异值、秩和条件数。</p>
+</li>
+<li>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 的奇异值为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>4</mn><mo>&#x0002C;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>0.5</mn></mrow></math>，求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo fence="false" stretchy="false">&#x02016;</mo><mi>&#x1D400;</mi><msub><mo fence="false" stretchy="false">&#x02016;</mo><mn>2</mn></msub></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo fence="false" stretchy="false">&#x02016;</mo><mi>&#x1D400;</mi><msub><mo fence="false" stretchy="false">&#x02016;</mo><mi>F</mi></msub></mrow></math> 和条件数。</p>
+</li>
+<li>
+<p>对 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>diag</mo><mo stretchy="false">&#x00028;</mo><mn>5</mn><mo>&#x0002C;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>0.5</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，写出最佳秩 1 近似和误差的 Frobenius 范数。</p>
+</li>
+<li>
+<p>解释为什么伪逆在列不满秩时比正规方程更稳健。</p>
+</li>
+<li>
+<p>PCA 中，为什么保留前 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>k</mi></mrow></math> 个主成分能保留最多方差？</p>
+</li>
+</ol>
+<hr>
+<h2>9. 答案与简解</h2>
+<details>
+<summary>点击展开（做完再看）</summary>
+
+**1.** 奇异值为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>3</mn><mo>&#x0002C;</mo><mn>2</mn></mrow></math>，秩为 2，条件数为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>3</mn><mo>&#x0002F;</mo><mn>2</mn><mo>&#x0003D;</mo><mn>1.5</mn></mrow></math>。
+
+**2.** <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo fence="false" stretchy="false">&#x02016;</mo><mi>&#x1D400;</mi><msub><mo fence="false" stretchy="false">&#x02016;</mo><mn>2</mn></msub><mo>&#x0003D;</mo><mn>4</mn></mrow></math>；<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo fence="false" stretchy="false">&#x02016;</mo><mi>&#x1D400;</mi><msub><mo fence="false" stretchy="false">&#x02016;</mo><mi>F</mi></msub><mo>&#x0003D;</mo><msqrt><mrow><mn>16</mn><mo>&#x0002B;</mo><mn>4</mn><mo>&#x0002B;</mo><mn>0.25</mn></mrow></msqrt><mo>&#x0003D;</mo><msqrt><mrow><mn>20.25</mn></mrow></msqrt><mo>&#x0003D;</mo><mn>4.5</mn></mrow></math>；条件数为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>4</mn><mo>&#x0002F;</mo><mn>0.5</mn><mo>&#x0003D;</mo><mn>8</mn></mrow></math>。
+
+**3.** <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D400;</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mo>diag</mo><mo stretchy="false">&#x00028;</mo><mn>5</mn><mo>&#x0002C;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，误差为
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msqrt><mrow><msup><mn>2</mn><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mn>0.5</mn><mn>2</mn></msup></mrow></msqrt><mo>&#x0003D;</mo><msqrt><mrow><mn>4.25</mn></mrow></msqrt><mo>&#x02248;</mo><mn>2.06</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+**4.** 列不满秩时 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi></mrow></math> 不可逆，正规方程有无穷多解，数值上也不稳定。伪逆通过截断零奇异值，给出唯一的最小范数解，并避免除以接近 0 的数。
+
+**5.** SVD 把数据方差分解到一组正交方向上，奇异值从大到小排列。前 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>k</mi></mrow></math> 个方向对应的奇异值平方和最大，因此保留的方差最多；被丢掉的方向方差最小，信息损失最小。
+
+</details>
+
+<hr>
+<h2>下节预告</h2>
+<p><strong>第 10 课：矩阵微积分与数值线性代数</strong></p>
+<ul>
+<li>矩阵求导与常用公式</li>
+<li>Jacobian、Hessian 与链式法则</li>
+<li>范数、条件数与浮点误差</li>
+<li>LU、QR 与迭代法</li>
+</ul>
+<hr>
+<h2>自查清单</h2>
+<ul>
+<li>[ ] 能写出 SVD 并解释三个因子的作用</li>
+<li>[ ] 知道奇异值与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi></mrow></math> 特征值的关系</li>
+<li>[ ] 会用奇异值判断秩、范数和条件数</li>
+<li>[ ] 理解伪逆与最小二乘的关系</li>
+<li>[ ] 知道低秩近似为什么最优</li>
+</ul>
+<nav class="lesson-nav"><span><a href="线代08-对称矩阵与二次型.html">&larr; 上一课</a></span><span><a href="线代10-矩阵微积分与数值线性代数.html">下一课 &rarr;</a></span></nav>
+<footer>线性代数 · 数学公式使用 MathML 渲染，建议使用 Chrome / Edge / Firefox 打开</footer>
+</main>
+</body>
+</html>

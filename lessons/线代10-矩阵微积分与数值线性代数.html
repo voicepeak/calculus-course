@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>线性代数 · 第 10 课：矩阵微积分与数值线性代数</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --quote-bg: #f6f8fa;
+  --code-bg: #eff2f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --border: #30363d;
+    --accent: #4493f8;
+    --quote-bg: #161b22;
+    --code-bg: #1f242c;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; font-weight: 650; }
+h1 { font-size: 2rem; margin: 0 0 .8em; padding-bottom: .35em; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 2.2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.2rem; margin: 1.8em 0 .55em; }
+p { margin: .85em 0; }
+a { color: var(--accent); }
+blockquote {
+  margin: 1em 0;
+  padding: .6em 1em;
+  border-left: 4px solid var(--accent);
+  background: var(--quote-bg);
+  color: var(--muted);
+  border-radius: 4px;
+}
+blockquote p { margin: .25em 0; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: .96em;
+  overflow: hidden;
+}
+th, td { border: 1px solid var(--border); padding: .45em .7em; text-align: left; vertical-align: top; }
+th { background: var(--quote-bg); font-weight: 600; }
+details {
+  margin: 1.2em 0;
+  padding: .8em 1em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--quote-bg);
+}
+summary { cursor: pointer; font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+ul, ol { padding-left: 1.7em; }
+li { margin: .3em 0; }
+.math-block {
+  margin: 1.15em 0;
+  padding: .7em .9em;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--quote-bg);
+  border-radius: 6px;
+}
+math { font-size: 1.14em; line-height: 1.2; }
+math[display="inline"] { font-size: 1.05em; vertical-align: baseline; }
+.math-block math { font-size: 1.24em; }
+.math-fallback, .math-fallback-block {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .08em .3em;
+  border-radius: 3px;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .12em .35em;
+  border-radius: 3px;
+  font-size: .92em;
+}
+pre code { display: block; padding: .8em 1em; overflow-x: auto; }
+.lesson-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .8em 1.4em;
+  justify-content: space-between;
+  margin: 2.4em 0 0;
+  padding-top: 1.1em;
+  border-top: 1px solid var(--border);
+  font-size: .95em;
+}
+footer { margin-top: 2.2em; color: var(--muted); font-size: .85em; text-align: center; }
+@media print {
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  .math-block { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>线性代数 · 第 10 课：矩阵微积分与数值线性代数</h1>
+<blockquote>
+<p><strong>本课目标</strong>：掌握常用的矩阵求导公式，理解条件数、浮点误差和数值线性代数的基本方法。</p>
+<p><strong>使用方法</strong>：先读讲解 → 做练习 → 对答案。错题 72 小时内重做。</p>
+</blockquote>
+<hr>
+<h2>目录</h2>
+<ol>
+<li>矩阵求导的记号</li>
+<li>三个常用公式</li>
+<li>链式法则、Jacobian 与 Hessian</li>
+<li>范数与条件数</li>
+<li>浮点误差与矩阵分解</li>
+<li>梯度下降与 Kalman 滤波</li>
+<li>工程视角：实时计算与数值稳定</li>
+<li>练习</li>
+<li>答案与简解</li>
+</ol>
+<hr>
+<h2>1. 矩阵求导的记号</h2>
+<p>本课采用<strong>分母布局</strong>：标量 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi></mrow></math> 对向量 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D431;</mi><mo>&#x02208;</mo><msup><mi>&#x0211D;</mi><mi>n</mi></msup></mrow></math> 的导数，是一个与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D431;</mi></mrow></math> 同形状的列向量：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mo>&#x02202;</mo><mi>f</mi></mrow><mrow><mo>&#x02202;</mo><mi>&#x1D431;</mi></mrow></mfrac><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><mo>&#x02202;</mo><mi>f</mi></mrow><mrow><mo>&#x02202;</mo><msub><mi>x</mi><mn>1</mn></msub></mrow></mfrac></mstyle></mtd></mtr><mtr><mtd><mo>&#x022EE;</mo></mtd></mtr><mtr><mtd><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><mo>&#x02202;</mo><mi>f</mi></mrow><mrow><mo>&#x02202;</mo><msub><mi>x</mi><mi>n</mi></msub></mrow></mfrac></mstyle></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>标量 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi></mrow></math> 对矩阵 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D417;</mi></mrow></math> 的导数，是与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D417;</mi></mrow></math> 同形状的矩阵，逐元素求偏导。</p>
+<p>标量对向量求导得到向量，向量对向量求导得到矩阵（Jacobian），标量对向量求两次导得到 Hessian。记号统一后，很多公式可以像普通微积分一样操作。</p>
+<blockquote>
+<p><strong>提醒</strong>：不同教材可能采用分子布局，结果会转置。看论文或代码时，先确认布局约定，再对公式。</p>
+</blockquote>
+<hr>
+<h2>2. 三个常用公式</h2>
+<p><strong>线性型</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mo>&#x02202;</mo><mo stretchy="false">&#x00028;</mo><msup><mi>&#x1D41A;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D431;</mi><mo stretchy="false">&#x00029;</mo></mrow><mrow><mo>&#x02202;</mo><mi>&#x1D431;</mi></mrow></mfrac><mo>&#x0003D;</mo><mi>&#x1D41A;</mi><mo>&#x0002E;</mo></mrow></math></div>
+<p>因为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x1D41A;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D431;</mi><mo>&#x0003D;</mo><msub><mo>&#x02211;</mo><mi>i</mi></msub><msub><mi>a</mi><mi>i</mi></msub><msub><mi>x</mi><mi>i</mi></msub></mrow></math>，对 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>x</mi><mi>i</mi></msub></mrow></math> 求偏导得 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>a</mi><mi>i</mi></msub></mrow></math>，拼成向量就是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41A;</mi></mrow></math>。</p>
+<p><strong>二次型</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mo>&#x02202;</mo><mo stretchy="false">&#x00028;</mo><msup><mi>&#x1D431;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo stretchy="false">&#x00029;</mo></mrow><mrow><mo>&#x02202;</mo><mi>&#x1D431;</mi></mrow></mfrac><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo>&#x0002B;</mo><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mo stretchy="false">&#x00029;</mo><mi>&#x1D431;</mi><mo>&#x0002E;</mo></mrow></math></div>
+<p>若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 对称，则等于 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mi>&#x1D400;</mi><mi>&#x1D431;</mi></mrow></math>。</p>
+<p><strong>最小二乘目标</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mo>&#x02202;</mo><mo fence="false" stretchy="false">&#x02016;</mo><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x02212;</mo><mi>&#x1D41B;</mi><msup><mo fence="false" stretchy="false">&#x02016;</mo><mn>2</mn></msup></mrow><mrow><mo>&#x02202;</mo><mi>&#x1D431;</mi></mrow></mfrac><mo>&#x0003D;</mo><mn>2</mn><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x02212;</mo><mi>&#x1D41B;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>推导：把范数平方展开：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo fence="false" stretchy="false">&#x02016;</mo><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x02212;</mo><mi>&#x1D41B;</mi><msup><mo fence="false" stretchy="false">&#x02016;</mo><mn>2</mn></msup><mi>&</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x02212;</mo><mi>&#x1D41B;</mi><msup><mo stretchy="false">&#x00029;</mo><mo>&#x022A4;</mo></msup><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x02212;</mo><mi>&#x1D41B;</mi><mo stretchy="false">&#x00029;</mo><mspace linebreak="newline" /><mi>&</mi><mo>&#x0003D;</mo><msup><mi>&#x1D431;</mi><mo>&#x022A4;</mo></msup><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x02212;</mo><mn>2</mn><msup><mi>&#x1D41B;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x0002B;</mo><msup><mi>&#x1D41B;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D41B;</mi><mo>&#x0002E;</mo></mrow></mrow></math></div>
+<p>前两项分别用二次型和线性型公式，得</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>2</mn><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x02212;</mo><mn>2</mn><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><mn>2</mn><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x02212;</mo><mi>&#x1D41B;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>令导数为零，就得到正规方程</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x0003D;</mo><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D41B;</mi><mo>&#x0002E;</mo></mrow></math></div>
+<p>这正是第 05 课用几何方法得到的结论。矩阵微积分给出了纯代数的推导。</p>
+<hr>
+<h2>3. 链式法则、Jacobian 与 Hessian</h2>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D420;</mi><mi>:</mi><msup><mi>&#x0211D;</mi><mi>n</mi></msup><mo>&#x02192;</mo><msup><mi>&#x0211D;</mi><mi>m</mi></msup></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mi>:</mi><msup><mi>&#x0211D;</mi><mi>m</mi></msup><mo>&#x02192;</mo><mi>&#x0211D;</mi></mrow></math>，则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mo>&#x02202;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D420;</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D431;</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x00029;</mo></mrow><mrow><mo>&#x02202;</mo><mi>&#x1D431;</mi></mrow></mfrac><mo>&#x0003D;</mo><msub><mi>&#x1D409;</mi><mi>g</mi></msub><mo stretchy="false">&#x00028;</mo><mi>&#x1D431;</mi><msup><mo stretchy="false">&#x00029;</mo><mo>&#x022A4;</mo></msup><mo>&#x02207;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D420;</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D431;</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D409;</mi><mi>g</mi></msub></mrow></math> 是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D420;</mi></mrow></math> 的 Jacobian 矩阵：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo stretchy="false">&#x00028;</mo><msub><mi>&#x1D409;</mi><mi>g</mi></msub><msub><mo stretchy="false">&#x00029;</mo><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>&#x0003D;</mo><mfrac><mrow><mo>&#x02202;</mo><msub><mi>g</mi><mi>i</mi></msub></mrow><mrow><mo>&#x02202;</mo><msub><mi>x</mi><mi>j</mi></msub></mrow></mfrac><mo>&#x0002E;</mo></mrow></math></div>
+<p>这与一元链式法则 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>f</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x00029;</mo><msup><mi>g</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 是同一个结构，只是乘法变成了矩阵乘法。</p>
+<p><strong>Hessian</strong> 是二阶导矩阵：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>&#x1D407;</mi><mi>f</mi></msub><mo stretchy="false">&#x00028;</mo><mi>&#x1D431;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mrow><msup><mo>&#x02202;</mo><mn>2</mn></msup><mi>f</mi></mrow><mrow><mo>&#x02202;</mo><msub><mi>x</mi><mi>i</mi></msub><mo>&#x02202;</mo><msub><mi>x</mi><mi>j</mi></msub></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0002E;</mo></mrow></math></div>
+<p>对二次型 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D431;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>&#x1D431;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><mi>&#x1D431;</mi></mrow></math>，Hessian 是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mo>&#x0002B;</mo><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup></mrow></math>；若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 对称，就是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mi>&#x1D400;</mi></mrow></math>。Hessian 的正定性决定驻点是极小、极大还是鞍点。</p>
+<hr>
+<h2>4. 范数与条件数</h2>
+<p>向量范数常用的有三种：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo fence="false" stretchy="false">&#x02016;</mo><mi>&#x1D431;</mi><msub><mo fence="false" stretchy="false">&#x02016;</mo><mn>1</mn></msub><mo>&#x0003D;</mo><munder><mo>&#x02211;</mo><mi>i</mi></munder><mo stretchy="false">&#x0007C;</mo><msub><mi>x</mi><mi>i</mi></msub><mo stretchy="false">&#x0007C;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mo fence="false" stretchy="false">&#x02016;</mo><mi>&#x1D431;</mi><msub><mo fence="false" stretchy="false">&#x02016;</mo><mn>2</mn></msub><mo>&#x0003D;</mo><msqrt><mrow><msub><mo>&#x02211;</mo><mi>i</mi></msub><msubsup><mi>x</mi><mi>i</mi><mn>2</mn></msubsup></mrow></msqrt><mo>&#x0002C;</mo><mspace width="2em" /><mo fence="false" stretchy="false">&#x02016;</mo><mi>&#x1D431;</mi><msub><mo fence="false" stretchy="false">&#x02016;</mo><mo>&#x0221E;</mo></msub><mo>&#x0003D;</mo><msub><mo>max</mo><mi>i</mi></msub><mo stretchy="false">&#x0007C;</mo><msub><mi>x</mi><mi>i</mi></msub><mo stretchy="false">&#x0007C;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>矩阵范数衡量“最大放大倍数”。谱范数是最大奇异值：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo fence="false" stretchy="false">&#x02016;</mo><mi>&#x1D400;</mi><msub><mo fence="false" stretchy="false">&#x02016;</mo><mn>2</mn></msub><mo>&#x0003D;</mo><msub><mi>&#x003C3;</mi><mrow><mo>max</mo></mrow></msub><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>Frobenius 范数把所有元素平方相加再开方：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo fence="false" stretchy="false">&#x02016;</mo><mi>&#x1D400;</mi><msub><mo fence="false" stretchy="false">&#x02016;</mo><mi>F</mi></msub><mo>&#x0003D;</mo><msqrt><mrow><msub><mo>&#x02211;</mo><mrow><mi>i</mi><mo>&#x0002C;</mo><mi>j</mi></mrow></msub><msubsup><mi>a</mi><mrow><mi>i</mi><mi>j</mi></mrow><mn>2</mn></msubsup></mrow></msqrt><mo>&#x0002E;</mo></mrow></math></div>
+<p>对可逆方阵，<strong>条件数</strong>定义为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x003BA;</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo fence="false" stretchy="false">&#x02016;</mo><mi>&#x1D400;</mi><mo fence="false" stretchy="false">&#x02016;</mo><mspace width="0.167em" /><mo fence="false" stretchy="false">&#x02016;</mo><msup><mi>&#x1D400;</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup><mo fence="false" stretchy="false">&#x02016;</mo><mo>&#x0003D;</mo><mfrac><mrow><msub><mi>&#x003C3;</mi><mrow><mo>max</mo></mrow></msub></mrow><mrow><msub><mi>&#x003C3;</mi><mrow><mo>min</mo></mrow></msub></mrow></mfrac><mo>&#x0002E;</mo></mrow></math></div>
+<p>它衡量相对误差的放大倍数：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mo fence="false" stretchy="false">&#x02016;</mo><mi>&#x003B4;</mi><mi>&#x1D431;</mi><mo fence="false" stretchy="false">&#x02016;</mo></mrow><mrow><mo fence="false" stretchy="false">&#x02016;</mo><mi>&#x1D431;</mi><mo fence="false" stretchy="false">&#x02016;</mo></mrow></mfrac><mo>&#x02264;</mo><mi>&#x003BA;</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo><mfrac><mrow><mo fence="false" stretchy="false">&#x02016;</mo><mi>&#x003B4;</mi><mi>&#x1D41B;</mi><mo fence="false" stretchy="false">&#x02016;</mo></mrow><mrow><mo fence="false" stretchy="false">&#x02016;</mo><mi>&#x1D41B;</mi><mo fence="false" stretchy="false">&#x02016;</mo></mrow></mfrac><mo>&#x0002E;</mo></mrow></math></div>
+<p>条件数为 1 最好；条件数越大，矩阵越病态。双精度浮点大约有 16 位有效数字，若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BA;</mi><mo>&#x02248;</mo><msup><mn>10</mn><mrow><mn>12</mn></mrow></msup></mrow></math>，求逆后可能只剩 4 位可信数字。</p>
+<hr>
+<h2>5. 浮点误差与矩阵分解</h2>
+<p>计算机用有限位浮点数表示实数，舍入误差不可避免。数值线性代数的核心任务之一，是让算法在有限精度下仍然可靠。</p>
+<p>常用分解：</p>
+<table>
+<thead>
+<tr>
+<th>分解</th>
+<th>用途</th>
+<th>复杂度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LU（带主元）</td>
+<td>解方阵方程组</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>O</mi><mo stretchy="false">&#x00028;</mo><msup><mi>n</mi><mn>3</mn></msup><mo stretchy="false">&#x00029;</mo></mrow></math></td>
+</tr>
+<tr>
+<td>QR</td>
+<td>最小二乘、特征值</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>O</mi><mo stretchy="false">&#x00028;</mo><mi>m</mi><msup><mi>n</mi><mn>2</mn></msup><mo stretchy="false">&#x00029;</mo></mrow></math></td>
+</tr>
+<tr>
+<td>Cholesky</td>
+<td>正定方程组</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>O</mi><mo stretchy="false">&#x00028;</mo><msup><mi>n</mi><mn>3</mn></msup><mo>&#x0002F;</mo><mn>3</mn><mo stretchy="false">&#x00029;</mo></mrow></math></td>
+</tr>
+<tr>
+<td>SVD</td>
+<td>伪逆、降维、病态问题</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>O</mi><mo stretchy="false">&#x00028;</mo><mi>m</mi><msup><mi>n</mi><mn>2</mn></msup><mo stretchy="false">&#x00029;</mo></mrow></math></td>
+</tr>
+</tbody>
+</table>
+<p><strong>LU 分解</strong>把 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 写成下三角和上三角的乘积，然后前代、回代各一次。必须选主元：若主元为 0 或很小，直接除会放大误差。列主元消元每次选当前列绝对值最大的元素作为主元。</p>
+<p><strong>迭代法</strong>适合大型稀疏矩阵，例如 Jacobi、Gauss–Seidel、共轭梯度。它们不直接分解矩阵，而是逐步逼近解，每步只需要矩阵乘向量，内存和计算量都可能远小于直接法。</p>
+<hr>
+<h2>6. 梯度下降与 Kalman 滤波</h2>
+<p><strong>梯度下降</strong>就是沿着负梯度方向走：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>&#x1D431;</mi><mrow><mi>k</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub><mo>&#x0003D;</mo><msub><mi>&#x1D431;</mi><mi>k</mi></msub><mo>&#x02212;</mo><mi>&#x003B1;</mi><mo>&#x02207;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><msub><mi>&#x1D431;</mi><mi>k</mi></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>对最小二乘目标，梯度是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x02212;</mo><mi>&#x1D41B;</mi><mo stretchy="false">&#x00029;</mo></mrow></math>，所以更新为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>&#x1D431;</mi><mrow><mi>k</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></msub><mo>&#x0003D;</mo><msub><mi>&#x1D431;</mi><mi>k</mi></msub><mo>&#x02212;</mo><mn>2</mn><mi>&#x003B1;</mi><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><msub><mi>&#x1D431;</mi><mi>k</mi></msub><mo>&#x02212;</mo><mi>&#x1D41B;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>步长 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003B1;</mi></mrow></math> 太大可能发散，太小收敛慢；最优步长与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi></mrow></math> 的特征值有关。条件数越大，梯度下降越难收敛，这也是需要预条件或牛顿法的原因。</p>
+<p><strong>Kalman 滤波</strong>的更新公式大量使用矩阵运算：协方差矩阵的传播、卡尔曼增益 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D40A;</mi><mo>&#x0003D;</mo><mi>&#x1D40F;</mi><msup><mi>&#x1D407;</mi><mo>&#x022A4;</mo></msup><mo stretchy="false">&#x00028;</mo><mi>&#x1D407;</mi><mi>&#x1D40F;</mi><msup><mi>&#x1D407;</mi><mo>&#x022A4;</mo></msup><mo>&#x0002B;</mo><mi>&#x1D411;</mi><msup><mo stretchy="false">&#x00029;</mo><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup></mrow></math>、状态更新，都是矩阵乘法、求逆和正定矩阵操作。数值实现中常用 Cholesky 分解和 Joseph 形式来保持协方差矩阵对称正定。</p>
+<hr>
+<h2>7. 工程视角：实时计算与数值稳定</h2>
+<ul>
+<li><strong>实时控制</strong>：无人机姿态控制每毫秒都要解小规模线性系统，选对分解比单纯追求理论最优更重要；</li>
+<li><strong>SLAM</strong>：大规模稀疏矩阵用因子图、稀疏 Cholesky、增量式求解；</li>
+<li><strong>深度学习</strong>：反向传播就是链式法则的矩阵形式，框架自动计算 Jacobian 与梯度；</li>
+<li><strong>数值稳定</strong>：优先用 QR/SVD，少用显式求逆；解 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x0003D;</mo><mi>&#x1D41B;</mi></mrow></math> 时用分解，不要先算 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x1D400;</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup></mrow></math>；</li>
+<li><strong>单位与尺度</strong>：把变量缩放到相近量级，可以显著降低条件数。</li>
+</ul>
+<blockquote>
+<p><strong>小实验</strong>：比较“显式求逆再相乘”和“直接解方程”的数值差异。</p>
+</blockquote>
+<pre><code class="language-python">import numpy as np
+
+A = np.array([[1, 1], [1, 1 + 1e-8]])
+b = np.array([2, 2 + 1e-8])
+x1 = np.linalg.inv(A) @ b
+x2 = np.linalg.solve(A, b)
+print(x1)
+print(x2)
+print(np.linalg.cond(A))
+</code></pre>
+<hr>
+<h2>8. 练习</h2>
+<ol>
+<li>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D431;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>&#x1D41A;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D431;</mi></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41A;</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>3</mn><msup><mo stretchy="false">&#x00029;</mo><mo>&#x022A4;</mo></msup></mrow></math>，求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02207;</mo><mi>f</mi></mrow></math>。</p>
+</li>
+<li>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D431;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>&#x1D431;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><mi>&#x1D431;</mi></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr><mtr><mtd><mn>3</mn></mtd><mtd><mn>4</mn></mtd></mtr></mtable><mo>&#x00029;</mo></mrow></math>，求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02207;</mo><mi>f</mi></mrow></math>。</p>
+</li>
+<li>
+<p>推导 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo fence="false" stretchy="false">&#x02016;</mo><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x02212;</mo><mi>&#x1D41B;</mi><msup><mo fence="false" stretchy="false">&#x02016;</mo><mn>2</mn></msup></mrow></math> 的梯度。</p>
+</li>
+<li>
+<p>求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>diag</mo><mo stretchy="false">&#x00028;</mo><mn>100</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 的条件数。它病态吗？</p>
+</li>
+<li>
+<p>解释为什么解线性方程组时通常不先求逆矩阵。</p>
+</li>
+</ol>
+<hr>
+<h2>9. 答案与简解</h2>
+<details>
+<summary>点击展开（做完再看）</summary>
+
+**1.** <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02207;</mo><mi>f</mi><mo>&#x0003D;</mo><mi>&#x1D41A;</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>3</mn><msup><mo stretchy="false">&#x00029;</mo><mo>&#x022A4;</mo></msup></mrow></math>。
+
+**2.** <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mo>&#x0002B;</mo><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>2</mn></mtd><mtd><mn>5</mn></mtd></mtr><mtr><mtd><mn>5</mn></mtd><mtd><mn>8</mn></mtd></mtr></mtable><mo>&#x00029;</mo></mrow></math>，所以
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x02207;</mo><mi>f</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>2</mn></mtd><mtd><mn>5</mn></mtd></mtr><mtr><mtd><mn>5</mn></mtd><mtd><mn>8</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mi>&#x1D431;</mi><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+**3.** 展开：
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo fence="false" stretchy="false">&#x02016;</mo><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x02212;</mo><mi>&#x1D41B;</mi><msup><mo fence="false" stretchy="false">&#x02016;</mo><mn>2</mn></msup><mo>&#x0003D;</mo><msup><mi>&#x1D431;</mi><mo>&#x022A4;</mo></msup><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x02212;</mo><mn>2</mn><msup><mi>&#x1D41B;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x0002B;</mo><msup><mi>&#x1D41B;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D41B;</mi><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+对 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D431;</mi></mrow></math> 求导，第一项给 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><mi>&#x1D431;</mi></mrow></math>，第二项给 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02212;</mo><mn>2</mn><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D41B;</mi></mrow></math>，所以
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x02207;</mo><mi>f</mi><mo>&#x0003D;</mo><mn>2</mn><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x02212;</mo><mi>&#x1D41B;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+**4.** 条件数为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>100</mn><mo>&#x0002F;</mo><mn>1</mn><mo>&#x0003D;</mo><mn>100</mn></mrow></math>。它有一定程度的病态，但不算特别严重；双精度下仍有约 14 位有效数字。
+
+**5.** 显式求逆需要 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>O</mi><mo stretchy="false">&#x00028;</mo><msup><mi>n</mi><mn>3</mn></msup><mo stretchy="false">&#x00029;</mo></mrow></math> 次运算，而且会引入额外舍入误差；直接分解求解通常更快、更稳定。求逆只在需要逆矩阵本身（例如协方差传播）时才做。
+
+</details>
+
+<hr>
+<h2>下节预告</h2>
+<p><strong>第 11 课：综合模拟卷</strong></p>
+<ul>
+<li>覆盖向量、矩阵、子空间、投影、行列式、特征值、二次型、SVD</li>
+<li>建议限时 90 分钟闭卷完成</li>
+</ul>
+<hr>
+<h2>自查清单</h2>
+<ul>
+<li>[ ] 记得三个常用矩阵求导公式</li>
+<li>[ ] 能推导最小二乘的梯度</li>
+<li>[ ] 理解条件数与误差放大的关系</li>
+<li>[ ] 知道 LU、QR、Cholesky、SVD 的用途</li>
+<li>[ ] 明白为什么不要显式求逆</li>
+</ul>
+<nav class="lesson-nav"><span><a href="线代09-SVD与低秩近似.html">&larr; 上一课</a></span><span><a href="线代11-综合模拟卷.html">下一课 &rarr;</a></span></nav>
+<footer>线性代数 · 数学公式使用 MathML 渲染，建议使用 Chrome / Edge / Firefox 打开</footer>
+</main>
+</body>
+</html>

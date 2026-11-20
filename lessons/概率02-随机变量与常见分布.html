@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>概率论 · 第 02 课：随机变量与常见分布</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --quote-bg: #f6f8fa;
+  --code-bg: #eff2f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --border: #30363d;
+    --accent: #4493f8;
+    --quote-bg: #161b22;
+    --code-bg: #1f242c;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; font-weight: 650; }
+h1 { font-size: 2rem; margin: 0 0 .8em; padding-bottom: .35em; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 2.2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.2rem; margin: 1.8em 0 .55em; }
+p { margin: .85em 0; }
+a { color: var(--accent); }
+blockquote {
+  margin: 1em 0;
+  padding: .6em 1em;
+  border-left: 4px solid var(--accent);
+  background: var(--quote-bg);
+  color: var(--muted);
+  border-radius: 4px;
+}
+blockquote p { margin: .25em 0; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: .96em;
+  overflow: hidden;
+}
+th, td { border: 1px solid var(--border); padding: .45em .7em; text-align: left; vertical-align: top; }
+th { background: var(--quote-bg); font-weight: 600; }
+details {
+  margin: 1.2em 0;
+  padding: .8em 1em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--quote-bg);
+}
+summary { cursor: pointer; font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+ul, ol { padding-left: 1.7em; }
+li { margin: .3em 0; }
+.math-block {
+  margin: 1.15em 0;
+  padding: .7em .9em;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--quote-bg);
+  border-radius: 6px;
+}
+math { font-size: 1.14em; line-height: 1.2; }
+math[display="inline"] { font-size: 1.05em; vertical-align: baseline; }
+.math-block math { font-size: 1.24em; }
+.math-fallback, .math-fallback-block {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .08em .3em;
+  border-radius: 3px;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .12em .35em;
+  border-radius: 3px;
+  font-size: .92em;
+}
+pre code { display: block; padding: .8em 1em; overflow-x: auto; }
+.lesson-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .8em 1.4em;
+  justify-content: space-between;
+  margin: 2.4em 0 0;
+  padding-top: 1.1em;
+  border-top: 1px solid var(--border);
+  font-size: .95em;
+}
+footer { margin-top: 2.2em; color: var(--muted); font-size: .85em; text-align: center; }
+@media print {
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  .math-block { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>概率论 · 第 02 课：随机变量与常见分布</h1>
+<blockquote>
+<p><strong>本课目标</strong>：理解随机变量、分布函数、离散与连续分布，掌握六种常见分布和随机变量变换。</p>
+<p><strong>使用方法</strong>：先读讲解 → 做练习 → 对答案。错题 72 小时内重做。</p>
+</blockquote>
+<hr>
+<h2>目录</h2>
+<ol>
+<li>随机变量</li>
+<li>离散型与概率质量函数</li>
+<li>连续型、密度函数与分布函数</li>
+<li>常见离散分布</li>
+<li>常见连续分布</li>
+<li>随机变量变换</li>
+<li>工程视角：噪声与到达过程</li>
+<li>练习</li>
+<li>答案与简解</li>
+</ol>
+<hr>
+<h2>1. 随机变量</h2>
+<p><strong>随机变量</strong>是把样本点映射成实数的函数：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>X</mi><mi>:</mi><mi>&#x003A9;</mi><mo>&#x02192;</mo><mi>&#x0211D;</mi><mo>&#x0002E;</mo></mrow></math></div>
+<p>例如掷两枚骰子，令 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi></mrow></math> 为点数之和，则 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi></mrow></math> 可以取 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mo>&#x0002C;</mo><mn>3</mn><mo>&#x0002C;</mo><mo>&#x02026;</mo><mo>&#x0002C;</mo><mn>12</mn></mrow></math>。随机变量不是“随机的变量”，而是一个确定的函数；随机性来自样本点本身。</p>
+<p>随机变量可以是：</p>
+<ul>
+<li><strong>离散型</strong>：取值有限或可列，例如人数、次数、到达数；</li>
+<li><strong>连续型</strong>：取值充满一个区间，例如时间、距离、电压；</li>
+<li>也有混合型，但入门阶段先掌握前两类。</li>
+</ul>
+<hr>
+<h2>2. 离散型与概率质量函数</h2>
+<p>离散型随机变量 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi></mrow></math> 的分布用<strong>概率质量函数</strong>（PMF）描述：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>p</mi><mi>X</mi></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0003D;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>它满足</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>p</mi><mi>X</mi></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02265;</mo><mn>0</mn><mo>&#x0002C;</mo><mspace width="2em" /><munder><mo>&#x02211;</mo><mi>x</mi></munder><msub><mi>p</mi><mi>X</mi></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002E;</mo></mrow></math></div>
+<p>任意事件 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi></mrow></math> 的概率，就是把 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>A</mi></mrow></math> 中所有取值的概率相加：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x02208;</mo><mi>A</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><munder><mo>&#x02211;</mo><mrow><mi>x</mi><mo>&#x02208;</mo><mi>A</mi></mrow></munder><msub><mi>p</mi><mi>X</mi></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<hr>
+<h2>3. 连续型、密度函数与分布函数</h2>
+<p>连续型随机变量用<strong>概率密度函数</strong>（PDF）<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>f</mi><mi>X</mi></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 描述，满足</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>f</mi><mi>X</mi></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02265;</mo><mn>0</mn><mo>&#x0002C;</mo><mspace width="2em" /><msubsup><mo>&#x0222B;</mo><mrow><mo>&#x02212;</mo><mo>&#x0221E;</mo></mrow><mrow><mo>&#x0221E;</mo></mrow></msubsup><msub><mi>f</mi><mi>X</mi></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>&#x00064;</mi><mi>x</mi><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002E;</mo></mrow></math></div>
+<p>概率通过积分计算：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>a</mi><mo>&#x02264;</mo><mi>X</mi><mo>&#x02264;</mo><mi>b</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mi>a</mi><mi>b</mi></msubsup><msub><mi>f</mi><mi>X</mi></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>&#x00064;</mi><mi>x</mi><mo>&#x0002E;</mo></mrow></math></div>
+<p><strong>分布函数</strong>（CDF）对离散和连续都适用：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>F</mi><mi>X</mi></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x02264;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>连续型时</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>F</mi><mi>X</mi></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mrow><mo>&#x02212;</mo><mo>&#x0221E;</mo></mrow><mi>x</mi></msubsup><msub><mi>f</mi><mi>X</mi></msub><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>&#x00064;</mi><mi>t</mi><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>f</mi><mi>X</mi></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msubsup><mi>F</mi><mi>X</mi><mi>&#x02032;</mi></msubsup><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<blockquote>
+<p><strong>重要</strong>：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>f</mi><mi>X</mi></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 本身不是概率。连续型随机变量取某个具体值的概率为 0：</p>
+</blockquote>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0003D;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn><mo>&#x0002E;</mo></mrow></math></div>
+<blockquote>
+<p>因此 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>a</mi><mo>&#x0003C;</mo><mi>X</mi><mo>&#x0003C;</mo><mi>b</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>a</mi><mo>&#x02264;</mo><mi>X</mi><mo>&#x02264;</mo><mi>b</mi><mo stretchy="false">&#x00029;</mo></mrow></math>，端点不影响积分。</p>
+</blockquote>
+<p>CDF 有三个性质：单调不减、右连续、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mo>&#x02212;</mo><mo>&#x0221E;</mo></mrow></msub><mi>F</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mo>lim</mo><mrow><mi>x</mi><mo>&#x02192;</mo><mo>&#x0002B;</mo><mo>&#x0221E;</mo></mrow></msub><mi>F</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math>。</p>
+<hr>
+<h2>4. 常见离散分布</h2>
+<table>
+<thead>
+<tr>
+<th>分布</th>
+<th>记号</th>
+<th>PMF</th>
+<th>期望</th>
+<th>方差</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>伯努利</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mi mathvariant="normal">B</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">n</mi></mrow><mo stretchy="false">&#x00028;</mo><mi>p</mi><mo stretchy="false">&#x00029;</mo></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>p</mi><mi>x</mi></msup><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><mi>p</mi><msup><mo stretchy="false">&#x00029;</mo><mrow><mn>1</mn><mo>&#x02212;</mo><mi>x</mi></mrow></msup></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><mi>p</mi><mo stretchy="false">&#x00029;</mo></mrow></math></td>
+</tr>
+<tr>
+<td>二项</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>B</mi><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo>&#x0002C;</mo><mi>p</mi><mo stretchy="false">&#x00029;</mo></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo minsize="2.047em" maxsize="2.047em">&#x00028;</mo><mfrac linethickness="0"><mrow><mi>n</mi></mrow><mrow><mi>k</mi></mrow></mfrac><mo minsize="2.047em" maxsize="2.047em">&#x00029;</mo><msup><mi>p</mi><mi>k</mi></msup><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><mi>p</mi><msup><mo stretchy="false">&#x00029;</mo><mrow><mi>n</mi><mo>&#x02212;</mo><mi>k</mi></mrow></msup></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mi>p</mi></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mi>p</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><mi>p</mi><mo stretchy="false">&#x00029;</mo></mrow></math></td>
+</tr>
+<tr>
+<td>几何</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mi mathvariant="normal">G</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">o</mi></mrow><mo stretchy="false">&#x00028;</mo><mi>p</mi><mo stretchy="false">&#x00029;</mo></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><mi>p</mi><msup><mo stretchy="false">&#x00029;</mo><mrow><mi>k</mi><mo>&#x02212;</mo><mn>1</mn></mrow></msup><mi>p</mi></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>k</mi><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo>&#x0002C;</mo><mo>&#x02026;</mo></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mn>1</mn><mi>p</mi></mfrac></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mn>1</mn><mo>&#x02212;</mo><mi>p</mi></mrow><mrow><msup><mi>p</mi><mn>2</mn></msup></mrow></mfrac></mrow></math></td>
+</tr>
+<tr>
+<td>泊松</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mi mathvariant="normal">P</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">s</mi></mrow><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x00029;</mo></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><msup><mi>&#x003BB;</mi><mi>k</mi></msup><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mi>&#x003BB;</mi></mrow></msup></mrow><mrow><mi>k</mi><mo>&#x00021;</mo></mrow></mfrac></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BB;</mi></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BB;</mi></mrow></math></td>
+</tr>
+</tbody>
+</table>
+<p><strong>二项分布</strong>是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math> 次独立伯努利试验中成功的次数。<strong>几何分布</strong>是首次成功所需的试验次数。<strong>泊松分布</strong>描述单位时间内的稀有事件到达数，例如每分钟到达的请求数、每平方公里的事故数。</p>
+<p><strong>例 2.1</strong>　某路口每分钟平均有 3 辆车到达，假设到达数服从泊松分布。求一分钟内没有车到达的概率。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x003BB;</mi><mo>&#x0003D;</mo><mn>3</mn><mo>&#x0002C;</mo><mspace width="2em" /><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>N</mi><mo>&#x0003D;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><msup><mn>3</mn><mn>0</mn></msup><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mn>3</mn></mrow></msup></mrow><mrow><mn>0</mn><mo>&#x00021;</mo></mrow></mfrac><mo>&#x0003D;</mo><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mn>3</mn></mrow></msup><mo>&#x02248;</mo><mn>0.0498</mn><mo>&#x0002E;</mo></mrow></math></div>
+<hr>
+<h2>5. 常见连续分布</h2>
+<table>
+<thead>
+<tr>
+<th>分布</th>
+<th>记号</th>
+<th>PDF</th>
+<th>期望</th>
+<th>方差</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>均匀</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>U</mi><mo stretchy="false">&#x00028;</mo><mi>a</mi><mo>&#x0002C;</mo><mi>b</mi><mo stretchy="false">&#x00029;</mo></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><mi>b</mi><mo>&#x02212;</mo><mi>a</mi></mrow></mfrac></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>a</mi><mo>&#x0003C;</mo><mi>x</mi><mo>&#x0003C;</mo><mi>b</mi></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mi>a</mi><mo>&#x0002B;</mo><mi>b</mi></mrow><mrow><mn>2</mn></mrow></mfrac></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mi>b</mi><mo>&#x02212;</mo><mi>a</mi><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup></mrow><mrow><mn>12</mn></mrow></mfrac></mrow></math></td>
+</tr>
+<tr>
+<td>指数</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mi mathvariant="normal">E</mi><mi mathvariant="normal">x</mi><mi mathvariant="normal">p</mi></mrow><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x00029;</mo></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BB;</mi><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mi>&#x003BB;</mi><mi>x</mi></mrow></msup></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003E;</mo><mn>0</mn></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mn>1</mn><mi>&#x003BB;</mi></mfrac></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mn>1</mn><mrow><msup><mi>&#x003BB;</mi><mn>2</mn></msup></mrow></mfrac></mrow></math></td>
+</tr>
+<tr>
+<td>正态</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>N</mi><mo stretchy="false">&#x00028;</mo><mi>&#x003BC;</mi><mo>&#x0002C;</mo><msup><mi>&#x003C3;</mi><mn>2</mn></msup><mo stretchy="false">&#x00029;</mo></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mn>1</mn></mrow><mrow><msqrt><mrow><mn>2</mn><mi>&#x003C0;</mi></mrow></msqrt><mi>&#x003C3;</mi></mrow></mfrac><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mfrac><mrow><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x02212;</mo><mi>&#x003BC;</mi><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup></mrow><mrow><mn>2</mn><msup><mi>&#x003C3;</mi><mn>2</mn></msup></mrow></mfrac></mrow></msup></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BC;</mi></mrow></math></td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x003C3;</mi><mn>2</mn></msup></mrow></math></td>
+</tr>
+</tbody>
+</table>
+<p><strong>指数分布</strong>有“无记忆性”：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0003E;</mo><mi>s</mi><mo>&#x0002B;</mo><mi>t</mi><mo>&#x02223;</mo><mi>X</mi><mo>&#x0003E;</mo><mi>s</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0003E;</mo><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>已经等了 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>s</mi></mrow></math> 分钟，再等 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>t</mi></mrow></math> 分钟的概率与重新开始一样。泊松过程的到达间隔服从指数分布，这两个分布是一对搭档。</p>
+<p><strong>正态分布</strong>是最重要的连续分布。标准化：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>Z</mi><mo>&#x0003D;</mo><mfrac><mrow><mi>X</mi><mo>&#x02212;</mo><mi>&#x003BC;</mi></mrow><mrow><mi>&#x003C3;</mi></mrow></mfrac><mi>&#x0007E;</mi><mi>N</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>常用区间概率：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mo stretchy="false">&#x0007C;</mo><mi>X</mi><mo>&#x02212;</mo><mi>&#x003BC;</mi><mo stretchy="false">&#x0007C;</mo><mo>&#x02264;</mo><mi>&#x003C3;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02248;</mo><mn>0.6827</mn><mo>&#x0002C;</mo></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mo stretchy="false">&#x0007C;</mo><mi>X</mi><mo>&#x02212;</mo><mi>&#x003BC;</mi><mo stretchy="false">&#x0007C;</mo><mo>&#x02264;</mo><mn>2</mn><mi>&#x003C3;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02248;</mo><mn>0.9545</mn><mo>&#x0002C;</mo></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mo stretchy="false">&#x0007C;</mo><mi>X</mi><mo>&#x02212;</mo><mi>&#x003BC;</mi><mo stretchy="false">&#x0007C;</mo><mo>&#x02264;</mo><mn>3</mn><mi>&#x003C3;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02248;</mo><mn>0.9973</mn><mo>&#x0002E;</mo></mrow></math></div>
+<hr>
+<h2>6. 随机变量变换</h2>
+<p>已知 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi></mrow></math> 的分布，求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>Y</mi><mo>&#x0003D;</mo><mi>g</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 的分布。</p>
+<p>若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>g</mi></mrow></math> 严格单调、可导，反函数为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>h</mi><mo>&#x0003D;</mo><msup><mi>g</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup></mrow></math>，则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>f</mi><mi>Y</mi></msub><mo stretchy="false">&#x00028;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msub><mi>f</mi><mi>X</mi></msub><mo stretchy="false">&#x00028;</mo><mi>h</mi><mo stretchy="false">&#x00028;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x00029;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><msup><mi>h</mi><mi>&#x02032;</mi></msup><mo stretchy="false">&#x00028;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x0002E;</mo></mrow></math></div>
+<p><strong>例 2.2</strong>　设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi><mi>&#x0007E;</mi><mi>U</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，令 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>Y</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mi>ln</mi><mi>X</mi></mrow></math>，求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>Y</mi></mrow></math> 的分布。</p>
+<p>当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003E;</mo><mn>0</mn></mrow></math> 时，</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>F</mi><mi>Y</mi></msub><mo stretchy="false">&#x00028;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mi>ln</mi><mi>X</mi><mo>&#x02264;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x02265;</mo><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mi>y</mi></mrow></msup><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn><mo>&#x02212;</mo><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mi>y</mi></mrow></msup><mo>&#x0002E;</mo></mrow></math></div>
+<p>求导得</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>f</mi><mi>Y</mi></msub><mo stretchy="false">&#x00028;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mi>y</mi></mrow></msup><mo>&#x0002C;</mo><mspace width="2em" /><mi>y</mi><mo>&#x0003E;</mo><mn>0</mn><mo>&#x0002C;</mo></mrow></math></div>
+<p>即 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>Y</mi><mi>&#x0007E;</mi><mrow><mi mathvariant="normal">E</mi><mi mathvariant="normal">x</mi><mi mathvariant="normal">p</mi></mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+<p>这个变换叫<strong>逆变换采样</strong>：只要能从均匀分布采样，就能通过 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02212;</mo><mi>ln</mi><mi>U</mi></mrow></math> 生成指数分布样本。更一般地，若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>F</mi></mrow></math> 是目标分布的 CDF，则 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>F</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup><mo stretchy="false">&#x00028;</mo><mi>U</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 服从目标分布。这是蒙特卡洛仿真的基础。</p>
+<hr>
+<h2>7. 工程视角：噪声与到达过程</h2>
+<ul>
+<li><strong>传感器噪声</strong>：陀螺仪、加速度计的零偏和噪声常建模为正态分布；激光测距的误差也常用正态近似。</li>
+<li><strong>到达过程</strong>：网络数据包、行人、车辆、光子到达常用泊松过程；到达间隔服从指数分布。</li>
+<li><strong>可靠性</strong>：元件寿命常用指数分布或威布尔分布；指数分布的无记忆性让计算简化。</li>
+<li><strong>仿真</strong>：逆变换采样把均匀随机数变成任意分布的样本，是 Monte Carlo 的第一步。</li>
+<li><strong>异常检测</strong>：用分布的分位数设定阈值，例如超出 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>3</mn><mi>&#x003C3;</mi></mrow></math> 视为异常。</li>
+</ul>
+<blockquote>
+<p><strong>小实验</strong>：用 NumPy 生成正态与指数样本，检查均值和方差。</p>
+</blockquote>
+<pre><code class="language-python">import numpy as np
+
+x = np.random.normal(loc=0, scale=2, size=100000)
+y = np.random.exponential(scale=1/3, size=100000)  # 速率 lambda=3
+print(x.mean(), x.var())
+print(y.mean(), y.var())
+</code></pre>
+<hr>
+<h2>8. 练习</h2>
+<ol>
+<li>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi><mi>&#x0007E;</mi><mrow><mi mathvariant="normal">B</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">n</mi></mrow><mo stretchy="false">&#x00028;</mo><mn>0.3</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0003D;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 和 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>Var</mo><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+</li>
+<li>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi><mi>&#x0007E;</mi><mi>B</mi><mo stretchy="false">&#x00028;</mo><mn>10</mn><mo>&#x0002C;</mo><mn>0.2</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0003D;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+</li>
+<li>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi><mi>&#x0007E;</mi><mrow><mi mathvariant="normal">P</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">s</mi></mrow><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0003D;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 和 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x02265;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+</li>
+<li>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi><mi>&#x0007E;</mi><mi>N</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，利用常用区间概率求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mo stretchy="false">&#x0007C;</mo><mi>X</mi><mo stretchy="false">&#x0007C;</mo><mo>&#x02264;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+</li>
+<li>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi><mi>&#x0007E;</mi><mi>U</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，令 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>Y</mi><mo>&#x0003D;</mo><mn>2</mn><mi>X</mi></mrow></math>，求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>Y</mi></mrow></math> 的 PDF。</p>
+</li>
+</ol>
+<hr>
+<h2>9. 答案与简解</h2>
+<details>
+<summary>点击展开（做完再看）</summary>
+
+**1.** <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0003D;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0.3</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>Var</mo><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0.3</mn><mo>&#x000D7;</mo><mn>0.7</mn><mo>&#x0003D;</mo><mn>0.21</mn></mrow></math>。
+
+**2.**
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0003D;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo minsize="2.047em" maxsize="2.047em">&#x00028;</mo><mfrac linethickness="0"><mrow><mn>10</mn></mrow><mrow><mn>2</mn></mrow></mfrac><mo minsize="2.047em" maxsize="2.047em">&#x00029;</mo><mo stretchy="false">&#x00028;</mo><mn>0.2</mn><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup><mo stretchy="false">&#x00028;</mo><mn>0.8</mn><msup><mo stretchy="false">&#x00029;</mo><mn>8</mn></msup><mo>&#x0003D;</mo><mn>45</mn><mo>&#x000D7;</mo><mn>0.04</mn><mo>&#x000D7;</mo><mn>0.1678</mn><mo>&#x02248;</mo><mn>0.302</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+**3.** <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0003D;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mn>2</mn></mrow></msup><mo>&#x02248;</mo><mn>0.1353</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x02265;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn><mo>&#x02212;</mo><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mn>2</mn></mrow></msup><mo>&#x02248;</mo><mn>0.8647</mn></mrow></math>。
+
+**4.** 由 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mi>&#x003C3;</mi></mrow></math> 区间概率，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mo stretchy="false">&#x0007C;</mo><mi>X</mi><mo stretchy="false">&#x0007C;</mo><mo>&#x02264;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo><mo>&#x02248;</mo><mn>0.9545</mn></mrow></math>。
+
+**5.** <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>Y</mi></mrow></math> 在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 上均匀分布。对 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x0003C;</mo><mi>y</mi><mo>&#x0003C;</mo><mn>2</mn></mrow></math>，
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>F</mi><mi>Y</mi></msub><mo stretchy="false">&#x00028;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mn>2</mn><mi>X</mi><mo>&#x02264;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>P</mi><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mi>X</mi><mo>&#x02264;</mo><mfrac><mi>y</mi><mn>2</mn></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0003D;</mo><mfrac><mi>y</mi><mn>2</mn></mfrac><mo>&#x0002C;</mo></mrow></math></div>
+
+
+
+所以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>f</mi><mi>Y</mi></msub><mo stretchy="false">&#x00028;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mn>2</mn></mfrac></mstyle></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x0003C;</mo><mi>y</mi><mo>&#x0003C;</mo><mn>2</mn></mrow></math>。
+
+</details>
+
+<hr>
+<h2>下节预告</h2>
+<p><strong>第 03 课：期望、方差与矩</strong></p>
+<ul>
+<li>期望与 LOTUS</li>
+<li>方差、协方差与相关系数</li>
+<li>矩与矩母函数</li>
+<li>Markov、Chebyshev、Jensen 不等式</li>
+</ul>
+<hr>
+<h2>自查清单</h2>
+<ul>
+<li>[ ] 能区分 PMF、PDF 与 CDF</li>
+<li>[ ] 记得六种常见分布的期望和方差</li>
+<li>[ ] 知道连续型随机变量取单点概率为 0</li>
+<li>[ ] 会用标准化计算正态概率</li>
+<li>[ ] 会做单调变换并写出新 PDF</li>
+</ul>
+<nav class="lesson-nav"><span><a href="概率01-概率空间与条件概率.html">&larr; 上一课</a></span><span><a href="概率03-期望方差与矩.html">下一课 &rarr;</a></span></nav>
+<footer>概率论 · 数学公式使用 MathML 渲染，建议使用 Chrome / Edge / Firefox 打开</footer>
+</main>
+</body>
+</html>

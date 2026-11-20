@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>线性代数 · 第 02 课：矩阵与线性映射</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --quote-bg: #f6f8fa;
+  --code-bg: #eff2f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --border: #30363d;
+    --accent: #4493f8;
+    --quote-bg: #161b22;
+    --code-bg: #1f242c;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; font-weight: 650; }
+h1 { font-size: 2rem; margin: 0 0 .8em; padding-bottom: .35em; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 2.2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.2rem; margin: 1.8em 0 .55em; }
+p { margin: .85em 0; }
+a { color: var(--accent); }
+blockquote {
+  margin: 1em 0;
+  padding: .6em 1em;
+  border-left: 4px solid var(--accent);
+  background: var(--quote-bg);
+  color: var(--muted);
+  border-radius: 4px;
+}
+blockquote p { margin: .25em 0; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: .96em;
+  overflow: hidden;
+}
+th, td { border: 1px solid var(--border); padding: .45em .7em; text-align: left; vertical-align: top; }
+th { background: var(--quote-bg); font-weight: 600; }
+details {
+  margin: 1.2em 0;
+  padding: .8em 1em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--quote-bg);
+}
+summary { cursor: pointer; font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+ul, ol { padding-left: 1.7em; }
+li { margin: .3em 0; }
+.math-block {
+  margin: 1.15em 0;
+  padding: .7em .9em;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--quote-bg);
+  border-radius: 6px;
+}
+math { font-size: 1.14em; line-height: 1.2; }
+math[display="inline"] { font-size: 1.05em; vertical-align: baseline; }
+.math-block math { font-size: 1.24em; }
+.math-fallback, .math-fallback-block {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .08em .3em;
+  border-radius: 3px;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .12em .35em;
+  border-radius: 3px;
+  font-size: .92em;
+}
+pre code { display: block; padding: .8em 1em; overflow-x: auto; }
+.lesson-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .8em 1.4em;
+  justify-content: space-between;
+  margin: 2.4em 0 0;
+  padding-top: 1.1em;
+  border-top: 1px solid var(--border);
+  font-size: .95em;
+}
+footer { margin-top: 2.2em; color: var(--muted); font-size: .85em; text-align: center; }
+@media print {
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  .math-block { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>线性代数 · 第 02 课：矩阵与线性映射</h1>
+<blockquote>
+<p><strong>本课目标</strong>：把矩阵看成线性映射，理解矩阵乘法的列视角与复合含义，掌握转置、逆矩阵和几类常用矩阵。</p>
+<p><strong>使用方法</strong>：先读讲解 → 做练习 → 对答案。错题 72 小时内重做。</p>
+</blockquote>
+<hr>
+<h2>目录</h2>
+<ol>
+<li>矩阵是线性映射</li>
+<li>矩阵乘向量：列的线性组合</li>
+<li>矩阵乘法：复合映射</li>
+<li>转置、单位阵与逆矩阵</li>
+<li>几类常用矩阵</li>
+<li>工程视角：坐标变换与神经网络</li>
+<li>练习</li>
+<li>答案与简解</li>
+</ol>
+<hr>
+<h2>1. 矩阵是线性映射</h2>
+<p>一个 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>m</mi><mo>&#x000D7;</mo><mi>n</mi></mrow></math> 矩阵是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>m</mi></mrow></math> 行、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math> 列的数表：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><msub><mi>a</mi><mrow><mn>11</mn></mrow></msub></mtd><mtd><msub><mi>a</mi><mrow><mn>12</mn></mrow></msub></mtd><mtd><mo>&#x022EF;</mo></mtd><mtd><msub><mi>a</mi><mrow><mn>1</mn><mi>n</mi></mrow></msub></mtd></mtr><mtr><mtd><msub><mi>a</mi><mrow><mn>21</mn></mrow></msub></mtd><mtd><msub><mi>a</mi><mrow><mn>22</mn></mrow></msub></mtd><mtd><mo>&#x022EF;</mo></mtd><mtd><msub><mi>a</mi><mrow><mn>2</mn><mi>n</mi></mrow></msub></mtd></mtr><mtr><mtd><mo>&#x022EE;</mo></mtd><mtd><mo>&#x022EE;</mo></mtd><mtd><mo>&#x022F1;</mo></mtd><mtd><mo>&#x022EE;</mo></mtd></mtr><mtr><mtd><msub><mi>a</mi><mrow><mi>m</mi><mn>1</mn></mrow></msub></mtd><mtd><msub><mi>a</mi><mrow><mi>m</mi><mn>2</mn></mrow></msub></mtd><mtd><mo>&#x022EF;</mo></mtd><mtd><msub><mi>a</mi><mrow><mi>m</mi><mi>n</mi></mrow></msub></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>它把 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math> 维向量变成 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>m</mi></mrow></math> 维向量：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mi>:</mi><msup><mi>&#x0211D;</mi><mi>n</mi></msup><mo>&#x02192;</mo><msup><mi>&#x0211D;</mi><mi>m</mi></msup><mo>&#x0002C;</mo><mspace width="2em" /><mi>&#x1D431;</mi><mo>&#x021A6;</mo><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x0002E;</mo></mrow></math></div>
+<p>这个映射有两个关键性质：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D431;</mi><mo>&#x0002B;</mo><mi>&#x1D432;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x0002B;</mo><mi>&#x1D400;</mi><mi>&#x1D432;</mi><mo>&#x0002C;</mo><mspace width="2em" /><mi>&#x1D400;</mi><mo stretchy="false">&#x00028;</mo><mi>c</mi><mi>&#x1D431;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>c</mi><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x0002E;</mo></mrow></math></div>
+<p>也就是“先相加再变换”等于“先变换再相加”，“先缩放再变换”等于“先变换再缩放”。满足这两条的映射叫<strong>线性映射</strong>。</p>
+<p>矩阵不是一堆孤立的数字，它是线性映射在标准基下的坐标表。换一组基，同一个映射会写成另一个矩阵，但它做的事情没有变。</p>
+<hr>
+<h2>2. 矩阵乘向量：列的线性组合</h2>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 的列向量为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D41A;</mi><mn>1</mn></msub><mo>&#x0002C;</mo><mo>&#x02026;</mo><mo>&#x0002C;</mo><msub><mi>&#x1D41A;</mi><mi>n</mi></msub></mrow></math>，则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x0003D;</mo><msub><mi>x</mi><mn>1</mn></msub><msub><mi>&#x1D41A;</mi><mn>1</mn></msub><mo>&#x0002B;</mo><msub><mi>x</mi><mn>2</mn></msub><msub><mi>&#x1D41A;</mi><mn>2</mn></msub><mo>&#x0002B;</mo><mo>&#x022EF;</mo><mo>&#x0002B;</mo><msub><mi>x</mi><mi>n</mi></msub><msub><mi>&#x1D41A;</mi><mi>n</mi></msub><mo>&#x0002E;</mo></mrow></math></div>
+<p>这是理解矩阵乘法最重要的一个视角：<strong><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mi>&#x1D431;</mi></mrow></math> 是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 的各列按 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D431;</mi></mrow></math> 的分量加权后的线性组合。</strong></p>
+<p>例如</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr><mtr><mtd><mn>3</mn></mtd><mtd><mn>4</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>5</mn></mtd></mtr><mtr><mtd><mn>6</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0003D;</mo><mn>5</mn><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>3</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002B;</mo><mn>6</mn><mo>&#x00028;</mo><mtable><mtr><mtd><mn>2</mn></mtd></mtr><mtr><mtd><mn>4</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>5</mn><mo>&#x0002B;</mo><mn>12</mn></mtd></mtr><mtr><mtd><mn>15</mn><mo>&#x0002B;</mo><mn>24</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>17</mn></mtd></mtr><mtr><mtd><mn>39</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>按行计算也能得到同样结果：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn><mo>&#x000B7;</mo><mn>5</mn><mo>&#x0002B;</mo><mn>2</mn><mo>&#x000B7;</mo><mn>6</mn></mtd></mtr><mtr><mtd><mn>3</mn><mo>&#x000B7;</mo><mn>5</mn><mo>&#x0002B;</mo><mn>4</mn><mo>&#x000B7;</mo><mn>6</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>17</mn></mtd></mtr><mtr><mtd><mn>39</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>行视角适合手算，列视角适合理解。看到 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mi>&#x1D431;</mi></mrow></math> 时，先想到“列的线性组合”，很多结论会变得自然。</p>
+<blockquote>
+<p><strong>推论</strong>：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x0003D;</mo><mrow><mn mathvariant="bold">0</mn></mrow></mrow></math> 有非零解，等价于 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 的列向量线性相关。这正是第 01 课的相关性与第 03 课零空间的连接点。</p>
+</blockquote>
+<hr>
+<h2>3. 矩阵乘法：复合映射</h2>
+<p>若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D401;</mi></mrow></math> 把 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D431;</mi></mrow></math> 变成 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D401;</mi><mi>&#x1D431;</mi></mrow></math>，再用 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 变换，得到</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D401;</mi><mi>&#x1D431;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mi>&#x1D401;</mi><mo stretchy="false">&#x00029;</mo><mi>&#x1D431;</mi><mo>&#x0002E;</mo></mrow></math></div>
+<p>所以矩阵乘法定义成“先做右边的映射，再做左边的映射”。这就是为什么</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mi>&#x1D401;</mi><mo stretchy="false">&#x00029;</mo><mi>&#x1D402;</mi><mo>&#x0003D;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D401;</mi><mi>&#x1D402;</mi><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>（结合律成立），但一般</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mi>&#x1D401;</mi><mo>&#x02260;</mo><mi>&#x1D401;</mi><mi>&#x1D400;</mi></mrow></math></div>
+<p>（交换律不成立）。映射的复合本来就不交换：先旋转再平移，和先平移再旋转，结果不同。</p>
+<p><strong>例 2.1</strong>　取</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>1</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mi>&#x1D401;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>0</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mi>&#x1D401;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>2</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mi>&#x1D401;</mi><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>两者不同，说明矩阵乘法一般不可交换。</p>
+<p>从列视角看，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mi>&#x1D401;</mi></mrow></math> 的第 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>j</mi></mrow></math> 列是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 乘以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D401;</mi></mrow></math> 的第 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>j</mi></mrow></math> 列，也就是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D401;</mi></mrow></math> 第 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>j</mi></mrow></math> 列在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 下的像。这个视角在推导分块矩阵乘法时特别有用。</p>
+<hr>
+<h2>4. 转置、单位阵与逆矩阵</h2>
+<p><strong>转置</strong>把行和列互换：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo stretchy="false">&#x00028;</mo><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><msub><mo stretchy="false">&#x00029;</mo><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>&#x0003D;</mo><msub><mi>a</mi><mrow><mi>j</mi><mi>i</mi></mrow></msub><mo>&#x0002E;</mo></mrow></math></div>
+<p>例如</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd><mtd><mn>3</mn></mtd></mtr><mtr><mtd><mn>4</mn></mtd><mtd><mn>5</mn></mtd><mtd><mn>6</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x022A4;</mo></msup><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>4</mn></mtd></mtr><mtr><mtd><mn>2</mn></mtd><mtd><mn>5</mn></mtd></mtr><mtr><mtd><mn>3</mn></mtd><mtd><mn>6</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>常用性质：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo stretchy="false">&#x00028;</mo><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><msup><mo stretchy="false">&#x00029;</mo><mo>&#x022A4;</mo></msup><mo>&#x0003D;</mo><mi>&#x1D400;</mi><mo>&#x0002C;</mo><mspace width="2em" /><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo>&#x0002B;</mo><mi>&#x1D401;</mi><msup><mo stretchy="false">&#x00029;</mo><mo>&#x022A4;</mo></msup><mo>&#x0003D;</mo><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mo>&#x0002B;</mo><msup><mi>&#x1D401;</mi><mo>&#x022A4;</mo></msup><mo>&#x0002C;</mo><mspace width="2em" /><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mi>&#x1D401;</mi><msup><mo stretchy="false">&#x00029;</mo><mo>&#x022A4;</mo></msup><mo>&#x0003D;</mo><msup><mi>&#x1D401;</mi><mo>&#x022A4;</mo></msup><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mo>&#x0002E;</mo></mrow></math></div>
+<p>最后一条的顺序会反过来，和逆矩阵的规则一样。</p>
+<p><strong>单位阵</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D408;</mi></mrow></math> 是对角线为 1、其余为 0 的方阵，满足</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D408;</mi><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mi>&#x1D400;</mi><mi>&#x1D408;</mi><mo>&#x0003D;</mo><mi>&#x1D400;</mi><mo>&#x0002E;</mo></mrow></math></div>
+<p><strong>逆矩阵</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x1D400;</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup></mrow></math> 满足</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><msup><mi>&#x1D400;</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup><mo>&#x0003D;</mo><msup><mi>&#x1D400;</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mi>&#x1D408;</mi><mo>&#x0002E;</mo></mrow></math></div>
+<p>只有方阵才谈逆矩阵，而且不是每个方阵都有逆。对于 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mo>&#x000D7;</mo><mn>2</mn></mrow></math> 矩阵，</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mi>a</mi></mtd><mtd><mi>b</mi></mtd></mtr><mtr><mtd><mi>c</mi></mtd><mtd><mi>d</mi></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><msup><mi>&#x1D400;</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>a</mi><mi>d</mi><mo>&#x02212;</mo><mi>b</mi><mi>c</mi></mrow></mfrac><mo>&#x00028;</mo><mtable><mtr><mtd><mi>d</mi></mtd><mtd><mo>&#x02212;</mo><mi>b</mi></mtd></mtr><mtr><mtd><mo>&#x02212;</mo><mi>c</mi></mtd><mtd><mi>a</mi></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002C;</mo></mrow></math></div>
+<p>前提是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>a</mi><mi>d</mi><mo>&#x02212;</mo><mi>b</mi><mi>c</mi><mo>&#x02260;</mo><mn>0</mn></mrow></math>。这个数就是行列式，第 06 课会详细讲。</p>
+<p>逆矩阵的意义是“撤销变换”。如果 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D432;</mi><mo>&#x0003D;</mo><mi>&#x1D400;</mi><mi>&#x1D431;</mi></mrow></math> 且 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 可逆，那么</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D431;</mi><mo>&#x0003D;</mo><msup><mi>&#x1D400;</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup><mi>&#x1D432;</mi><mo>&#x0002E;</mo></mrow></math></div>
+<hr>
+<h2>5. 几类常用矩阵</h2>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>形式或条件</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>对角矩阵</td>
+<td>非对角元全为 0</td>
+<td>各分量独立缩放</td>
+</tr>
+<tr>
+<td>上三角矩阵</td>
+<td>对角线下方全为 0</td>
+<td>消元后的形式</td>
+</tr>
+<tr>
+<td>对称矩阵</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mo>&#x0003D;</mo><mi>&#x1D400;</mi></mrow></math></td>
+<td>协方差、Hessian</td>
+</tr>
+<tr>
+<td>正交矩阵</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x1D410;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D410;</mi><mo>&#x0003D;</mo><mi>&#x1D408;</mi></mrow></math></td>
+<td>旋转、反射，保持长度</td>
+</tr>
+<tr>
+<td>旋转矩阵</td>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x00028;</mo><mtable><mtr><mtd><mi>cos</mi><mi>&#x003B8;</mi></mtd><mtd><mo>&#x02212;</mo><mi>sin</mi><mi>&#x003B8;</mi></mtd></mtr><mtr><mtd><mi>sin</mi><mi>&#x003B8;</mi></mtd><mtd><mi>cos</mi><mi>&#x003B8;</mi></mtd></mtr></mtable><mo>&#x00029;</mo></mrow></math></td>
+<td>平面旋转</td>
+</tr>
+</tbody>
+</table>
+<p>正交矩阵满足 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x1D410;</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup><mo>&#x0003D;</mo><msup><mi>&#x1D410;</mi><mo>&#x022A4;</mo></msup></mrow></math>，计算逆矩阵几乎不花代价，而且数值稳定。这是它在工程中受欢迎的原因。</p>
+<p>二维旋转矩阵作用在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 上：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x00028;</mo><mtable><mtr><mtd><mi>cos</mi><mi>&#x003B8;</mi></mtd><mtd><mo>&#x02212;</mo><mi>sin</mi><mi>&#x003B8;</mi></mtd></mtr><mtr><mtd><mi>sin</mi><mi>&#x003B8;</mi></mtd><mtd><mi>cos</mi><mi>&#x003B8;</mi></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>0</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mi>cos</mi><mi>&#x003B8;</mi></mtd></mtr><mtr><mtd><mi>sin</mi><mi>&#x003B8;</mi></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002C;</mo></mrow></math></div>
+<p>正好是单位圆上角度为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003B8;</mi></mrow></math> 的点。作用在任意向量上，长度不变，只改变方向。</p>
+<hr>
+<h2>6. 工程视角：坐标变换与神经网络</h2>
+<p><strong>坐标变换</strong>：无人机在不同坐标系之间转换位置，用的就是矩阵。世界坐标系到机体系的变换通常写成</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>&#x1D429;</mi><mrow><mtext>body</mtext></mrow></msub><mo>&#x0003D;</mo><msub><mi>&#x1D411;</mi><mrow><mtext>world</mtext><mo>&#x02192;</mo><mtext>body</mtext></mrow></msub><mspace width="0.167em" /><msub><mi>&#x1D429;</mi><mrow><mtext>world</mtext></mrow></msub><mo>&#x0002E;</mo></mrow></math></div>
+<p>如果涉及平移，还会把旋转矩阵扩成 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>4</mn><mo>&#x000D7;</mo><mn>4</mn></mrow></math> 的齐次变换矩阵。旋转矩阵是正交矩阵，它的逆就是转置。</p>
+<p><strong>神经网络</strong>：一层全连接层写成</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D421;</mi><mo>&#x0003D;</mo><mi>&#x003C3;</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D416;</mi><mi>&#x1D431;</mi><mo>&#x0002B;</mo><mi>&#x1D41B;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D416;</mi></mrow></math> 是权重矩阵，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41B;</mi></mrow></math> 是偏置向量，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C3;</mi></mrow></math> 是逐元素非线性函数。如果没有 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C3;</mi></mrow></math>，多层线性层叠起来仍然只是一个线性映射， depth 没有意义。</p>
+<p><strong>协方差矩阵</strong>：多个变量的方差和协方差排成一个对称矩阵。它描述不确定性的形状，第 08 课会用二次型解释它的几何意义。</p>
+<blockquote>
+<p><strong>小实验</strong>：验证矩阵乘法不可交换，并检查旋转矩阵是否正交。</p>
+</blockquote>
+<pre><code class="language-python">import numpy as np
+
+A = np.array([[1, 1], [0, 1]])
+B = np.array([[1, 0], [1, 1]])
+print(A @ B)
+print(B @ A)
+
+theta = np.pi / 2
+R = np.array([[np.cos(theta), -np.sin(theta)],
+              [np.sin(theta),  np.cos(theta)]])
+print(np.allclose(R.T @ R, np.eye(2)))  # True
+</code></pre>
+<hr>
+<h2>7. 练习</h2>
+<ol>
+<li>
+<p>计算
+$\begin{pmatrix}1&amp;2\3&amp;4\end{pmatrix}
+\begin{pmatrix}2\-1\end{pmatrix}$。</p>
+</li>
+<li>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr><mtr><mtd><mn>3</mn></mtd><mtd><mn>4</mn></mtd></mtr></mtable><mo>&#x00029;</mo></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D401;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>0</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>0</mn></mtd></mtr></mtable><mo>&#x00029;</mo></mrow></math>，分别求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mi>&#x1D401;</mi></mrow></math> 与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D401;</mi><mi>&#x1D400;</mi></mrow></math>，并说明它们是否相等。</p>
+</li>
+<li>
+<p>求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x00028;</mo><mtable><mtr><mtd><mn>2</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd></mtr></mtable><mo>&#x00029;</mo></mrow></math> 的逆矩阵。</p>
+</li>
+<li>
+<p>把向量 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 逆时针旋转 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mn>90</mn><mo>&#x02218;</mo></msup></mrow></math>，结果是什么？</p>
+</li>
+<li>
+<p>判断 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr><mtr><mtd><mn>2</mn></mtd><mtd><mn>4</mn></mtd></mtr></mtable><mo>&#x00029;</mo></mrow></math> 是否可逆，并解释原因。</p>
+</li>
+</ol>
+<hr>
+<h2>8. 答案与简解</h2>
+<details>
+<summary>点击展开（做完再看）</summary>
+
+**1.**
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr><mtr><mtd><mn>3</mn></mtd><mtd><mn>4</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>2</mn></mtd></mtr><mtr><mtd><mo>&#x02212;</mo><mn>1</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0003D;</mo><mn>2</mn><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>3</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x02212;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>2</mn></mtd></mtr><mtr><mtd><mn>4</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>0</mn></mtd></mtr><mtr><mtd><mn>2</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+**2.**
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mi>&#x1D401;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>2</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>4</mn></mtd><mtd><mn>3</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mi>&#x1D401;</mi><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>3</mn></mtd><mtd><mn>4</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+两者不相等，验证了矩阵乘法一般不可交换。
+
+**3.** 行列式为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mo>&#x000B7;</mo><mn>1</mn><mo>&#x02212;</mo><mn>1</mn><mo>&#x000B7;</mo><mn>1</mn><mo>&#x0003D;</mo><mn>1</mn></mrow></math>，所以
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>&#x1D400;</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mo>&#x02212;</mo><mn>1</mn></mtd></mtr><mtr><mtd><mo>&#x02212;</mo><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+**4.** <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003B8;</mi><mo>&#x0003D;</mo><msup><mn>90</mn><mo>&#x02218;</mo></msup></mrow></math>，旋转矩阵为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x00028;</mo><mtable><mtr><mtd><mn>0</mn></mtd><mtd><mo>&#x02212;</mo><mn>1</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>0</mn></mtd></mtr></mtable><mo>&#x00029;</mo></mrow></math>，作用于 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 得 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。即向上旋转到向左。
+
+**5.** 行列式为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn><mo>&#x000B7;</mo><mn>4</mn><mo>&#x02212;</mo><mn>2</mn><mo>&#x000B7;</mo><mn>2</mn><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，不可逆。第二列是第一列的 2 倍，两列线性相关，映射把平面压成一条直线，信息丢失，无法撤销。
+
+</details>
+
+<hr>
+<h2>下节预告</h2>
+<p><strong>第 03 课：高斯消元与线性方程组</strong></p>
+<ul>
+<li>增广矩阵与初等行变换</li>
+<li>行阶梯形与简化行阶梯形</li>
+<li>秩与解的结构</li>
+<li>齐次方程组与零空间</li>
+</ul>
+<hr>
+<h2>自查清单</h2>
+<ul>
+<li>[ ] 能从列视角解释 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mi>&#x1D431;</mi></mrow></math></li>
+<li>[ ] 能说清矩阵乘法为什么对应复合映射</li>
+<li>[ ] 记得 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mi>&#x1D401;</mi><msup><mo stretchy="false">&#x00029;</mo><mo>&#x022A4;</mo></msup><mo>&#x0003D;</mo><msup><mi>&#x1D401;</mi><mo>&#x022A4;</mo></msup><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup></mrow></math></li>
+<li>[ ] 会求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mo>&#x000D7;</mo><mn>2</mn></mrow></math> 逆矩阵</li>
+<li>[ ] 知道正交矩阵的逆等于转置</li>
+</ul>
+<nav class="lesson-nav"><span><a href="线代01-向量与线性组合.html">&larr; 上一课</a></span><span><a href="线代03-高斯消元与线性方程组.html">下一课 &rarr;</a></span></nav>
+<footer>线性代数 · 数学公式使用 MathML 渲染，建议使用 Chrome / Edge / Firefox 打开</footer>
+</main>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>微积分自学课程</title>
+<title>数学自学课程 · 微积分 · 线性代数 · 概率论</title>
 <style>
 :root {
   --bg: #ffffff; --fg: #1f2328; --muted: #59636e; --border: #d1d9e0;
@@ -49,23 +49,55 @@ footer { margin-top: 4em; padding-top: 1em; border-top: 1px solid var(--border);
 </head>
 <body>
 <main>
-  <h1>微积分自学课程</h1>
-  <p class="muted">普通高中基础 → 单变量微积分速成 → 进阶 → 补全。公式为排版版，手机、平板、电脑都能看。</p>
+  <h1>数学自学课程</h1>
+  <p class="muted">微积分 30 课 · 线性代数 11 课 · 概率论 11 课。面向无人机 / 具身智能，公式为排版版，手机、平板、电脑都能看。</p>
 
   <div class="top">
-    <a class="btn" href="lessons/第21课-幂级数与泰勒级数.html">从第 21 课继续</a>
+    <a class="btn" href="lessons/线代01-向量与线性组合.html">从线性代数第 01 课开始</a>
     <a class="btn" href="ROADMAP.md" style="background:transparent;color:var(--accent);border:1px solid var(--border);margin-left:8px;">完整路线</a>
     <a class="btn" href="https://github.com/voicepeak/calculus-course/blob/main/progress.md" style="background:transparent;color:var(--accent);border:1px solid var(--border);margin-left:8px;">学习进度</a>
   </div>
-  <p class="muted">已完成 01–15。想从头复习，从 <a href="lessons/第01课-极限.html">第 01 课</a> 开始。</p>
+  <p class="muted">微积分 01–30 已完成。想复习，从 <a href="lessons/第01课-极限.html">第 01 课</a> 开始。</p>
 
-  <h2>你的路线（无人机 / 具身智能）</h2>
+  <h2>新阶段（无人机 / 具身智能）</h2>
   <div class="note" style="margin-top:0">
-    <strong>下一阶段：</strong>21 → 23 → 24 → 25 → 26 → 28 → 29 → 22。<br>
-    16–20、27、30 作为理论选学/按需。仓库外还需要线性代数、概率统计、最优化、数值方法、信号与系统、控制与估计、刚体变换。
+    <strong>建议顺序：</strong>线性代数 01–11 → 概率论 01–11，可与最优化、控制与估计并行。<br>
+    线代是 SLAM、控制、机器学习共同的语言；概率是传感器融合、状态估计和强化学习的地基。
   </div>
 
-  <h2>基础篇</h2>
+  <h2>线性代数（新）</h2>
+  <p class="muted">从向量与线性组合开始，到 SVD、矩阵微积分和数值稳定性。</p>
+  <div class="grid">
+    <a class="card" href="lessons/线代01-向量与线性组合.html"><span class="num">01</span>向量与线性组合<span class="desc">张成、线性无关、基与维数</span></a>
+    <a class="card" href="lessons/线代02-矩阵与线性映射.html"><span class="num">02</span>矩阵与线性映射<span class="desc">矩阵乘法、逆矩阵、旋转与正交</span></a>
+    <a class="card" href="lessons/线代03-高斯消元与线性方程组.html"><span class="num">03</span>高斯消元与线性方程组<span class="desc">行变换、秩、解的结构、零空间</span></a>
+    <a class="card" href="lessons/线代04-四个基本子空间.html"><span class="num">04</span>四个基本子空间<span class="desc">列空间、零空间、秩-零化度、正交补</span></a>
+    <a class="card" href="lessons/线代05-正交投影与最小二乘.html"><span class="num">05</span>正交投影与最小二乘<span class="desc">投影、Gram–Schmidt、正规方程</span></a>
+    <a class="card" href="lessons/线代06-行列式.html"><span class="num">06</span>行列式<span class="desc">面积体积、余子式、Cramer 法则、雅可比</span></a>
+    <a class="card" href="lessons/线代07-特征值与特征向量.html"><span class="num">07</span>特征值与特征向量<span class="desc">特征多项式、对角化、动力系统稳定性</span></a>
+    <a class="card" href="lessons/线代08-对称矩阵与二次型.html"><span class="num">08</span>对称矩阵与二次型<span class="desc">谱定理、正定、Rayleigh 商、椭球</span></a>
+    <a class="card" href="lessons/线代09-SVD与低秩近似.html"><span class="num">09</span>SVD 与低秩近似<span class="desc">奇异值、伪逆、PCA、数据压缩</span></a>
+    <a class="card" href="lessons/线代10-矩阵微积分与数值线性代数.html"><span class="num">10</span>矩阵微积分与数值线性代数<span class="desc">矩阵求导、条件数、LU/QR、迭代法</span></a>
+    <a class="card" href="lessons/线代11-综合模拟卷.html"><span class="num">11</span>综合模拟卷<span class="desc">第 01–10 课闭卷自测</span></a>
+  </div>
+
+  <h2>概率论（新）</h2>
+  <p class="muted">从条件概率与贝叶斯开始，到参数估计、假设检验、随机过程和信息论。</p>
+  <div class="grid">
+    <a class="card" href="lessons/概率01-概率空间与条件概率.html"><span class="num">01</span>概率空间与条件概率<span class="desc">概率公理、全概率、贝叶斯、独立性</span></a>
+    <a class="card" href="lessons/概率02-随机变量与常见分布.html"><span class="num">02</span>随机变量与常见分布<span class="desc">PMF/PDF/CDF、二项、泊松、正态、指数</span></a>
+    <a class="card" href="lessons/概率03-期望方差与矩.html"><span class="num">03</span>期望、方差与矩<span class="desc">LOTUS、协方差、矩母函数、概率不等式</span></a>
+    <a class="card" href="lessons/概率04-多维随机变量与独立性.html"><span class="num">04</span>多维随机变量与独立性<span class="desc">联合分布、卷积、多元正态、条件期望</span></a>
+    <a class="card" href="lessons/概率05-大数定律与中心极限定理.html"><span class="num">05</span>大数定律与中心极限定理<span class="desc">收敛、CLT、正态近似、蒙特卡洛</span></a>
+    <a class="card" href="lessons/概率06-参数估计.html"><span class="num">06</span>参数估计<span class="desc">矩估计、MLE、Fisher 信息、置信区间</span></a>
+    <a class="card" href="lessons/概率07-假设检验.html"><span class="num">07</span>假设检验<span class="desc">两类错误、p 值、t 检验、多重检验</span></a>
+    <a class="card" href="lessons/概率08-贝叶斯推断.html"><span class="num">08</span>贝叶斯推断<span class="desc">共轭先验、可信区间、贝叶斯线性回归</span></a>
+    <a class="card" href="lessons/概率09-随机过程初步.html"><span class="num">09</span>随机过程初步<span class="desc">马尔可夫链、平稳分布、泊松过程、高斯过程</span></a>
+    <a class="card" href="lessons/概率10-信息论与KL散度.html"><span class="num">10</span>信息论与 KL 散度<span class="desc">熵、互信息、交叉熵、变分推断</span></a>
+    <a class="card" href="lessons/概率11-综合模拟卷.html"><span class="num">11</span>综合模拟卷<span class="desc">第 01–10 课闭卷自测</span></a>
+  </div>
+
+  <h2>微积分 · 基础篇</h2>
   <div class="grid">
     <a class="card done" href="lessons/第01课-极限.html"><span class="num">01</span>极限<span class="desc">极限的直觉、四步计算法、等价无穷小</span></a>
     <a class="card done" href="lessons/第02课-导数.html"><span class="num">02</span>导数与求导法则<span class="desc">公式表、四则运算、链式法则</span></a>
@@ -77,7 +109,7 @@ footer { margin-top: 4em; padding-top: 1em; border-top: 1px solid var(--border);
     <a class="card done" href="lessons/第08课-综合模拟卷.html"><span class="num">08</span>综合模拟卷<span class="desc">90 分钟闭卷自测</span></a>
   </div>
 
-  <h2>进阶篇</h2>
+  <h2>微积分 · 进阶篇</h2>
   <div class="grid">
     <a class="card done" href="lessons/第09课-洛必达法则.html"><span class="num">09</span>洛必达法则<span class="desc">未定式、幂指型、失效判断</span></a>
     <a class="card done" href="lessons/第10课-泰勒展开.html"><span class="num">10</span>泰勒展开与级数初步<span class="desc">五个展开、泰勒求极限</span></a>
@@ -86,49 +118,44 @@ footer { margin-top: 4em; padding-top: 1em; border-top: 1px solid var(--border);
     <a class="card done" href="lessons/第13课-综合模拟卷2.html"><span class="num">13</span>综合模拟卷 2<span class="desc">第 1–12 课闭卷自测</span></a>
   </div>
 
-  <h2>多元入门</h2>
+  <h2>微积分 · 多元与工具主线</h2>
   <div class="grid">
     <a class="card done" href="lessons/第14课-多元函数初步.html"><span class="num">14</span>多元函数初步<span class="desc">偏导数、全微分、链式法则</span></a>
     <a class="card done" href="lessons/第15课-二重积分.html"><span class="num">15</span>二重积分<span class="desc">累次积分、区域、极坐标</span></a>
+    <a class="card done" href="lessons/第21课-幂级数与泰勒级数.html"><span class="num">21</span>幂级数与泰勒级数<span class="desc">收敛半径、五个展开、近似计算</span></a>
+    <a class="card done" href="lessons/第23课-二阶线性微分方程.html"><span class="num">23</span>二阶线性微分方程<span class="desc">特征方程、特解、共振</span></a>
+    <a class="card done" href="lessons/第24课-可降阶方程与建模.html"><span class="num">24</span>可降阶方程与建模<span class="desc">降阶、积分因子、冷却与混合</span></a>
+    <a class="card done" href="lessons/第25课-多元函数的极限与连续.html"><span class="num">25</span>多元函数的极限与连续<span class="desc">二重极限、路径法、累次极限</span></a>
+    <a class="card done" href="lessons/第26课-方向导数梯度与多元极值.html"><span class="num">26</span>方向导数、梯度与多元极值<span class="desc">梯度、二阶判别、拉格朗日乘数</span></a>
+    <a class="card done" href="lessons/第28课-曲线积分与格林公式.html"><span class="num">28</span>曲线积分与格林公式<span class="desc">两类曲线积分、保守场</span></a>
+    <a class="card done" href="lessons/第29课-曲面积分与高斯斯托克斯.html"><span class="num">29</span>曲面积分与高斯、斯托克斯公式<span class="desc">通量、散度、旋度</span></a>
+    <a class="card done" href="lessons/第22课-傅里叶级数初步.html"><span class="num">22</span>傅里叶级数初步<span class="desc">三角级数、方波、吉布斯现象</span></a>
   </div>
 
-  <h2>工具主线（无人机 / 具身智能）</h2>
-  <p class="muted">按推荐顺序排列：21 → 23 → 24 → 25 → 26 → 28 → 29 → 22。</p>
+  <h2>微积分 · 理论选学 / 按需</h2>
   <div class="grid">
-    <a class="card" href="lessons/第21课-幂级数与泰勒级数.html"><span class="num">21</span>幂级数与泰勒级数<span class="desc">收敛半径、五个展开、近似计算</span></a>
-    <a class="card" href="lessons/第23课-二阶线性微分方程.html"><span class="num">23</span>二阶线性微分方程<span class="desc">特征方程、特解、共振</span></a>
-    <a class="card" href="lessons/第24课-可降阶方程与建模.html"><span class="num">24</span>可降阶方程与建模<span class="desc">降阶、积分因子、冷却与混合</span></a>
-    <a class="card" href="lessons/第25课-多元函数的极限与连续.html"><span class="num">25</span>多元函数的极限与连续<span class="desc">二重极限、路径法、累次极限</span></a>
-    <a class="card" href="lessons/第26课-方向导数梯度与多元极值.html"><span class="num">26</span>方向导数、梯度与多元极值<span class="desc">梯度、二阶判别、拉格朗日乘数</span></a>
-    <a class="card" href="lessons/第28课-曲线积分与格林公式.html"><span class="num">28</span>曲线积分与格林公式<span class="desc">两类曲线积分、保守场</span></a>
-    <a class="card" href="lessons/第29课-曲面积分与高斯斯托克斯.html"><span class="num">29</span>曲面积分与高斯、斯托克斯公式<span class="desc">通量、散度、旋度</span></a>
-    <a class="card" href="lessons/第22课-傅里叶级数初步.html"><span class="num">22</span>傅里叶级数初步（选学）<span class="desc">三角级数、方波、吉布斯现象</span></a>
-  </div>
-
-  <h2>理论选学 / 按需</h2>
-  <div class="grid">
-    <a class="card" href="lessons/第16课-中值定理.html"><span class="num">16</span>中值定理<span class="desc">罗尔、拉格朗日、柯西</span></a>
-    <a class="card" href="lessons/第17课-极限的严格定义与连续.html"><span class="num">17</span>极限的严格定义与连续<span class="desc">ε-δ、间断点、闭区间性质</span></a>
-    <a class="card" href="lessons/第18课-数列极限与级数概念.html"><span class="num">18</span>数列极限与级数概念<span class="desc">数列极限、几何级数、调和级数</span></a>
-    <a class="card" href="lessons/第19课-正项级数判别法.html"><span class="num">19</span>正项级数判别法<span class="desc">比较、比值、根值、积分判别</span></a>
-    <a class="card" href="lessons/第20课-交错级数与绝对收敛.html"><span class="num">20</span>交错级数与绝对收敛<span class="desc">莱布尼茨、条件收敛、误差估计</span></a>
-    <a class="card" href="lessons/第27课-三重积分.html"><span class="num">27</span>三重积分<span class="desc">直角、柱、球坐标</span></a>
-    <a class="card" href="lessons/第30课-综合模拟卷3.html"><span class="num">30</span>综合模拟卷 3<span class="desc">第 16–29 课闭卷自测</span></a>
+    <a class="card done" href="lessons/第16课-中值定理.html"><span class="num">16</span>中值定理<span class="desc">罗尔、拉格朗日、柯西</span></a>
+    <a class="card done" href="lessons/第17课-极限的严格定义与连续.html"><span class="num">17</span>极限的严格定义与连续<span class="desc">ε-δ、间断点、闭区间性质</span></a>
+    <a class="card done" href="lessons/第18课-数列极限与级数概念.html"><span class="num">18</span>数列极限与级数概念<span class="desc">数列极限、几何级数、调和级数</span></a>
+    <a class="card done" href="lessons/第19课-正项级数判别法.html"><span class="num">19</span>正项级数判别法<span class="desc">比较、比值、根值、积分判别</span></a>
+    <a class="card done" href="lessons/第20课-交错级数与绝对收敛.html"><span class="num">20</span>交错级数与绝对收敛<span class="desc">莱布尼茨、条件收敛、误差估计</span></a>
+    <a class="card done" href="lessons/第27课-三重积分.html"><span class="num">27</span>三重积分<span class="desc">直角、柱、球坐标</span></a>
+    <a class="card done" href="lessons/第30课-综合模拟卷3.html"><span class="num">30</span>综合模拟卷 3<span class="desc">第 16–29 课闭卷自测</span></a>
   </div>
 
   <h2>补充资料</h2>
   <div class="grid">
-    <a class="card" href="lessons/补充-微分方程专项.html"><span class="num">+</span>微分方程专项<span class="desc">从 y′ = 2y 到应用题</span></a>
+    <a class="card done" href="lessons/补充-微分方程专项.html"><span class="num">+</span>微分方程专项<span class="desc">从 y′ = 2y 到应用题</span></a>
   </div>
 
-  <h2>仓库外还要补</h2>
-  <p class="muted">线性代数、概率统计、最优化、数值方法、信号与系统、控制与估计、刚体变换。详细清单见 <a href="ROADMAP.md">ROADMAP.md</a>。</p>
+  <h2>接下来还要补</h2>
+  <p class="muted">最优化、数值方法、信号与系统、控制与估计、刚体变换（SO(3)/SE(3)）。详细清单见 <a href="ROADMAP.md">ROADMAP.md</a>。</p>
 
   <div class="note">
-    <strong>课程已完结：</strong>第 01–30 课全部生成。你已完成 01–15，建议按上方路线继续；16–20、27、30 可按需选学。
+    <strong>当前进度：</strong>微积分 01–30 与微分方程专项已完成。现在是线性代数与概率论阶段，建议先线代后概率，也可以并行。
   </div>
 
-  <footer>微积分自学课程 · 资料持续更新</footer>
+  <footer>数学自学课程 · 微积分 / 线性代数 / 概率论 · 资料持续更新</footer>
 </main>
 </body>
 </html>

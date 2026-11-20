@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>线性代数 · 第 11 课：综合模拟卷</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --quote-bg: #f6f8fa;
+  --code-bg: #eff2f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --border: #30363d;
+    --accent: #4493f8;
+    --quote-bg: #161b22;
+    --code-bg: #1f242c;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; font-weight: 650; }
+h1 { font-size: 2rem; margin: 0 0 .8em; padding-bottom: .35em; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 2.2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.2rem; margin: 1.8em 0 .55em; }
+p { margin: .85em 0; }
+a { color: var(--accent); }
+blockquote {
+  margin: 1em 0;
+  padding: .6em 1em;
+  border-left: 4px solid var(--accent);
+  background: var(--quote-bg);
+  color: var(--muted);
+  border-radius: 4px;
+}
+blockquote p { margin: .25em 0; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: .96em;
+  overflow: hidden;
+}
+th, td { border: 1px solid var(--border); padding: .45em .7em; text-align: left; vertical-align: top; }
+th { background: var(--quote-bg); font-weight: 600; }
+details {
+  margin: 1.2em 0;
+  padding: .8em 1em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--quote-bg);
+}
+summary { cursor: pointer; font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+ul, ol { padding-left: 1.7em; }
+li { margin: .3em 0; }
+.math-block {
+  margin: 1.15em 0;
+  padding: .7em .9em;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--quote-bg);
+  border-radius: 6px;
+}
+math { font-size: 1.14em; line-height: 1.2; }
+math[display="inline"] { font-size: 1.05em; vertical-align: baseline; }
+.math-block math { font-size: 1.24em; }
+.math-fallback, .math-fallback-block {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .08em .3em;
+  border-radius: 3px;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .12em .35em;
+  border-radius: 3px;
+  font-size: .92em;
+}
+pre code { display: block; padding: .8em 1em; overflow-x: auto; }
+.lesson-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .8em 1.4em;
+  justify-content: space-between;
+  margin: 2.4em 0 0;
+  padding-top: 1.1em;
+  border-top: 1px solid var(--border);
+  font-size: .95em;
+}
+footer { margin-top: 2.2em; color: var(--muted); font-size: .85em; text-align: center; }
+@media print {
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  .math-block { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>线性代数 · 第 11 课：综合模拟卷</h1>
+<blockquote>
+<p><strong>本课目标</strong>：用一份 90 分钟闭卷卷检查第 01–10 课的综合掌握情况。</p>
+<p><strong>使用方法</strong>：先限时完成，再对答案。错题回到对应课节复习，72 小时内重做。</p>
+</blockquote>
+<hr>
+<h2>说明</h2>
+<ul>
+<li>建议时间：90 分钟，闭卷。</li>
+<li>总分 100 分：第 1–10 题每题 8 分，第 11–12 题每题 10 分。</li>
+<li>允许使用纸笔，不允许查公式表；计算题要写出关键步骤。</li>
+</ul>
+<hr>
+<h2>目录</h2>
+<ol>
+<li>判断题</li>
+<li>线性组合与相关性</li>
+<li>矩阵运算与逆矩阵</li>
+<li>线性方程组</li>
+<li>四个子空间</li>
+<li>投影</li>
+<li>行列式</li>
+<li>特征值与对角化</li>
+<li>二次型与正定性</li>
+<li>SVD</li>
+<li>矩阵求导</li>
+<li>最小二乘应用</li>
+</ol>
+<hr>
+<h2>1. 判断题（每题 1.6 分，共 8 分）</h2>
+<p>判断下列说法是否正确，并简述理由。</p>
+<ol>
+<li>若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 的列向量线性无关，则 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x0003D;</mo><mrow><mn mathvariant="bold">0</mn></mrow></mrow></math> 只有零解。</li>
+<li>对任意同阶方阵 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mo>&#x0002C;</mo><mi>&#x1D401;</mi></mrow></math>，都有 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mi>&#x1D401;</mi><mo>&#x0003D;</mo><mi>&#x1D401;</mi><mi>&#x1D400;</mi></mrow></math>。</li>
+<li>实对称矩阵一定可以正交对角化。</li>
+<li>对任意同阶方阵，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo>&#x0002B;</mo><mi>&#x1D401;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D401;</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。</li>
+<li>若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 正定，则它的所有特征值都大于 0。</li>
+</ol>
+<hr>
+<h2>2. 线性组合与相关性（8 分）</h2>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42F;</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42F;</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>3</mn><mo>&#x0002C;</mo><mn>3</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+<ol>
+<li>判断 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41B;</mi></mrow></math> 是否在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42F;</mi><mn>1</mn></msub><mo>&#x0002C;</mo><msub><mi>&#x1D42F;</mi><mn>2</mn></msub></mrow></math> 的张成中；若是，写出线性组合。</li>
+<li>判断 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42F;</mi><mn>1</mn></msub><mo>&#x0002C;</mo><msub><mi>&#x1D42F;</mi><mn>2</mn></msub><mo>&#x0002C;</mo><msub><mi>&#x1D42F;</mi><mn>3</mn></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 是否线性无关。</li>
+</ol>
+<hr>
+<h2>3. 矩阵运算与逆矩阵（8 分）</h2>
+<p>设</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>2</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mi>&#x1D401;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>1</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<ol>
+<li>计算 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mi>&#x1D401;</mi></mrow></math>。</li>
+<li>求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x1D400;</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup></mrow></math>。</li>
+<li>计算 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D401;</mi><mi>&#x1D400;</mi></mrow></math>，并说明 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mi>&#x1D401;</mi></mrow></math> 与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D401;</mi><mi>&#x1D400;</mi></mrow></math> 是否相等。</li>
+</ol>
+<hr>
+<h2>4. 线性方程组（8 分）</h2>
+<p>解方程组</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007B;</mo><mtable><mtr><mtd columnalign="left"><mi>x</mi><mo>&#x0002B;</mo><mi>y</mi><mo>&#x0002B;</mo><mi>z</mi><mo>&#x0003D;</mo><mn>2</mn><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><mn>2</mn><mi>x</mi><mo>&#x0002B;</mo><mn>2</mn><mi>y</mi><mo>&#x0002B;</mo><mi>z</mi><mo>&#x0003D;</mo><mn>3</mn><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><mi>x</mi><mo>&#x02212;</mo><mi>y</mi><mo>&#x0003D;</mo><mn>0</mn><mo>&#x0002E;</mo></mtd></mtr></mtable></mrow></mrow></math></div>
+<p>并判断解是唯一、无穷多还是无解。</p>
+<hr>
+<h2>5. 四个子空间（8 分）</h2>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>3</mn><mo>&#x000D7;</mo><mn>4</mn></mrow></math> 矩阵，秩为 2。求列空间、零空间、行空间、左零空间的维数。若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x0003D;</mo><mi>&#x1D41B;</mi></mrow></math> 有解，解的自由度是多少？</p>
+<hr>
+<h2>6. 投影（8 分）</h2>
+<p>把向量 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 投影到 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41A;</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 张成的直线上，求投影向量和残差，并验证残差与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41A;</mi></mrow></math> 正交。</p>
+<hr>
+<h2>7. 行列式（8 分）</h2>
+<p>设</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd><mtd><mn>3</mn></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>4</mn></mtd><mtd><mn>5</mn></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>0</mn></mtd><mtd><mn>6</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D401;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>2</mn><mo>&#x0002E;</mo></mrow></math></div>
+<ol>
+<li>求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。</li>
+<li>求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><msup><mi>&#x1D400;</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup><mo stretchy="false">&#x00029;</mo></mrow></math>。</li>
+<li>若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D401;</mi></mrow></math> 是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>3</mn><mo>&#x000D7;</mo><mn>3</mn></mrow></math> 矩阵，求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><mn>2</mn><mi>&#x1D401;</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。</li>
+</ol>
+<hr>
+<h2>8. 特征值与对角化（8 分）</h2>
+<p>设</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>4</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>2</mn></mtd><mtd><mn>3</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<ol>
+<li>求特征值。</li>
+<li>求对应的特征向量。</li>
+<li>写出对角化 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mi>&#x1D40F;</mi><mi>&#x1D403;</mi><msup><mi>&#x1D40F;</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup></mrow></math> 中的 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D40F;</mi></mrow></math> 和 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D403;</mi></mrow></math>。</li>
+<li>验证迹与行列式。</li>
+</ol>
+<hr>
+<h2>9. 二次型与正定性（8 分）</h2>
+<p>判断二次型</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>Q</mi><mo stretchy="false">&#x00028;</mo><msub><mi>x</mi><mn>1</mn></msub><mo>&#x0002C;</mo><msub><mi>x</mi><mn>2</mn></msub><mo>&#x0002C;</mo><msub><mi>x</mi><mn>3</mn></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msubsup><mi>x</mi><mn>1</mn><mn>2</mn></msubsup><mo>&#x0002B;</mo><mn>2</mn><msub><mi>x</mi><mn>1</mn></msub><msub><mi>x</mi><mn>2</mn></msub><mo>&#x0002B;</mo><mn>2</mn><msubsup><mi>x</mi><mn>2</mn><mn>2</mn></msubsup><mo>&#x0002B;</mo><mn>3</mn><msubsup><mi>x</mi><mn>3</mn><mn>2</mn></msubsup></mrow></math></div>
+<p>是否正定，并写出它的对称矩阵。</p>
+<hr>
+<h2>10. SVD（8 分）</h2>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>diag</mo><mo stretchy="false">&#x00028;</mo><mn>4</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+<ol>
+<li>写出奇异值、秩和条件数（若条件数无定义，说明原因）。</li>
+<li>写出最佳秩 1 近似。</li>
+<li>求该近似的 Frobenius 误差。</li>
+</ol>
+<hr>
+<h2>11. 矩阵求导（10 分）</h2>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D431;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo fence="false" stretchy="false">&#x02016;</mo><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x02212;</mo><mi>&#x1D41B;</mi><msup><mo fence="false" stretchy="false">&#x02016;</mo><mn>2</mn></msup></mrow></math>。</p>
+<ol>
+<li>展开 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>f</mi></mrow></math> 并求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02207;</mo><mi>f</mi></mrow></math>。</li>
+<li>令梯度为零，推导正规方程。</li>
+<li>说明当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 列满秩时，最小二乘解是什么。</li>
+</ol>
+<hr>
+<h2>12. 最小二乘应用（10 分）</h2>
+<p>用直线 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>c</mi><mo>&#x0002B;</mo><mi>d</mi><mi>x</mi></mrow></math> 拟合点 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>3</mn><mo stretchy="false">&#x00029;</mo></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>4</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+<ol>
+<li>写出设计矩阵 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 和向量 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41B;</mi></mrow></math>。</li>
+<li>求正规方程并解出 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>c</mi><mo>&#x0002C;</mo><mi>d</mi></mrow></math>。</li>
+<li>写出拟合直线，并求三个残差。</li>
+</ol>
+<hr>
+<h2>答案与简解</h2>
+<details>
+<summary>点击展开（做完再看）</summary>
+
+### 1. 判断题
+
+1. **对**。列线性无关等价于零空间只有零向量。
+2. **错**。矩阵乘法一般不可交换。
+3. **对**。谱定理保证实对称矩阵可以正交对角化。
+4. **错**。行列式不是线性的，一般 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo>&#x0002B;</mo><mi>&#x1D401;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02260;</mo><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D401;</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。
+5. **对**。正定的等价条件是所有特征值为正。
+
+### 2. 线性组合与相关性
+
+1. 设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><msub><mi>c</mi><mn>1</mn></msub><msub><mi>&#x1D42F;</mi><mn>1</mn></msub><mo>&#x0002B;</mo><msub><mi>c</mi><mn>2</mn></msub><msub><mi>&#x1D42F;</mi><mn>2</mn></msub></mrow></math>，则
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007B;</mo><mtable><mtr><mtd columnalign="left"><msub><mi>c</mi><mn>1</mn></msub><mo>&#x0002B;</mo><mn>2</mn><msub><mi>c</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mn>3</mn><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><mn>2</mn><msub><mi>c</mi><mn>1</mn></msub><mo>&#x0002B;</mo><msub><mi>c</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mn>3</mn><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><msub><mi>c</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002E;</mo></mtd></mtr></mtable></mrow></mrow></math></div>
+
+
+
+由第三式 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>c</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mn>1</mn></mrow></math>，代入第一式得 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>c</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mn>1</mn></mrow></math>，第二式 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mo>&#x0002B;</mo><mn>1</mn><mo>&#x0003D;</mo><mn>3</mn></mrow></math> 成立。所以
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><msub><mi>&#x1D42F;</mi><mn>1</mn></msub><mo>&#x0002B;</mo><msub><mi>&#x1D42F;</mi><mn>2</mn></msub><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+2. 以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42F;</mi><mn>1</mn></msub><mo>&#x0002C;</mo><msub><mi>&#x1D42F;</mi><mn>2</mn></msub><mo>&#x0002C;</mo><msub><mi>&#x1D42F;</mi><mn>3</mn></msub></mrow></math> 为列的行列式为
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0007C;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd><mtd><mn>0</mn></mtd></mtr><mtr><mtd><mn>2</mn></mtd><mtd><mn>1</mn></mtd><mtd><mn>0</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>0</mn></mtd><mtd><mn>1</mn></mtd></mtr></mtable><mo>&#x0007C;</mo><mo>&#x0003D;</mo><mn>1</mn><mo>&#x000B7;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x000B7;</mo><mn>1</mn><mo>&#x02212;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mn>2</mn><mo>&#x000B7;</mo><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo>&#x000B7;</mo><mn>1</mn><mo>&#x02212;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn><mo>&#x02212;</mo><mn>4</mn><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>3</mn><mo>&#x02260;</mo><mn>0</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+所以三个向量线性无关。
+
+### 3. 矩阵运算与逆矩阵
+
+1.
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mi>&#x1D401;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>2</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>1</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>2</mn></mtd><mtd><mn>5</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>3</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+2. <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo movablelimits="true">det</mo><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mn>2</mn><mo>&#x000B7;</mo><mn>1</mn><mo>&#x02212;</mo><mn>1</mn><mo>&#x000B7;</mo><mn>1</mn><mo>&#x0003D;</mo><mn>1</mn></mrow></math>，所以
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>&#x1D400;</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mo>&#x02212;</mo><mn>1</mn></mtd></mtr><mtr><mtd><mo>&#x02212;</mo><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+3.
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D401;</mi><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>1</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>2</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>4</mn></mtd><mtd><mn>3</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x02260;</mo><mi>&#x1D400;</mi><mi>&#x1D401;</mi><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+### 4. 线性方程组
+
+由 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x02212;</mo><mi>y</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math> 得 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mi>y</mi></mrow></math>。第一式变为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mi>x</mi><mo>&#x0002B;</mo><mi>z</mi><mo>&#x0003D;</mo><mn>2</mn></mrow></math>，第二式变为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>4</mn><mi>x</mi><mo>&#x0002B;</mo><mi>z</mi><mo>&#x0003D;</mo><mn>3</mn></mrow></math>。两式相减得 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mi>x</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math>，所以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mi>y</mi><mo>&#x0003D;</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mn>2</mn></mfrac></mstyle></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>z</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math>。解唯一：
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo>&#x0002C;</mo><mi>z</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>&#x0002C;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+### 5. 四个子空间
+
+秩 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>r</mi><mo>&#x0003D;</mo><mn>2</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>m</mi><mo>&#x0003D;</mo><mn>3</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mo>&#x0003D;</mo><mn>4</mn></mrow></math>：
+
+- 列空间维数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn></mrow></math>；
+- 零空间维数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>4</mn><mo>&#x02212;</mo><mn>2</mn><mo>&#x0003D;</mo><mn>2</mn></mrow></math>；
+- 行空间维数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn></mrow></math>；
+- 左零空间维数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>3</mn><mo>&#x02212;</mo><mn>2</mn><mo>&#x0003D;</mo><mn>1</mn></mrow></math>。
+
+有解时自由变量个数为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mo>&#x02212;</mo><mi>r</mi><mo>&#x0003D;</mo><mn>2</mn></mrow></math>，所以有无穷多解。
+
+### 6. 投影
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D41A;</mi><mo>&#x000B7;</mo><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002B;</mo><mn>2</mn><mo>&#x0003D;</mo><mn>3</mn><mo>&#x0002C;</mo><mspace width="2em" /><mi>&#x1D41A;</mi><mo>&#x000B7;</mo><mi>&#x1D41A;</mi><mo>&#x0003D;</mo><mn>2</mn><mo>&#x0002C;</mo></mrow></math></div>
+
+
+
+投影为
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mo>proj</mo><mrow><mi>&#x1D41A;</mi></mrow></msub><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><mfrac><mrow><mn>3</mn></mrow><mrow><mn>2</mn></mrow></mfrac><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mn>3</mn><mn>2</mn></mfrac><mo>&#x0002C;</mo><mfrac><mn>3</mn><mn>2</mn></mfrac><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+残差为
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D42B;</mi><mo>&#x0003D;</mo><mi>&#x1D41B;</mi><mo>&#x02212;</mo><mo>proj</mo><mo>&#x0003D;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mo>&#x02212;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>&#x0002C;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+验证：
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D42B;</mi><mo>&#x000B7;</mo><mi>&#x1D41A;</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>&#x0002B;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>&#x0002B;</mo><mn>0</mn><mo>&#x0003D;</mo><mn>0</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+### 7. 行列式
+
+1. 上三角矩阵行列式等于对角线乘积：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo movablelimits="true">det</mo><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mn>1</mn><mo>&#x000B7;</mo><mn>4</mn><mo>&#x000B7;</mo><mn>6</mn><mo>&#x0003D;</mo><mn>24</mn></mrow></math>。
+2. <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><msup><mi>&#x1D400;</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><mn>1</mn></mrow><mrow><mn>24</mn></mrow></mfrac></mstyle></mrow></math>。
+3. <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><mn>2</mn><mi>&#x1D401;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mn>2</mn><mn>3</mn></msup><mo movablelimits="true">det</mo><mi>&#x1D401;</mi><mo>&#x0003D;</mo><mn>8</mn><mo>&#x000B7;</mo><mn>2</mn><mo>&#x0003D;</mo><mn>16</mn></mrow></math>。
+
+### 8. 特征值与对角化
+
+1.
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo>&#x02212;</mo><mi>&#x003BB;</mi><mi>&#x1D408;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>4</mn><mo>&#x02212;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x00028;</mo><mn>3</mn><mo>&#x02212;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mn>2</mn><mo>&#x0003D;</mo><msup><mi>&#x003BB;</mi><mn>2</mn></msup><mo>&#x02212;</mo><mn>7</mn><mi>&#x003BB;</mi><mo>&#x0002B;</mo><mn>10</mn><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo>&#x02212;</mo><mn>5</mn><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo>&#x02212;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+特征值为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>5</mn><mo>&#x0002C;</mo><mn>2</mn></mrow></math>。
+
+2. 对 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BB;</mi><mo>&#x0003D;</mo><mn>5</mn></mrow></math>，解 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo>&#x02212;</mo><mn>5</mn><mi>&#x1D408;</mi><mo stretchy="false">&#x00029;</mo><mi>&#x1D42F;</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，得 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02212;</mo><msub><mi>v</mi><mn>1</mn></msub><mo>&#x0002B;</mo><msub><mi>v</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，所以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>v</mi><mn>1</mn></msub><mo>&#x0003D;</mo><msub><mi>v</mi><mn>2</mn></msub></mrow></math>，取 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42F;</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。
+
+对 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BB;</mi><mo>&#x0003D;</mo><mn>2</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mo>&#x02212;</mo><mn>2</mn><mi>&#x1D408;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>2</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>2</mn></mtd><mtd><mn>1</mn></mtd></mtr></mtable><mo>&#x00029;</mo></mrow></math>，得 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><msub><mi>v</mi><mn>1</mn></msub><mo>&#x0002B;</mo><msub><mi>v</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，取 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42F;</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mo>&#x02212;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。
+
+3.
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D40F;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mo>&#x02212;</mo><mn>2</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mi>&#x1D403;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>5</mn></mtd><mtd><mn>0</mn></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>2</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+4. 迹为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>4</mn><mo>&#x0002B;</mo><mn>3</mn><mo>&#x0003D;</mo><mn>7</mn><mo>&#x0003D;</mo><mn>5</mn><mo>&#x0002B;</mo><mn>2</mn></mrow></math>；行列式为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>12</mn><mo>&#x02212;</mo><mn>2</mn><mo>&#x0003D;</mo><mn>10</mn><mo>&#x0003D;</mo><mn>5</mn><mo>&#x000B7;</mo><mn>2</mn></mrow></math>。验证成立。
+
+### 9. 二次型与正定性
+
+对称矩阵为
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd><mtd><mn>0</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd><mtd><mn>0</mn></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>0</mn></mtd><mtd><mn>3</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+顺序主子式：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn><mo>&#x0003E;</mo><mn>0</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x0007C;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr></mtable><mo>&#x0007C;</mo><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0003E;</mo><mn>0</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo movablelimits="true">det</mo><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mn>3</mn><mo>&#x0003E;</mo><mn>0</mn></mrow></math>。所以正定。
+
+### 10. SVD
+
+1. 奇异值为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>4</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>0</mn></mrow></math>，秩为 2。第三个奇异值为 0，矩阵不可逆，条件数无定义（或视为无穷大）。
+2. 最佳秩 1 近似为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D400;</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mo>diag</mo><mo stretchy="false">&#x00028;</mo><mn>4</mn><mo>&#x0002C;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。
+3. 误差为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msqrt><mrow><msup><mn>1</mn><mn>2</mn></msup><mo>&#x0002B;</mo><msup><mn>0</mn><mn>2</mn></msup></mrow></msqrt><mo>&#x0003D;</mo><mn>1</mn></mrow></math>。
+
+### 11. 矩阵求导
+
+1. 展开：
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>f</mi><mo>&#x0003D;</mo><msup><mi>&#x1D431;</mi><mo>&#x022A4;</mo></msup><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x02212;</mo><mn>2</mn><msup><mi>&#x1D41B;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x0002B;</mo><msup><mi>&#x1D41B;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D41B;</mi><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+所以
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x02207;</mo><mi>f</mi><mo>&#x0003D;</mo><mn>2</mn><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x02212;</mo><mn>2</mn><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><mn>2</mn><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x02212;</mo><mi>&#x1D41B;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+2. 令 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02207;</mo><mi>f</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math>：
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x0003D;</mo><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D41B;</mi><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+3. 若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 列满秩，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi></mrow></math> 可逆，解为
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mover accent="true"><mrow><mi>&#x1D431;</mi></mrow><mo>&#x0005E;</mo></mover><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><msup><mo stretchy="false">&#x00029;</mo><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D41B;</mi><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+### 12. 最小二乘应用
+
+1.
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>0</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>3</mn></mtd></mtr><mtr><mtd><mn>4</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+2.
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>3</mn></mtd><mtd><mn>3</mn></mtd></mtr><mtr><mtd><mn>3</mn></mtd><mtd><mn>5</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>8</mn></mtd></mtr><mtr><mtd><mn>11</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+正规方程为
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007B;</mo><mtable><mtr><mtd columnalign="left"><mn>3</mn><mi>c</mi><mo>&#x0002B;</mo><mn>3</mn><mi>d</mi><mo>&#x0003D;</mo><mn>8</mn><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><mn>3</mn><mi>c</mi><mo>&#x0002B;</mo><mn>5</mn><mi>d</mi><mo>&#x0003D;</mo><mn>11</mn><mo>&#x0002E;</mo></mtd></mtr></mtable></mrow></mrow></math></div>
+
+
+
+相减得 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mi>d</mi><mo>&#x0003D;</mo><mn>3</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>d</mi><mo>&#x0003D;</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>3</mn><mn>2</mn></mfrac></mstyle></mrow></math>，再得 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>c</mi><mo>&#x0003D;</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>7</mn><mn>6</mn></mfrac></mstyle></mrow></math>。
+
+3. 拟合直线为
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>y</mi><mo>&#x0003D;</mo><mfrac><mn>7</mn><mn>6</mn></mfrac><mo>&#x0002B;</mo><mfrac><mn>3</mn><mn>2</mn></mfrac><mi>x</mi><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+三个预测值约为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1.167</mn></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2.667</mn></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>4.167</mn></mrow></math>，残差分别为
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x02212;</mo><mfrac><mn>1</mn><mn>6</mn></mfrac><mo>&#x0002C;</mo><mspace width="1em" /><mfrac><mn>1</mn><mn>3</mn></mfrac><mo>&#x0002C;</mo><mspace width="1em" /><mo>&#x02212;</mo><mfrac><mn>1</mn><mn>6</mn></mfrac><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+（残差 = 预测值 − 实际值。）
+
+</details>
+
+<hr>
+<h2>复习建议</h2>
+<ul>
+<li>错在计算：重做第 03、06、08 课例题。</li>
+<li>错在概念：重读第 04、07、09 课的定义与判据。</li>
+<li>错在应用：回到第 05、10 课，把最小二乘和矩阵求导各推一遍。</li>
+<li>若总分低于 60，建议按 01 → 05 → 07 → 09 的顺序复习；高于 80 可以进入概率论。</li>
+</ul>
+<hr>
+<h2>自查清单</h2>
+<ul>
+<li>[ ] 能在 90 分钟内完成整卷</li>
+<li>[ ] 计算题步骤完整、结果正确</li>
+<li>[ ] 概念题能说出理由，而不是只猜对错</li>
+<li>[ ] 错题已经回到对应课节复习</li>
+<li>[ ] 能独立推导正规方程</li>
+</ul>
+<nav class="lesson-nav"><span><a href="线代10-矩阵微积分与数值线性代数.html">&larr; 上一课</a></span><span><a href="../index.html">返回课程主页</a></span></nav>
+<footer>线性代数 · 数学公式使用 MathML 渲染，建议使用 Chrome / Edge / Firefox 打开</footer>
+</main>
+</body>
+</html>

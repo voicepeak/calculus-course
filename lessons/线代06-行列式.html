@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>线性代数 · 第 06 课：行列式</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --quote-bg: #f6f8fa;
+  --code-bg: #eff2f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --border: #30363d;
+    --accent: #4493f8;
+    --quote-bg: #161b22;
+    --code-bg: #1f242c;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; font-weight: 650; }
+h1 { font-size: 2rem; margin: 0 0 .8em; padding-bottom: .35em; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 2.2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.2rem; margin: 1.8em 0 .55em; }
+p { margin: .85em 0; }
+a { color: var(--accent); }
+blockquote {
+  margin: 1em 0;
+  padding: .6em 1em;
+  border-left: 4px solid var(--accent);
+  background: var(--quote-bg);
+  color: var(--muted);
+  border-radius: 4px;
+}
+blockquote p { margin: .25em 0; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: .96em;
+  overflow: hidden;
+}
+th, td { border: 1px solid var(--border); padding: .45em .7em; text-align: left; vertical-align: top; }
+th { background: var(--quote-bg); font-weight: 600; }
+details {
+  margin: 1.2em 0;
+  padding: .8em 1em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--quote-bg);
+}
+summary { cursor: pointer; font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+ul, ol { padding-left: 1.7em; }
+li { margin: .3em 0; }
+.math-block {
+  margin: 1.15em 0;
+  padding: .7em .9em;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--quote-bg);
+  border-radius: 6px;
+}
+math { font-size: 1.14em; line-height: 1.2; }
+math[display="inline"] { font-size: 1.05em; vertical-align: baseline; }
+.math-block math { font-size: 1.24em; }
+.math-fallback, .math-fallback-block {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .08em .3em;
+  border-radius: 3px;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .12em .35em;
+  border-radius: 3px;
+  font-size: .92em;
+}
+pre code { display: block; padding: .8em 1em; overflow-x: auto; }
+.lesson-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .8em 1.4em;
+  justify-content: space-between;
+  margin: 2.4em 0 0;
+  padding-top: 1.1em;
+  border-top: 1px solid var(--border);
+  font-size: .95em;
+}
+footer { margin-top: 2.2em; color: var(--muted); font-size: .85em; text-align: center; }
+@media print {
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  .math-block { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>线性代数 · 第 06 课：行列式</h1>
+<blockquote>
+<p><strong>本课目标</strong>：理解行列式的几何意义，掌握 2×2、3×3 行列式的计算与性质，能用行列式判断可逆性。</p>
+<p><strong>使用方法</strong>：先读讲解 → 做练习 → 对答案。错题 72 小时内重做。</p>
+</blockquote>
+<hr>
+<h2>目录</h2>
+<ol>
+<li>行列式是带符号的面积与体积</li>
+<li>2×2 与 3×3 的计算</li>
+<li>行列式的性质</li>
+<li>代数余子式展开</li>
+<li>可逆性、Cramer 法则与雅可比</li>
+<li>工程视角：换元与不确定性</li>
+<li>练习</li>
+<li>答案与简解</li>
+</ol>
+<hr>
+<h2>1. 行列式是带符号的面积与体积</h2>
+<p>二阶行列式定义为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0007C;</mo><mtable><mtr><mtd><mi>a</mi></mtd><mtd><mi>b</mi></mtd></mtr><mtr><mtd><mi>c</mi></mtd><mtd><mi>d</mi></mtd></mtr></mtable><mo>&#x0007C;</mo><mo>&#x0003D;</mo><mi>a</mi><mi>d</mi><mo>&#x02212;</mo><mi>b</mi><mi>c</mi><mo>&#x0002E;</mo></mrow></math></div>
+<p>它的绝对值等于向量 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mi>a</mi><mo>&#x0002C;</mo><mi>c</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mi>b</mi><mo>&#x0002C;</mo><mi>d</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 张成的平行四边形的面积，符号表示这两个向量的相对方向：从第一个向量转到第二个向量是逆时针则为正，顺时针则为负。</p>
+<p>三阶行列式的绝对值等于三个列向量张成的平行六面体的体积，符号同样表示定向。若三个向量共面，体积为 0，行列式也为 0。</p>
+<p>这个几何解释说明：行列式衡量线性变换“把体积放大或缩小了多少倍”。若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo movablelimits="true">det</mo><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，变换把空间压到更低维，体积变为 0，信息不可逆。</p>
+<hr>
+<h2>2. 2×2 与 3×3 的计算</h2>
+<p>二阶：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0007C;</mo><mtable><mtr><mtd><mi>a</mi></mtd><mtd><mi>b</mi></mtd></mtr><mtr><mtd><mi>c</mi></mtd><mtd><mi>d</mi></mtd></mtr></mtable><mo>&#x0007C;</mo><mo>&#x0003D;</mo><mi>a</mi><mi>d</mi><mo>&#x02212;</mo><mi>b</mi><mi>c</mi><mo>&#x0002E;</mo></mrow></math></div>
+<p>三阶可以用对角线法则：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0007C;</mo><mtable><mtr><mtd><mi>a</mi></mtd><mtd><mi>b</mi></mtd><mtd><mi>c</mi></mtd></mtr><mtr><mtd><mi>d</mi></mtd><mtd><mi>e</mi></mtd><mtd><mi>f</mi></mtd></mtr><mtr><mtd><mi>g</mi></mtd><mtd><mi>h</mi></mtd><mtd><mi>i</mi></mtd></mtr></mtable><mo>&#x0007C;</mo><mo>&#x0003D;</mo><mi>a</mi><mi>e</mi><mi>i</mi><mo>&#x0002B;</mo><mi>b</mi><mi>f</mi><mi>g</mi><mo>&#x0002B;</mo><mi>c</mi><mi>d</mi><mi>h</mi><mo>&#x02212;</mo><mi>c</mi><mi>e</mi><mi>g</mi><mo>&#x02212;</mo><mi>b</mi><mi>d</mi><mi>i</mi><mo>&#x02212;</mo><mi>a</mi><mi>f</mi><mi>h</mi><mo>&#x0002E;</mo></mrow></math></div>
+<p>三条主对角线方向的乘积取正号，三条副对角线方向的乘积取负号。</p>
+<p><strong>例 6.1</strong>　计算</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>2</mn></mtd><mtd><mn>1</mn></mtd><mtd><mn>0</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>3</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr></mtable><mo>&#x00029;</mo></mrow></math></div>
+<p>的行列式。</p>
+<p>按第一行展开：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo movablelimits="true">det</mo><mi>&#x1D400;</mi><mi>&</mi><mo>&#x0003D;</mo><mn>2</mn><mo>&#x0007C;</mo><mtable><mtr><mtd><mn>3</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr></mtable><mo>&#x0007C;</mo><mo>&#x02212;</mo><mn>1</mn><mo>&#x0007C;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>2</mn></mtd></mtr></mtable><mo>&#x0007C;</mo><mo>&#x0002B;</mo><mn>0</mn><mo>&#x0007C;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>3</mn></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>1</mn></mtd></mtr></mtable><mo>&#x0007C;</mo><mspace linebreak="newline" /><mi>&</mi><mo>&#x0003D;</mo><mn>2</mn><mo stretchy="false">&#x00028;</mo><mn>6</mn><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo>&#x02212;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>10</mn><mo>&#x02212;</mo><mn>2</mn><mo>&#x0003D;</mo><mn>8</mn><mo>&#x0002E;</mo></mrow></mrow></math></div>
+<blockquote>
+<p><strong>注意</strong>：对角线法则只适用于 2×2 和 3×3，不能推广到 4×4 及以上。高阶行列式要用余子式展开或行变换。</p>
+</blockquote>
+<hr>
+<h2>3. 行列式的性质</h2>
+<p>行列式是“多线性”和“反对称”的函数。常用性质如下：</p>
+<ol>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mi>&#x1D401;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D401;</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。</li>
+<li>交换两行（或两列），行列式变号。</li>
+<li>某一行乘以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>c</mi></mrow></math>，行列式乘以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>c</mi></mrow></math>；因此 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><mi>c</mi><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>c</mi><mi>n</mi></msup><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo></mrow></math>（<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math> 阶）。</li>
+<li>把一行的倍数加到另一行，行列式不变。</li>
+<li>若有两行相同或成比例，行列式为 0。</li>
+<li>三角矩阵的行列式等于对角线元素之积。</li>
+<li>若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 可逆，则 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><msup><mi>&#x1D400;</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><mn>1</mn></mrow><mrow><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo></mrow></mfrac></mstyle></mrow></math>。</li>
+</ol>
+<p>这些性质让计算可以大幅简化：先用行变换把矩阵化成三角形，再把对角线乘起来。</p>
+<p><strong>例 6.2</strong>　计算</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0007C;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd><mtd><mn>3</mn></mtd></mtr><mtr><mtd><mn>2</mn></mtd><mtd><mn>4</mn></mtd><mtd><mn>6</mn></mtd></mtr><mtr><mtd><mn>7</mn></mtd><mtd><mn>8</mn></mtd><mtd><mn>9</mn></mtd></mtr></mtable><mo>&#x0007C;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>第二行是第一行的 2 倍，两行成比例，所以行列式为 0。</p>
+<p><strong>例 6.3</strong>　计算</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x0007C;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd><mtd><mn>3</mn></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>4</mn></mtd><mtd><mn>5</mn></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>0</mn></mtd><mtd><mn>6</mn></mtd></mtr></mtable><mo>&#x0007C;</mo><mo>&#x0003D;</mo><mn>1</mn><mo>&#x000B7;</mo><mn>4</mn><mo>&#x000B7;</mo><mn>6</mn><mo>&#x0003D;</mo><mn>24</mn><mo>&#x0002E;</mo></mrow></math></div>
+<hr>
+<h2>4. 代数余子式展开</h2>
+<p>划去第 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>i</mi></mrow></math> 行第 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>j</mi></mrow></math> 列后剩下的行列式，叫元素 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>a</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mrow></math> 的<strong>余子式</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>M</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mrow></math>。加上符号</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>C</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mrow><mi>i</mi><mo>&#x0002B;</mo><mi>j</mi></mrow></msup><msub><mi>M</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub></mrow></math></div>
+<p>叫<strong>代数余子式</strong>。行列式可以沿任意一行或一列展开：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo movablelimits="true">det</mo><mi>&#x1D400;</mi><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>j</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mi>n</mi></munderover><msub><mi>a</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><msub><mi>C</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>i</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mi>n</mi></munderover><msub><mi>a</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><msub><mi>C</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>&#x0002E;</mo></mrow></math></div>
+<p>选择含零最多的行或列展开，计算量最小。</p>
+<p><strong>例 6.4</strong>　沿第一列展开例 6.1 的矩阵：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo movablelimits="true">det</mo><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mn>2</mn><mo>&#x0007C;</mo><mtable><mtr><mtd><mn>3</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr></mtable><mo>&#x0007C;</mo><mo>&#x02212;</mo><mn>1</mn><mo>&#x0007C;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>0</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr></mtable><mo>&#x0007C;</mo><mo>&#x0002B;</mo><mn>0</mn><mo>&#x0003D;</mo><mn>2</mn><mo>&#x000B7;</mo><mn>5</mn><mo>&#x02212;</mo><mn>1</mn><mo>&#x000B7;</mo><mn>2</mn><mo>&#x0003D;</mo><mn>8</mn><mo>&#x0002E;</mo></mrow></math></div>
+<p>结果与按第一行展开一致。</p>
+<hr>
+<h2>5. 可逆性、Cramer 法则与雅可比</h2>
+<p>方阵 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 可逆，当且仅当</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02260;</mo><mn>0</mn><mo>&#x0002E;</mo></mrow></math></div>
+<p>若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，称 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 奇异。奇异矩阵的列线性相关，零空间非平凡，映射不可逆。</p>
+<p><strong>Cramer 法则</strong>：若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 可逆，方程组 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x0003D;</mo><mi>&#x1D41B;</mi></mrow></math> 的解为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>x</mi><mi>i</mi></msub><mo>&#x0003D;</mo><mfrac><mrow><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><msub><mi>&#x1D400;</mi><mi>i</mi></msub><mo stretchy="false">&#x00029;</mo></mrow><mrow><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo></mrow></mfrac><mo>&#x0002C;</mo></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D400;</mi><mi>i</mi></msub></mrow></math> 是把 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 的第 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>i</mi></mrow></math> 列换成 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41B;</mi></mrow></math> 得到的矩阵。</p>
+<p>Cramer 法则形式漂亮，但计算量大：每求一个分量都要算一个行列式，实际工程中很少用它，更多用 LU 分解或迭代法。它的价值在于理论分析。</p>
+<p><strong>雅可比行列式</strong>：多元换元积分时，体积元要乘以变换的雅可比行列式的绝对值：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x00064;</mi><mi>x</mi><mspace width="0.167em" /><mi>&#x00064;</mi><mi>y</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x0007C;</mo><mo movablelimits="true">det</mo><mi>&#x1D409;</mi><mo stretchy="false">&#x0007C;</mo><mspace width="0.167em" /><mi>&#x00064;</mi><mi>u</mi><mspace width="0.167em" /><mi>&#x00064;</mi><mi>v</mi><mo>&#x0002E;</mo></mrow></math></div>
+<p>例如极坐标 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mi>r</mi><mi>cos</mi><mi>&#x003B8;</mi></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>r</mi><mi>sin</mi><mi>&#x003B8;</mi></mrow></math>，雅可比矩阵为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D409;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mi>cos</mi><mi>&#x003B8;</mi></mtd><mtd><mo>&#x02212;</mo><mi>r</mi><mi>sin</mi><mi>&#x003B8;</mi></mtd></mtr><mtr><mtd><mi>sin</mi><mi>&#x003B8;</mi></mtd><mtd><mi>r</mi><mi>cos</mi><mi>&#x003B8;</mi></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mo movablelimits="true">det</mo><mi>&#x1D409;</mi><mo>&#x0003D;</mo><mi>r</mi><mo>&#x0002E;</mo></mrow></math></div>
+<p>所以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x00064;</mi><mi>x</mi><mspace width="0.167em" /><mi>&#x00064;</mi><mi>y</mi><mo>&#x0003D;</mo><mi>r</mi><mspace width="0.167em" /><mi>&#x00064;</mi><mi>r</mi><mspace width="0.167em" /><mi>&#x00064;</mi><mi>&#x003B8;</mi></mrow></math>。这正是二重积分极坐标公式的来源。</p>
+<hr>
+<h2>6. 工程视角：换元与不确定性</h2>
+<p>行列式在工程中至少有三类用途：</p>
+<ul>
+<li><strong>换元与积分</strong>：概率密度、体积元、坐标变换都要乘雅可比行列式；</li>
+<li><strong>可逆性判断</strong>：控制系统、标定矩阵、协方差矩阵是否退化，看行列式是否接近 0；</li>
+<li><strong>不确定性体积</strong>：多元高斯分布的协方差矩阵行列式决定置信椭球的体积，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo movablelimits="true">det</mo><mrow><mi mathvariant="bold-italic">&#x003A3;</mi></mrow></mrow></math> 越小，估计越集中。</li>
+</ul>
+<p>数值上要注意：行列式接近 0 并不一定说明矩阵“几乎不可逆”到无法使用，条件数才是更可靠的指标（第 10 课）。一个行列式很小的矩阵可能只是尺度小，方向仍然很清楚。</p>
+<blockquote>
+<p><strong>小实验</strong>：用 NumPy 计算行列式，并观察行变换对它的影响。</p>
+</blockquote>
+<pre><code class="language-python">import numpy as np
+
+A = np.array([[2, 1, 0], [1, 3, 1], [0, 1, 2]])
+print(np.linalg.det(A))  # 约 8
+
+B = A.copy()
+B[1] = B[0]              # 让两行相同
+print(np.linalg.det(B))  # 0
+</code></pre>
+<hr>
+<h2>7. 练习</h2>
+<ol>
+<li>
+<p>计算 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x0007C;</mo><mtable><mtr><mtd><mn>3</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>2</mn></mtd><mtd><mn>4</mn></mtd></mtr></mtable><mo>&#x0007C;</mo></mrow></math>。</p>
+</li>
+<li>
+<p>计算例 6.1 中矩阵的行列式，并判断是否可逆。</p>
+</li>
+<li>
+<p>计算 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x0007C;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr><mtr><mtd><mn>2</mn></mtd><mtd><mn>4</mn></mtd></mtr></mtable><mo>&#x0007C;</mo></mrow></math>，解释结果。</p>
+</li>
+<li>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>3</mn><mo>&#x000D7;</mo><mn>3</mn></mrow></math> 矩阵，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>3</mn></mrow></math>。求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><msup><mi>&#x1D400;</mi><mn>2</mn></msup><mo stretchy="false">&#x00029;</mo></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><msup><mi>&#x1D400;</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup><mo stretchy="false">&#x00029;</mo></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><mn>2</mn><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+</li>
+<li>
+<p>求向量 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>3</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 张成的平行四边形面积。</p>
+</li>
+</ol>
+<hr>
+<h2>8. 答案与简解</h2>
+<details>
+<summary>点击展开（做完再看）</summary>
+
+**1.** <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>3</mn><mo>&#x000B7;</mo><mn>4</mn><mo>&#x02212;</mo><mn>1</mn><mo>&#x000B7;</mo><mn>2</mn><mo>&#x0003D;</mo><mn>10</mn></mrow></math>。
+
+**2.** 已算得 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo movablelimits="true">det</mo><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mn>8</mn><mo>&#x02260;</mo><mn>0</mn></mrow></math>，所以可逆。
+
+**3.** <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn><mo>&#x000B7;</mo><mn>4</mn><mo>&#x02212;</mo><mn>2</mn><mo>&#x000B7;</mo><mn>2</mn><mo>&#x0003D;</mo><mn>0</mn></mrow></math>。第二列是第一列的 2 倍，两列线性相关，矩阵奇异，不可逆。
+
+**4.** <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><msup><mi>&#x1D400;</mi><mn>2</mn></msup><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mn>3</mn><mn>2</mn></msup><mo>&#x0003D;</mo><mn>9</mn></mrow></math>；<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><msup><mi>&#x1D400;</mi><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002F;</mo><mn>3</mn></mrow></math>；<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><mn>2</mn><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mn>2</mn><mn>3</mn></msup><mo>&#x000B7;</mo><mn>3</mn><mo>&#x0003D;</mo><mn>24</mn></mrow></math>。
+
+**5.** 面积为行列式的绝对值：
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007C;</mo><mo>&#x0007C;</mo><mtable><mtr><mtd><mn>3</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd></mtr></mtable><mo>&#x0007C;</mo><mo stretchy="true" fence="true" form="postfix">&#x0007C;</mo></mrow><mo>&#x0003D;</mo><mo stretchy="false">&#x0007C;</mo><mn>6</mn><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x0007C;</mo><mo>&#x0003D;</mo><mn>5</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+</details>
+
+<hr>
+<h2>下节预告</h2>
+<p><strong>第 07 课：特征值与特征向量</strong></p>
+<ul>
+<li>定义 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mi>&#x1D42F;</mi><mo>&#x0003D;</mo><mi>&#x003BB;</mi><mi>&#x1D42F;</mi></mrow></math></li>
+<li>特征多项式与特征空间</li>
+<li>对角化</li>
+<li>矩阵幂与线性动力系统</li>
+</ul>
+<hr>
+<h2>自查清单</h2>
+<ul>
+<li>[ ] 能说出行列式的面积/体积意义</li>
+<li>[ ] 会算 2×2、3×3 行列式</li>
+<li>[ ] 记得 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mi>&#x1D401;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo><mo movablelimits="true">det</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D401;</mi><mo stretchy="false">&#x00029;</mo></mrow></math></li>
+<li>[ ] 知道行列式非零等价于可逆</li>
+<li>[ ] 理解极坐标雅可比为什么是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>r</mi></mrow></math></li>
+</ul>
+<nav class="lesson-nav"><span><a href="线代05-正交投影与最小二乘.html">&larr; 上一课</a></span><span><a href="线代07-特征值与特征向量.html">下一课 &rarr;</a></span></nav>
+<footer>线性代数 · 数学公式使用 MathML 渲染，建议使用 Chrome / Edge / Firefox 打开</footer>
+</main>
+</body>
+</html>

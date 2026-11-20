@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>线性代数 · 第 03 课：高斯消元与线性方程组</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --quote-bg: #f6f8fa;
+  --code-bg: #eff2f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --border: #30363d;
+    --accent: #4493f8;
+    --quote-bg: #161b22;
+    --code-bg: #1f242c;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; font-weight: 650; }
+h1 { font-size: 2rem; margin: 0 0 .8em; padding-bottom: .35em; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 2.2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.2rem; margin: 1.8em 0 .55em; }
+p { margin: .85em 0; }
+a { color: var(--accent); }
+blockquote {
+  margin: 1em 0;
+  padding: .6em 1em;
+  border-left: 4px solid var(--accent);
+  background: var(--quote-bg);
+  color: var(--muted);
+  border-radius: 4px;
+}
+blockquote p { margin: .25em 0; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: .96em;
+  overflow: hidden;
+}
+th, td { border: 1px solid var(--border); padding: .45em .7em; text-align: left; vertical-align: top; }
+th { background: var(--quote-bg); font-weight: 600; }
+details {
+  margin: 1.2em 0;
+  padding: .8em 1em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--quote-bg);
+}
+summary { cursor: pointer; font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+ul, ol { padding-left: 1.7em; }
+li { margin: .3em 0; }
+.math-block {
+  margin: 1.15em 0;
+  padding: .7em .9em;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--quote-bg);
+  border-radius: 6px;
+}
+math { font-size: 1.14em; line-height: 1.2; }
+math[display="inline"] { font-size: 1.05em; vertical-align: baseline; }
+.math-block math { font-size: 1.24em; }
+.math-fallback, .math-fallback-block {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .08em .3em;
+  border-radius: 3px;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .12em .35em;
+  border-radius: 3px;
+  font-size: .92em;
+}
+pre code { display: block; padding: .8em 1em; overflow-x: auto; }
+.lesson-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .8em 1.4em;
+  justify-content: space-between;
+  margin: 2.4em 0 0;
+  padding-top: 1.1em;
+  border-top: 1px solid var(--border);
+  font-size: .95em;
+}
+footer { margin-top: 2.2em; color: var(--muted); font-size: .85em; text-align: center; }
+@media print {
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  .math-block { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>线性代数 · 第 03 课：高斯消元与线性方程组</h1>
+<blockquote>
+<p><strong>本课目标</strong>：会用消元法解线性方程组，理解秩与解的结构，能写出齐次方程组的零空间。</p>
+<p><strong>使用方法</strong>：先读讲解 → 做练习 → 对答案。错题 72 小时内重做。</p>
+</blockquote>
+<hr>
+<h2>目录</h2>
+<ol>
+<li>线性方程组与增广矩阵</li>
+<li>初等行变换</li>
+<li>行阶梯形与简化行阶梯形</li>
+<li>秩与解的结构</li>
+<li>齐次方程组与零空间</li>
+<li>工程视角：约束与平衡</li>
+<li>练习</li>
+<li>答案与简解</li>
+</ol>
+<hr>
+<h2>1. 线性方程组与增广矩阵</h2>
+<p>一个线性方程组写成</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007B;</mo><mtable><mtr><mtd columnalign="left"><msub><mi>a</mi><mrow><mn>11</mn></mrow></msub><msub><mi>x</mi><mn>1</mn></msub><mo>&#x0002B;</mo><mo>&#x022EF;</mo><mo>&#x0002B;</mo><msub><mi>a</mi><mrow><mn>1</mn><mi>n</mi></mrow></msub><msub><mi>x</mi><mi>n</mi></msub><mo>&#x0003D;</mo><msub><mi>b</mi><mn>1</mn></msub><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><mspace width="1em" /><mo>&#x022EE;</mo></mtd></mtr><mtr><mtd columnalign="left"><msub><mi>a</mi><mrow><mi>m</mi><mn>1</mn></mrow></msub><msub><mi>x</mi><mn>1</mn></msub><mo>&#x0002B;</mo><mo>&#x022EF;</mo><mo>&#x0002B;</mo><msub><mi>a</mi><mrow><mi>m</mi><mi>n</mi></mrow></msub><msub><mi>x</mi><mi>n</mi></msub><mo>&#x0003D;</mo><msub><mi>b</mi><mi>m</mi></msub><mo>&#x0002E;</mo></mtd></mtr></mtable></mrow></mrow></math></div>
+<p>把系数和常数项排在一起，得到<strong>增广矩阵</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><mi>&#x1D400;</mi><mo>&#x02223;</mo><mi>&#x1D41B;</mi><mo stretchy="true" fence="true" form="postfix">]</mo></mrow><mo>&#x0003D;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mtable columnlines="none none solid"><mtr><mtd columnalign="center"><msub><mi>a</mi><mrow><mn>11</mn></mrow></msub></mtd><mtd columnalign="center"><mo>&#x022EF;</mo></mtd><mtd columnalign="center"><msub><mi>a</mi><mrow><mn>1</mn><mi>n</mi></mrow></msub></mtd><mtd columnalign="center"><msub><mi>b</mi><mn>1</mn></msub></mtd></mtr><mtr><mtd columnalign="center"><mo>&#x022EE;</mo></mtd><mtd columnalign="center"><mo>&#x022F1;</mo></mtd><mtd columnalign="center"><mo>&#x022EE;</mo></mtd><mtd columnalign="center"><mo>&#x022EE;</mo></mtd></mtr><mtr><mtd columnalign="center"><msub><mi>a</mi><mrow><mi>m</mi><mn>1</mn></mrow></msub></mtd><mtd columnalign="center"><mo>&#x022EF;</mo></mtd><mtd columnalign="center"><msub><mi>a</mi><mrow><mi>m</mi><mi>n</mi></mrow></msub></mtd><mtd columnalign="center"><msub><mi>b</mi><mi>m</mi></msub></mtd></mtr></mtable><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0002E;</mo></mrow></math></div>
+<p>解方程组时，我们只关心系数之间的关系，变量名 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>x</mi><mn>1</mn></msub><mo>&#x0002C;</mo><mo>&#x02026;</mo><mo>&#x0002C;</mo><msub><mi>x</mi><mi>n</mi></msub></mrow></math> 只是占位符。因此可以对增广矩阵做行变换，而不必反复抄写变量。</p>
+<hr>
+<h2>2. 初等行变换</h2>
+<p>下面三种操作不改变方程组的解集：</p>
+<ol>
+<li>交换两行；</li>
+<li>把某一行乘以一个非零常数；</li>
+<li>把某一行的倍数加到另一行上。</li>
+</ol>
+<p>这三种操作叫<strong>初等行变换</strong>。它们对应方程组的合法变形：交换方程顺序、两边同乘非零数、两个方程相减。</p>
+<p>注意：<strong>不能交换列</strong>，因为列对应变量，交换列会改变变量的含义；<strong>不能把某行乘以 0</strong>，那会丢失方程。</p>
+<p>高斯消元的目标，是用行变换把矩阵化成容易回代的形式。</p>
+<hr>
+<h2>3. 行阶梯形与简化行阶梯形</h2>
+<p><strong>行阶梯形</strong>（row echelon form）满足：</p>
+<ul>
+<li>非零行在零行上方；</li>
+<li>每一行的第一个非零元（主元）在上一行主元的右边；</li>
+<li>主元所在列的下方全为 0。</li>
+</ul>
+<p><strong>简化行阶梯形</strong>（RREF）还要求：</p>
+<ul>
+<li>每个主元都是 1；</li>
+<li>主元所在列的其他元素全为 0。</li>
+</ul>
+<p><strong>例 3.1</strong>　解方程组</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007B;</mo><mtable><mtr><mtd columnalign="left"><mi>x</mi><mo>&#x0002B;</mo><mi>y</mi><mo>&#x0002B;</mo><mi>z</mi><mo>&#x0003D;</mo><mn>6</mn><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><mn>2</mn><mi>x</mi><mo>&#x02212;</mo><mi>y</mi><mo>&#x0002B;</mo><mi>z</mi><mo>&#x0003D;</mo><mn>3</mn><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><mi>x</mi><mo>&#x0002B;</mo><mn>2</mn><mi>y</mi><mo>&#x02212;</mo><mi>z</mi><mo>&#x0003D;</mo><mn>2</mn><mo>&#x0002E;</mo></mtd></mtr></mtable></mrow></mrow></math></div>
+<p>增广矩阵：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mtable columnlines="none none solid"><mtr><mtd columnalign="center"><mn>1</mn></mtd><mtd columnalign="center"><mn>1</mn></mtd><mtd columnalign="center"><mn>1</mn></mtd><mtd columnalign="center"><mn>6</mn></mtd></mtr><mtr><mtd columnalign="center"><mn>2</mn></mtd><mtd columnalign="center"><mo>&#x02212;</mo><mn>1</mn></mtd><mtd columnalign="center"><mn>1</mn></mtd><mtd columnalign="center"><mn>3</mn></mtd></mtr><mtr><mtd columnalign="center"><mn>1</mn></mtd><mtd columnalign="center"><mn>2</mn></mtd><mtd columnalign="center"><mo>&#x02212;</mo><mn>1</mn></mtd><mtd columnalign="center"><mn>2</mn></mtd></mtr></mtable><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0002E;</mo></mrow></math></div>
+<p>第二行减去第一行的 2 倍，第三行减去第一行：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mtable columnlines="none none solid"><mtr><mtd columnalign="center"><mn>1</mn></mtd><mtd columnalign="center"><mn>1</mn></mtd><mtd columnalign="center"><mn>1</mn></mtd><mtd columnalign="center"><mn>6</mn></mtd></mtr><mtr><mtd columnalign="center"><mn>0</mn></mtd><mtd columnalign="center"><mo>&#x02212;</mo><mn>3</mn></mtd><mtd columnalign="center"><mo>&#x02212;</mo><mn>1</mn></mtd><mtd columnalign="center"><mo>&#x02212;</mo><mn>9</mn></mtd></mtr><mtr><mtd columnalign="center"><mn>0</mn></mtd><mtd columnalign="center"><mn>1</mn></mtd><mtd columnalign="center"><mo>&#x02212;</mo><mn>2</mn></mtd><mtd columnalign="center"><mo>&#x02212;</mo><mn>4</mn></mtd></mtr></mtable><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0002E;</mo></mrow></math></div>
+<p>交换第二、三行，再把新的第二行乘以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mtable columnlines="none none solid"><mtr><mtd columnalign="center"><mn>1</mn></mtd><mtd columnalign="center"><mn>1</mn></mtd><mtd columnalign="center"><mn>1</mn></mtd><mtd columnalign="center"><mn>6</mn></mtd></mtr><mtr><mtd columnalign="center"><mn>0</mn></mtd><mtd columnalign="center"><mn>1</mn></mtd><mtd columnalign="center"><mo>&#x02212;</mo><mn>2</mn></mtd><mtd columnalign="center"><mo>&#x02212;</mo><mn>4</mn></mtd></mtr><mtr><mtd columnalign="center"><mn>0</mn></mtd><mtd columnalign="center"><mo>&#x02212;</mo><mn>3</mn></mtd><mtd columnalign="center"><mo>&#x02212;</mo><mn>1</mn></mtd><mtd columnalign="center"><mo>&#x02212;</mo><mn>9</mn></mtd></mtr></mtable><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0002E;</mo></mrow></math></div>
+<p>第三行加上第二行的 3 倍：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mtable columnlines="none none solid"><mtr><mtd columnalign="center"><mn>1</mn></mtd><mtd columnalign="center"><mn>1</mn></mtd><mtd columnalign="center"><mn>1</mn></mtd><mtd columnalign="center"><mn>6</mn></mtd></mtr><mtr><mtd columnalign="center"><mn>0</mn></mtd><mtd columnalign="center"><mn>1</mn></mtd><mtd columnalign="center"><mo>&#x02212;</mo><mn>2</mn></mtd><mtd columnalign="center"><mo>&#x02212;</mo><mn>4</mn></mtd></mtr><mtr><mtd columnalign="center"><mn>0</mn></mtd><mtd columnalign="center"><mn>0</mn></mtd><mtd columnalign="center"><mo>&#x02212;</mo><mn>7</mn></mtd><mtd columnalign="center"><mo>&#x02212;</mo><mn>21</mn></mtd></mtr></mtable><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0002E;</mo></mrow></math></div>
+<p>第三行给出 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>&#x02212;</mo><mn>7</mn><mi>z</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>21</mn></mrow></math>，所以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>z</mi><mo>&#x0003D;</mo><mn>3</mn></mrow></math>。回代：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x02212;</mo><mn>2</mn><mo>&#x000B7;</mo><mn>3</mn><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>4</mn></mrow></math>，得 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mn>2</mn></mrow></math>；<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0002B;</mo><mn>2</mn><mo>&#x0002B;</mo><mn>3</mn><mo>&#x0003D;</mo><mn>6</mn></mrow></math>，得 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math>。解为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo>&#x0002C;</mo><mi>z</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>3</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>这一组主元在三个不同的列上，对应唯一解。</p>
+<hr>
+<h2>4. 秩与解的结构</h2>
+<p>矩阵 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 的<strong>秩</strong> <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>rank</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 是行阶梯形中主元的个数，也就是非零行的个数。它衡量矩阵“真正独立的方向”有多少。</p>
+<p>设方程组有 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math> 个未知数，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>m</mi><mo>&#x000D7;</mo><mi>n</mi></mrow></math> 矩阵，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>r</mi><mo>&#x0003D;</mo><mo>rank</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。比较 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>rank</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>rank</mo><mo stretchy="false">&#x00028;</mo><mo stretchy="false">[</mo><mi>&#x1D400;</mi><mo>&#x02223;</mo><mi>&#x1D41B;</mi><mo stretchy="false">]</mo><mo stretchy="false">&#x00029;</mo></mrow></math>：</p>
+<table>
+<thead>
+<tr>
+<th>情况</th>
+<th>解的结构</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>rank</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003C;</mo><mo>rank</mo><mo stretchy="false">&#x00028;</mo><mo stretchy="false">[</mo><mi>&#x1D400;</mi><mo>&#x02223;</mo><mi>&#x1D41B;</mi><mo stretchy="false">]</mo><mo stretchy="false">&#x00029;</mo></mrow></math></td>
+<td>无解</td>
+</tr>
+<tr>
+<td>两者相等，且 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>r</mi><mo>&#x0003D;</mo><mi>n</mi></mrow></math></td>
+<td>唯一解</td>
+</tr>
+<tr>
+<td>两者相等，且 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>r</mi><mo>&#x0003C;</mo><mi>n</mi></mrow></math></td>
+<td>无穷多解，有 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mo>&#x02212;</mo><mi>r</mi></mrow></math> 个自由变量</td>
+</tr>
+</tbody>
+</table>
+<p>直观解释：</p>
+<ul>
+<li>增广矩阵的秩更大，说明出现了 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x0003D;</mo><mi>d</mi></mrow></math> 且 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>d</mi><mo>&#x02260;</mo><mn>0</mn></mrow></math> 的矛盾行，方程组不相容；</li>
+<li>每个未知数都对应一个主元，就没有自由变量，解唯一；</li>
+<li>有 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mo>&#x02212;</mo><mi>r</mi></mrow></math> 列没有主元，这些列对应的变量可以自由取值，其他变量由它们决定。</li>
+</ul>
+<p><strong>例 3.2</strong>　</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007B;</mo><mtable><mtr><mtd columnalign="left"><mi>x</mi><mo>&#x0002B;</mo><mn>2</mn><mi>y</mi><mo>&#x0002B;</mo><mi>z</mi><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><mn>2</mn><mi>x</mi><mo>&#x0002B;</mo><mn>4</mn><mi>y</mi><mo>&#x0002B;</mo><mi>z</mi><mo>&#x0003D;</mo><mn>3</mn><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><mi>x</mi><mo>&#x0002B;</mo><mn>2</mn><mi>y</mi><mo>&#x02212;</mo><mi>z</mi><mo>&#x0003D;</mo><mn>3</mn><mo>&#x0002E;</mo></mtd></mtr></mtable></mrow></mrow></math></div>
+<p>消元后得到</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mtable columnlines="none none solid"><mtr><mtd columnalign="center"><mn>1</mn></mtd><mtd columnalign="center"><mn>2</mn></mtd><mtd columnalign="center"><mn>1</mn></mtd><mtd columnalign="center"><mn>1</mn></mtd></mtr><mtr><mtd columnalign="center"><mn>0</mn></mtd><mtd columnalign="center"><mn>0</mn></mtd><mtd columnalign="center"><mo>&#x02212;</mo><mn>1</mn></mtd><mtd columnalign="center"><mn>1</mn></mtd></mtr><mtr><mtd columnalign="center"><mn>0</mn></mtd><mtd columnalign="center"><mn>0</mn></mtd><mtd columnalign="center"><mn>0</mn></mtd><mtd columnalign="center"><mn>0</mn></mtd></mtr></mtable><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0002E;</mo></mrow></math></div>
+<p>秩为 2，未知数 3 个，所以有无穷多解。由第二行 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>z</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>1</mn></mrow></math>，代入第一行得 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mn>2</mn><mo>&#x02212;</mo><mn>2</mn><mi>y</mi></mrow></math>。令 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>t</mi></mrow></math>，则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo>&#x0002C;</mo><mi>z</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo>&#x02212;</mo><mn>2</mn><mi>t</mi><mo>&#x0002C;</mo><mtext>&#x000A0;</mtext><mi>t</mi><mo>&#x0002C;</mo><mtext>&#x000A0;</mtext><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mi>t</mi><mo>&#x02208;</mo><mi>&#x0211D;</mi><mo>&#x0002E;</mo></mrow></math></div>
+<p>几何上，这是三维空间中的一条直线。</p>
+<hr>
+<h2>5. 齐次方程组与零空间</h2>
+<p>常数项全为 0 的方程组 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x0003D;</mo><mrow><mn mathvariant="bold">0</mn></mrow></mrow></math> 叫<strong>齐次方程组</strong>。它永远有零解 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D431;</mi><mo>&#x0003D;</mo><mrow><mn mathvariant="bold">0</mn></mrow></mrow></math>，所以一定相容。</p>
+<p>它的全部解组成矩阵 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi></mrow></math> 的<strong>零空间</strong>（null space），记作 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>N</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>N</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo stretchy="false">&#x0007B;</mo><mi>&#x1D431;</mi><mo>&#x02208;</mo><msup><mi>&#x0211D;</mi><mi>n</mi></msup><mo>&#x02223;</mo><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x0003D;</mo><mrow><mn mathvariant="bold">0</mn></mrow><mo stretchy="false">&#x0007D;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>rank</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>r</mi></mrow></math>，则零空间的维数是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mo>&#x02212;</mo><mi>r</mi></mrow></math>。这个数叫<strong>零化度</strong>。</p>
+<p><strong>例 3.3</strong>　求</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd><mtd><mn>3</mn></mtd></mtr><mtr><mtd><mn>2</mn></mtd><mtd><mn>4</mn></mtd><mtd><mn>6</mn></mtd></mtr></mtable><mo>&#x00029;</mo></mrow></math></div>
+<p>的零空间。</p>
+<p>第二行是第一行的 2 倍，消元后只剩 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>x</mi><mn>1</mn></msub><mo>&#x0002B;</mo><mn>2</mn><msub><mi>x</mi><mn>2</mn></msub><mo>&#x0002B;</mo><mn>3</mn><msub><mi>x</mi><mn>3</mn></msub><mo>&#x0003D;</mo><mn>0</mn></mrow></math>。<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>x</mi><mn>2</mn></msub><mo>&#x0002C;</mo><msub><mi>x</mi><mn>3</mn></msub></mrow></math> 是自由变量，令 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>x</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mi>s</mi></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>x</mi><mn>3</mn></msub><mo>&#x0003D;</mo><mi>t</mi></mrow></math>，则 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>x</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>2</mn><mi>s</mi><mo>&#x02212;</mo><mn>3</mn><mi>t</mi></mrow></math>。于是</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D431;</mi><mo>&#x0003D;</mo><mi>s</mi><mo>&#x00028;</mo><mtable><mtr><mtd><mo>&#x02212;</mo><mn>2</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>0</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002B;</mo><mi>t</mi><mo>&#x00028;</mo><mtable><mtr><mtd><mo>&#x02212;</mo><mn>3</mn></mtd></mtr><mtr><mtd><mn>0</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>零空间是二维平面，基为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>0</mn><msup><mo stretchy="false">&#x00029;</mo><mo>&#x022A4;</mo></msup></mrow></math> 和 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>3</mn><mo>&#x0002C;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mo>&#x022A4;</mo></msup></mrow></math>。</p>
+<blockquote>
+<p><strong>连接</strong>：非齐次方程 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x0003D;</mo><mi>&#x1D41B;</mi></mrow></math> 的通解，等于“一个特解 + 齐次方程的通解”。这与微积分里“非齐次线性微分方程的通解 = 特解 + 齐次通解”是同一个结构。</p>
+</blockquote>
+<hr>
+<h2>6. 工程视角：约束与平衡</h2>
+<p>线性方程组在工程里通常不是“作业题”，而是约束：</p>
+<ul>
+<li>无人机的力/力矩平衡：每个电机推力是未知数，机体受力平衡给出线性方程；</li>
+<li>电路网络：基尔霍夫定律给出节点电流和回路电压的线性方程；</li>
+<li>结构力学：桁架节点的受力平衡；</li>
+<li>机器学习：线性回归的正规方程 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D400;</mi><mi>&#x1D431;</mi><mo>&#x0003D;</mo><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mi>&#x1D41B;</mi></mrow></math>；</li>
+<li>计算机视觉：多视图几何中的三角化与光束法平差。</li>
+</ul>
+<p>工程中常见的三种情形正好对应上面的分类：</p>
+<ul>
+<li><strong>唯一解</strong>：约束足够且独立，问题适定；</li>
+<li><strong>无穷多解</strong>：约束不足，需要额外正则化或选一个最优解；</li>
+<li><strong>无解</strong>：约束矛盾，通常说明模型有噪声，此时退而求最小二乘解（第 05 课）。</li>
+</ul>
+<blockquote>
+<p><strong>小实验</strong>：用 NumPy 判断方程组是否有解，并求一个特解。</p>
+</blockquote>
+<pre><code class="language-python">import numpy as np
+
+A = np.array([[1, 2, 1],
+              [2, 4, 1],
+              [1, 2, -1]])
+b = np.array([1, 3, -1])
+print(np.linalg.matrix_rank(A), np.linalg.matrix_rank(np.column_stack([A, b])))
+print(np.linalg.lstsq(A, b, rcond=None)[0])  # 无穷多解时给出最小范数解
+</code></pre>
+<hr>
+<h2>7. 练习</h2>
+<ol>
+<li>
+<p>解方程组
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007B;</mo><mtable><mtr><mtd columnalign="left"><mn>2</mn><mi>x</mi><mo>&#x0002B;</mo><mi>y</mi><mo>&#x0003D;</mo><mn>5</mn><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><mi>x</mi><mo>&#x02212;</mo><mi>y</mi><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002E;</mo></mtd></mtr></mtable></mrow></mrow></math></p>
+</li>
+<li>
+<p>解方程组
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007B;</mo><mtable><mtr><mtd columnalign="left"><mi>x</mi><mo>&#x0002B;</mo><mi>y</mi><mo>&#x0002B;</mo><mi>z</mi><mo>&#x0003D;</mo><mn>3</mn><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><mn>2</mn><mi>x</mi><mo>&#x0002B;</mo><mn>2</mn><mi>y</mi><mo>&#x0002B;</mo><mn>2</mn><mi>z</mi><mo>&#x0003D;</mo><mn>6</mn><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><mi>x</mi><mo>&#x02212;</mo><mi>y</mi><mo>&#x0003D;</mo><mn>0</mn><mo>&#x0002E;</mo></mtd></mtr></mtable></mrow></mrow></math></p>
+</li>
+<li>
+<p>求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>2</mn></mtd><mtd><mn>3</mn></mtd></mtr><mtr><mtd><mn>2</mn></mtd><mtd><mn>4</mn></mtd><mtd><mn>6</mn></mtd></mtr></mtable><mo>&#x00029;</mo></mrow></math> 的秩和零空间维数。</p>
+</li>
+<li>
+<p>讨论 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>k</mi></mrow></math> 取何值时，方程组
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007B;</mo><mtable><mtr><mtd columnalign="left"><mi>x</mi><mo>&#x0002B;</mo><mi>y</mi><mo>&#x0003D;</mo><mn>2</mn><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><mn>2</mn><mi>x</mi><mo>&#x0002B;</mo><mn>2</mn><mi>y</mi><mo>&#x0003D;</mo><mi>k</mi></mtd></mtr></mtable></mrow></mrow></math>
+有唯一解、无穷多解或无解。</p>
+</li>
+<li>
+<p>判断方程组
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007B;</mo><mtable><mtr><mtd columnalign="left"><mi>x</mi><mo>&#x0002B;</mo><mi>y</mi><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><mi>x</mi><mo>&#x0002B;</mo><mi>y</mi><mo>&#x0003D;</mo><mn>2</mn></mtd></mtr></mtable></mrow></mrow></math>
+是否有解，并用秩解释。</p>
+</li>
+</ol>
+<hr>
+<h2>8. 答案与简解</h2>
+<details>
+<summary>点击展开（做完再看）</summary>
+
+**1.** 第二式给出 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mi>y</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></math>，代入第一式：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mo stretchy="false">&#x00028;</mo><mi>y</mi><mo>&#x0002B;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><mi>y</mi><mo>&#x0003D;</mo><mn>5</mn></mrow></math>，即 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>3</mn><mi>y</mi><mo>&#x0003D;</mo><mn>3</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mn>2</mn></mrow></math>。解为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。
+
+**2.** 第二行是第一行的 2 倍，方程实际只有 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0002B;</mo><mi>y</mi><mo>&#x0002B;</mo><mi>z</mi><mo>&#x0003D;</mo><mn>3</mn></mrow></math> 和 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x02212;</mo><mi>y</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math>。由 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><mi>y</mi></mrow></math> 得 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mi>y</mi><mo>&#x0002B;</mo><mi>z</mi><mo>&#x0003D;</mo><mn>3</mn></mrow></math>，即 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>z</mi><mo>&#x0003D;</mo><mn>3</mn><mo>&#x02212;</mo><mn>2</mn><mi>y</mi></mrow></math>。令 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>t</mi></mrow></math>，解为
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo>&#x0002C;</mo><mi>z</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mi>t</mi><mo>&#x0002C;</mo><mi>t</mi><mo>&#x0002C;</mo><mn>3</mn><mo>&#x02212;</mo><mn>2</mn><mi>t</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+**3.** 第二行是第一行的 2 倍，秩为 1，零空间维数为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>3</mn><mo>&#x02212;</mo><mn>1</mn><mo>&#x0003D;</mo><mn>2</mn></mrow></math>。零空间由 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>x</mi><mn>1</mn></msub><mo>&#x0002B;</mo><mn>2</mn><msub><mi>x</mi><mn>2</mn></msub><mo>&#x0002B;</mo><mn>3</mn><msub><mi>x</mi><mn>3</mn></msub><mo>&#x0003D;</mo><mn>0</mn></mrow></math> 给出，基为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>0</mn><msup><mo stretchy="false">&#x00029;</mo><mo>&#x022A4;</mo></msup></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>3</mn><mo>&#x0002C;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><msup><mo stretchy="false">&#x00029;</mo><mo>&#x022A4;</mo></msup></mrow></math>。
+
+**4.** 第二式是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002B;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>k</mi></mrow></math>。若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>k</mi><mo>&#x0003D;</mo><mn>4</mn></mrow></math>，与第一式相容，但两式成比例，秩为 1，未知数 2 个，有无穷多解；若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>k</mi><mo>&#x02260;</mo><mn>4</mn></mrow></math>，则 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0002B;</mo><mi>y</mi><mo>&#x0003D;</mo><mn>2</mn></mrow></math> 与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0002B;</mo><mi>y</mi><mo>&#x0003D;</mo><mi>k</mi><mo>&#x0002F;</mo><mn>2</mn></mrow></math> 矛盾，无解。不存在唯一解的情形，因为两行总是成比例。
+
+**5.** 增广矩阵消元后出现 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x0003D;</mo><mn>1</mn></mrow></math>，无解。<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>rank</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D400;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn></mrow></math>，而 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>rank</mo><mo stretchy="false">&#x00028;</mo><mo stretchy="false">[</mo><mi>&#x1D400;</mi><mo>&#x02223;</mo><mi>&#x1D41B;</mi><mo stretchy="false">]</mo><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>2</mn></mrow></math>，增广矩阵的秩更大。
+
+</details>
+
+<hr>
+<h2>下节预告</h2>
+<p><strong>第 04 课：四个基本子空间</strong></p>
+<ul>
+<li>列空间、零空间、行空间、左零空间</li>
+<li>秩-零化度定理</li>
+<li>正交补与可解性判据</li>
+<li>从 RREF 读出基</li>
+</ul>
+<hr>
+<h2>自查清单</h2>
+<ul>
+<li>[ ] 会写增广矩阵并做初等行变换</li>
+<li>[ ] 能分清行阶梯形与 RREF</li>
+<li>[ ] 能用秩判断唯一解、无穷多解、无解</li>
+<li>[ ] 知道零空间维数是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mo>&#x02212;</mo><mi>r</mi></mrow></math></li>
+<li>[ ] 能写出非齐次方程的通解结构</li>
+</ul>
+<nav class="lesson-nav"><span><a href="线代02-矩阵与线性映射.html">&larr; 上一课</a></span><span><a href="线代04-四个基本子空间.html">下一课 &rarr;</a></span></nav>
+<footer>线性代数 · 数学公式使用 MathML 渲染，建议使用 Chrome / Edge / Firefox 打开</footer>
+</main>
+</body>
+</html>

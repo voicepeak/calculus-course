@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>概率论 · 第 04 课：多维随机变量与独立性</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --quote-bg: #f6f8fa;
+  --code-bg: #eff2f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --border: #30363d;
+    --accent: #4493f8;
+    --quote-bg: #161b22;
+    --code-bg: #1f242c;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; font-weight: 650; }
+h1 { font-size: 2rem; margin: 0 0 .8em; padding-bottom: .35em; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 2.2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.2rem; margin: 1.8em 0 .55em; }
+p { margin: .85em 0; }
+a { color: var(--accent); }
+blockquote {
+  margin: 1em 0;
+  padding: .6em 1em;
+  border-left: 4px solid var(--accent);
+  background: var(--quote-bg);
+  color: var(--muted);
+  border-radius: 4px;
+}
+blockquote p { margin: .25em 0; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: .96em;
+  overflow: hidden;
+}
+th, td { border: 1px solid var(--border); padding: .45em .7em; text-align: left; vertical-align: top; }
+th { background: var(--quote-bg); font-weight: 600; }
+details {
+  margin: 1.2em 0;
+  padding: .8em 1em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--quote-bg);
+}
+summary { cursor: pointer; font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+ul, ol { padding-left: 1.7em; }
+li { margin: .3em 0; }
+.math-block {
+  margin: 1.15em 0;
+  padding: .7em .9em;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--quote-bg);
+  border-radius: 6px;
+}
+math { font-size: 1.14em; line-height: 1.2; }
+math[display="inline"] { font-size: 1.05em; vertical-align: baseline; }
+.math-block math { font-size: 1.24em; }
+.math-fallback, .math-fallback-block {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .08em .3em;
+  border-radius: 3px;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .12em .35em;
+  border-radius: 3px;
+  font-size: .92em;
+}
+pre code { display: block; padding: .8em 1em; overflow-x: auto; }
+.lesson-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .8em 1.4em;
+  justify-content: space-between;
+  margin: 2.4em 0 0;
+  padding-top: 1.1em;
+  border-top: 1px solid var(--border);
+  font-size: .95em;
+}
+footer { margin-top: 2.2em; color: var(--muted); font-size: .85em; text-align: center; }
+@media print {
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  .math-block { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>概率论 · 第 04 课：多维随机变量与独立性</h1>
+<blockquote>
+<p><strong>本课目标</strong>：理解联合分布、边缘分布、条件分布，掌握独立性、卷积、协方差矩阵和条件期望。</p>
+<p><strong>使用方法</strong>：先读讲解 → 做练习 → 对答案。错题 72 小时内重做。</p>
+</blockquote>
+<hr>
+<h2>目录</h2>
+<ol>
+<li>联合分布</li>
+<li>边缘分布与条件分布</li>
+<li>独立性</li>
+<li>和的分布与卷积</li>
+<li>协方差矩阵与多元正态</li>
+<li>条件期望与全期望公式</li>
+<li>工程视角：传感器融合与 Kalman</li>
+<li>练习</li>
+<li>答案与简解</li>
+</ol>
+<hr>
+<h2>1. 联合分布</h2>
+<p>两个随机变量 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi></mrow></math> 的<strong>联合分布</strong>描述它们一起取值的方式。</p>
+<p>离散型用联合 PMF：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>p</mi><mrow><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi></mrow></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0003D;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>Y</mi><mo>&#x0003D;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>连续型用联合 PDF <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>f</mi><mrow><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi></mrow></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo></mrow></math>，满足</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>f</mi><mrow><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi></mrow></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02265;</mo><mn>0</mn><mo>&#x0002C;</mo><mspace width="2em" /><msubsup><mo>&#x0222B;</mo><mrow><mo>&#x02212;</mo><mo>&#x0221E;</mo></mrow><mrow><mo>&#x0221E;</mo></mrow></msubsup><msubsup><mo>&#x0222B;</mo><mrow><mo>&#x02212;</mo><mo>&#x0221E;</mo></mrow><mrow><mo>&#x0221E;</mo></mrow></msubsup><msub><mi>f</mi><mrow><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi></mrow></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>&#x00064;</mi><mi>x</mi><mspace width="0.167em" /><mi>&#x00064;</mi><mi>y</mi><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002E;</mo></mrow></math></div>
+<p>区域 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>D</mi></mrow></math> 上的概率为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02208;</mo><mi>D</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msub><mo>&#x0222C;</mo><mi>D</mi></msub><msub><mi>f</mi><mrow><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi></mrow></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>&#x00064;</mi><mi>x</mi><mspace width="0.167em" /><mi>&#x00064;</mi><mi>y</mi><mo>&#x0002E;</mo></mrow></math></div>
+<p>联合分布包含两个变量之间的全部依赖信息，比单独看每个变量更完整。</p>
+<hr>
+<h2>2. 边缘分布与条件分布</h2>
+<p>从联合分布中“抹掉”一个变量，得到<strong>边缘分布</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>p</mi><mi>X</mi></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><munder><mo>&#x02211;</mo><mi>y</mi></munder><msub><mi>p</mi><mrow><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi></mrow></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>f</mi><mi>X</mi></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mrow><mo>&#x02212;</mo><mo>&#x0221E;</mo></mrow><mrow><mo>&#x0221E;</mo></mrow></msubsup><msub><mi>f</mi><mrow><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi></mrow></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>&#x00064;</mi><mi>y</mi><mo>&#x0002E;</mo></mrow></math></div>
+<p><strong>条件分布</strong>描述已知一个变量后，另一个变量的分布：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>f</mi><mrow><mi>Y</mi><mo>&#x02223;</mo><mi>X</mi></mrow></msub><mo stretchy="false">&#x00028;</mo><mi>y</mi><mo>&#x02223;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><msub><mi>f</mi><mrow><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi></mrow></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo></mrow><mrow><msub><mi>f</mi><mi>X</mi></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></mfrac><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>f</mi><mi>X</mi></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003E;</mo><mn>0</mn><mo>&#x0002E;</mo></mrow></math></div>
+<p>离散型同理，把 PDF 换成 PMF。</p>
+<p>联合、边缘、条件三者的关系是概率论的核心：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>f</mi><mrow><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi></mrow></msub><mo>&#x0003D;</mo><msub><mi>f</mi><mrow><mi>Y</mi><mo>&#x02223;</mo><mi>X</mi></mrow></msub><msub><mi>f</mi><mi>X</mi></msub><mo>&#x0003D;</mo><msub><mi>f</mi><mrow><mi>X</mi><mo>&#x02223;</mo><mi>Y</mi></mrow></msub><msub><mi>f</mi><mi>Y</mi></msub><mo>&#x0002E;</mo></mrow></math></div>
+<hr>
+<h2>3. 独立性</h2>
+<p>若对任意 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi></mrow></math> 都有</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>f</mi><mrow><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi></mrow></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msub><mi>f</mi><mi>X</mi></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><msub><mi>f</mi><mi>Y</mi></msub><mo stretchy="false">&#x00028;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo></mrow></math></div>
+<p>称 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi></mrow></math> <strong>相互独立</strong>。离散型把 PDF 换成 PMF。</p>
+<p>独立性的直观含义：知道一个变量的取值，不会改变另一个变量的分布。</p>
+<p>独立性的推论：</p>
+<ul>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><mi>X</mi><mi>Y</mi><mo stretchy="false">]</mo><mo>&#x0003D;</mo><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><mi>X</mi><mo stretchy="false">]</mo><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><mi>Y</mi><mo stretchy="false">]</mo></mrow></math>；</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>Cov</mo><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math>；</li>
+<li>联合 CDF 等于边缘 CDF 的乘积；</li>
+<li>独立随机变量的函数仍然独立。</li>
+</ul>
+<p>反之，协方差为 0 不能推出独立，除非是联合正态分布。对于联合正态，不相关与独立等价，这是正态分布的特殊性质。</p>
+<hr>
+<h2>4. 和的分布与卷积</h2>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>Z</mi><mo>&#x0003D;</mo><mi>X</mi><mo>&#x0002B;</mo><mi>Y</mi></mrow></math>。若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi></mrow></math> 独立，连续型的 PDF 为卷积：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>f</mi><mi>Z</mi></msub><mo stretchy="false">&#x00028;</mo><mi>z</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msubsup><mo>&#x0222B;</mo><mrow><mo>&#x02212;</mo><mo>&#x0221E;</mo></mrow><mrow><mo>&#x0221E;</mo></mrow></msubsup><msub><mi>f</mi><mi>X</mi></msub><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><msub><mi>f</mi><mi>Y</mi></msub><mo stretchy="false">&#x00028;</mo><mi>z</mi><mo>&#x02212;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>&#x00064;</mi><mi>x</mi><mo>&#x0002E;</mo></mrow></math></div>
+<p>离散型为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>p</mi><mi>Z</mi></msub><mo stretchy="false">&#x00028;</mo><mi>k</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><munder><mo>&#x02211;</mo><mi>i</mi></munder><msub><mi>p</mi><mi>X</mi></msub><mo stretchy="false">&#x00028;</mo><mi>i</mi><mo stretchy="false">&#x00029;</mo><msub><mi>p</mi><mi>Y</mi></msub><mo stretchy="false">&#x00028;</mo><mi>k</mi><mo>&#x02212;</mo><mi>i</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p><strong>例 4.1</strong>　设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi></mrow></math> 独立且都服从 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>U</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>Z</mi><mo>&#x0003D;</mo><mi>X</mi><mo>&#x0002B;</mo><mi>Y</mi></mrow></math> 的分布。</p>
+<p>联合密度在单位正方形上为 1，所以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>f</mi><mi>Z</mi></msub><mo stretchy="false">&#x00028;</mo><mi>z</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 等于直线 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0002B;</mo><mi>y</mi><mo>&#x0003D;</mo><mi>z</mi></mrow></math> 穿过正方形的长度：</p>
+<ul>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x0003C;</mo><mi>z</mi><mo>&#x0003C;</mo><mn>1</mn></mrow></math> 时，长度为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>z</mi></mrow></math>；</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn><mo>&#x02264;</mo><mi>z</mi><mo>&#x0003C;</mo><mn>2</mn></mrow></math> 时，长度为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mo>&#x02212;</mo><mi>z</mi></mrow></math>；</li>
+<li>其他情况为 0。</li>
+</ul>
+<p>这是三角形分布。两个均匀分布相加，结果不再是均匀分布，而是中间高、两边低。</p>
+<hr>
+<h2>5. 协方差矩阵与多元正态</h2>
+<p>随机向量 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D417;</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><msub><mi>X</mi><mn>1</mn></msub><mo>&#x0002C;</mo><mo>&#x02026;</mo><mo>&#x0002C;</mo><msub><mi>X</mi><mi>n</mi></msub><msup><mo stretchy="false">&#x00029;</mo><mo>&#x022A4;</mo></msup></mrow></math> 的<strong>协方差矩阵</strong>为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mi mathvariant="bold-italic">&#x003A3;</mi></mrow><mo>&#x0003D;</mo><mo>Cov</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D417;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>&#x1D53C;</mi><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D417;</mi><mo>&#x02212;</mo><mrow><mi mathvariant="bold-italic">&#x003BC;</mi></mrow><mo stretchy="false">&#x00029;</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D417;</mi><mo>&#x02212;</mo><mrow><mi mathvariant="bold-italic">&#x003BC;</mi></mrow><msup><mo stretchy="false">&#x00029;</mo><mo>&#x022A4;</mo></msup><mo stretchy="true" fence="true" form="postfix">]</mo></mrow><mo>&#x0002C;</mo></mrow></math></div>
+<p>其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mi mathvariant="bold-italic">&#x003BC;</mi></mrow><mo>&#x0003D;</mo><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><mi>&#x1D417;</mi><mo stretchy="false">]</mo></mrow></math>。对角线是各分量的方差，非对角线是协方差。<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mi mathvariant="bold-italic">&#x003A3;</mi></mrow></mrow></math> 对称半正定。</p>
+<p><strong>线性变换</strong>：若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D418;</mi><mo>&#x0003D;</mo><mi>&#x1D400;</mi><mi>&#x1D417;</mi><mo>&#x0002B;</mo><mi>&#x1D41B;</mi></mrow></math>，则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><mi>&#x1D418;</mi><mo stretchy="false">]</mo><mo>&#x0003D;</mo><mi>&#x1D400;</mi><mrow><mi mathvariant="bold-italic">&#x003BC;</mi></mrow><mo>&#x0002B;</mo><mi>&#x1D41B;</mi><mo>&#x0002C;</mo><mspace width="2em" /><mo>Cov</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D418;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>&#x1D400;</mi><mrow><mi mathvariant="bold-italic">&#x003A3;</mi></mrow><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mo>&#x0002E;</mo></mrow></math></div>
+<p>这条公式在误差传播、坐标变换、Kalman 滤波中反复出现。</p>
+<p><strong>多元正态</strong>记作 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D417;</mi><mi>&#x0007E;</mi><mi>&#x1D4A9;</mi><mo stretchy="false">&#x00028;</mo><mrow><mi mathvariant="bold-italic">&#x003BC;</mi></mrow><mo>&#x0002C;</mo><mrow><mi mathvariant="bold-italic">&#x003A3;</mi></mrow><mo stretchy="false">&#x00029;</mo></mrow></math>，密度为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>&#x1D431;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mo stretchy="false">&#x00028;</mo><mn>2</mn><mi>&#x003C0;</mi><msup><mo stretchy="false">&#x00029;</mo><mrow><mi>n</mi><mo>&#x0002F;</mo><mn>2</mn></mrow></msup><mo stretchy="false">&#x0007C;</mo><mrow><mi mathvariant="bold-italic">&#x003A3;</mi></mrow><msup><mo stretchy="false">&#x0007C;</mo><mrow><mn>1</mn><mo>&#x0002F;</mo><mn>2</mn></mrow></msup></mrow></mfrac><mi>exp</mi><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mo>&#x02212;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo stretchy="false">&#x00028;</mo><mi>&#x1D431;</mi><mo>&#x02212;</mo><mrow><mi mathvariant="bold-italic">&#x003BC;</mi></mrow><msup><mo stretchy="false">&#x00029;</mo><mo>&#x022A4;</mo></msup><msup><mrow><mi mathvariant="bold-italic">&#x003A3;</mi></mrow><mrow><mo>&#x02212;</mo><mn>1</mn></mrow></msup><mo stretchy="false">&#x00028;</mo><mi>&#x1D431;</mi><mo>&#x02212;</mo><mrow><mi mathvariant="bold-italic">&#x003BC;</mi></mrow><mo stretchy="false">&#x00029;</mo><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0002E;</mo></mrow></math></div>
+<p>它的等密度面是椭球，形状由 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mi mathvariant="bold-italic">&#x003A3;</mi></mrow></mrow></math> 的特征值决定。</p>
+<p>对二元正态，若相关系数为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C1;</mi></mrow></math>，则条件分布为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><mi>Y</mi><mo>&#x02223;</mo><mi>X</mi><mo>&#x0003D;</mo><mi>x</mi><mo stretchy="false">]</mo><mo>&#x0003D;</mo><msub><mi>&#x003BC;</mi><mi>Y</mi></msub><mo>&#x0002B;</mo><mi>&#x003C1;</mi><mfrac><mrow><msub><mi>&#x003C3;</mi><mi>Y</mi></msub></mrow><mrow><msub><mi>&#x003C3;</mi><mi>X</mi></msub></mrow></mfrac><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x02212;</mo><msub><mi>&#x003BC;</mi><mi>X</mi></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo></mrow></math></div>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>Var</mo><mo stretchy="false">&#x00028;</mo><mi>Y</mi><mo>&#x02223;</mo><mi>X</mi><mo>&#x0003D;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msubsup><mi>&#x003C3;</mi><mi>Y</mi><mn>2</mn></msubsup><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><msup><mi>&#x003C1;</mi><mn>2</mn></msup><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>条件均值是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math> 的线性函数，条件方差与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math> 无关。这是 Kalman 滤波能用线性公式的原因。</p>
+<hr>
+<h2>6. 条件期望与全期望公式</h2>
+<p>条件期望 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><mi>Y</mi><mo>&#x02223;</mo><mi>X</mi><mo stretchy="false">]</mo></mrow></math> 是随机变量 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi></mrow></math> 的函数，本身也是随机变量。它表示“已知 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi></mrow></math> 后，对 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>Y</mi></mrow></math> 的最佳平方预测”。</p>
+<p><strong>全期望公式</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><mi>Y</mi><mo stretchy="false">]</mo><mo>&#x0003D;</mo><mi>&#x1D53C;</mi><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><mi>Y</mi><mo>&#x02223;</mo><mi>X</mi><mo stretchy="false">]</mo><mo stretchy="true" fence="true" form="postfix">]</mo></mrow><mo>&#x0002E;</mo></mrow></math></div>
+<p><strong>全方差公式</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>Var</mo><mo stretchy="false">&#x00028;</mo><mi>Y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>&#x1D53C;</mi><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><mo>Var</mo><mo stretchy="false">&#x00028;</mo><mi>Y</mi><mo>&#x02223;</mo><mi>X</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="true" fence="true" form="postfix">]</mo></mrow><mo>&#x0002B;</mo><mo>Var</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><mi>Y</mi><mo>&#x02223;</mo><mi>X</mi><mo stretchy="false">]</mo><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0002E;</mo></mrow></math></div>
+<p>总方差 = 组内方差 + 组间方差。这个分解在方差分析、混合模型和强化学习中都很常见。</p>
+<hr>
+<h2>7. 工程视角：传感器融合与 Kalman</h2>
+<ul>
+<li><strong>传感器融合</strong>：两个传感器对同一状态的观测可以写成联合分布，条件化后得到融合估计；</li>
+<li><strong>Kalman 滤波</strong>：预测步用线性变换传播均值和协方差，更新步用条件高斯公式融合观测；</li>
+<li><strong>SLAM</strong>：地图点和位姿的联合分布高度相关，协方差矩阵的非对角块描述这种相关性；</li>
+<li><strong>误差传播</strong>：多个误差源独立时，总方差相加；不独立时必须保留协方差项；</li>
+<li><strong>高斯过程</strong>：有限个点的联合分布是多元正态，条件化就是回归。</li>
+</ul>
+<blockquote>
+<p><strong>一句话</strong>：多维概率的核心不是公式多，而是“联合—边缘—条件”这三件事的来回转换。Kalman 滤波就是这套转换的工程实现。</p>
+</blockquote>
+<hr>
+<h2>8. 练习</h2>
+<ol>
+<li>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi></mrow></math> 独立，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi><mi>&#x0007E;</mi><mi>U</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>Y</mi><mi>&#x0007E;</mi><mi>U</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0002B;</mo><mi>Y</mi><mo>&#x02264;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+</li>
+<li>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi></mrow></math> 的联合 PMF 为</p>
+</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi><mi>&#x0005C;</mi><mi>Y</mi></mrow></math></th>
+<th>0</th>
+<th>1</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>0.2</td>
+<td>0.3</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0.3</td>
+<td>0.2</td>
+</tr>
+</tbody>
+</table>
+<p>求边缘分布，并判断 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi></mrow></math> 是否独立。</p>
+<ol start="3">
+<li>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi></mrow></math> 独立，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi><mi>&#x0007E;</mi><mrow><mi mathvariant="normal">P</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">s</mi></mrow><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>Y</mi><mi>&#x0007E;</mi><mrow><mi mathvariant="normal">P</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">s</mi></mrow><mo stretchy="false">&#x00028;</mo><mn>3</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi><mo>&#x0002B;</mo><mi>Y</mi></mrow></math> 的分布。</p>
+</li>
+<li>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 服从二元正态，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C1;</mi><mo>&#x0003D;</mo><mn>0.5</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x003C3;</mi><mi>X</mi></msub><mo>&#x0003D;</mo><msub><mi>&#x003C3;</mi><mi>Y</mi></msub><mo>&#x0003D;</mo><mn>1</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x003BC;</mi><mi>X</mi></msub><mo>&#x0003D;</mo><msub><mi>&#x003BC;</mi><mi>Y</mi></msub><mo>&#x0003D;</mo><mn>0</mn></mrow></math>。求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><mi>Y</mi><mo>&#x02223;</mo><mi>X</mi><mo>&#x0003D;</mo><mn>2</mn><mo stretchy="false">]</mo></mrow></math> 和 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>Var</mo><mo stretchy="false">&#x00028;</mo><mi>Y</mi><mo>&#x02223;</mo><mi>X</mi><mo>&#x0003D;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+</li>
+<li>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D418;</mi><mo>&#x0003D;</mo><mi>&#x1D400;</mi><mi>&#x1D417;</mi></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>Cov</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D417;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>&#x1D408;</mi></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D400;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>1</mn></mtd></mtr></mtable><mo>&#x00029;</mo></mrow></math>。求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>Cov</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D418;</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+</li>
+</ol>
+<hr>
+<h2>9. 答案与简解</h2>
+<details>
+<summary>点击展开（做完再看）</summary>
+
+**1.** 单位正方形中满足 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0002B;</mo><mi>y</mi><mo>&#x02264;</mo><mn>1</mn></mrow></math> 的三角形面积为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mn>2</mn></mfrac></mstyle></mrow></math>，联合密度为 1，所以概率为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mn>2</mn></mfrac></mstyle></mrow></math>。
+
+**2.** 边缘分布：
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0003D;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0.5</mn><mo>&#x0002C;</mo><mspace width="1em" /><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0003D;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0.5</mn><mo>&#x0002C;</mo><mspace width="1em" /><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>Y</mi><mo>&#x0003D;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0.5</mn><mo>&#x0002C;</mo><mspace width="1em" /><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>Y</mi><mo>&#x0003D;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0.5</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+但 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0003D;</mo><mn>0</mn><mo>&#x0002C;</mo><mi>Y</mi><mo>&#x0003D;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0.2</mn><mo>&#x02260;</mo><mn>0.5</mn><mo>&#x000D7;</mo><mn>0.5</mn><mo>&#x0003D;</mo><mn>0.25</mn></mrow></math>，所以不独立。
+
+**3.** 泊松分布具有可加性：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi><mo>&#x0002B;</mo><mi>Y</mi><mi>&#x0007E;</mi><mrow><mi mathvariant="normal">P</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">s</mi></mrow><mo stretchy="false">&#x00028;</mo><mn>5</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。
+
+**4.** 由条件正态公式：
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><mi>Y</mi><mo>&#x02223;</mo><mi>X</mi><mo>&#x0003D;</mo><mn>2</mn><mo stretchy="false">]</mo><mo>&#x0003D;</mo><mn>0.5</mn><mo>&#x000D7;</mo><mn>2</mn><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002C;</mo></mrow></math></div>
+
+
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>Var</mo><mo stretchy="false">&#x00028;</mo><mi>Y</mi><mo>&#x02223;</mo><mi>X</mi><mo>&#x0003D;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn><mo>&#x000D7;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><msup><mn>0.5</mn><mn>2</mn></msup><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0.75</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+**5.**
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>Cov</mo><mo stretchy="false">&#x00028;</mo><mi>&#x1D418;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>&#x1D400;</mi><mi>&#x1D408;</mi><msup><mi>&#x1D400;</mi><mo>&#x022A4;</mo></msup><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>1</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>0</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>2</mn></mtd><mtd><mn>1</mn></mtd></mtr><mtr><mtd><mn>1</mn></mtd><mtd><mn>1</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+</details>
+
+<hr>
+<h2>下节预告</h2>
+<p><strong>第 05 课：大数定律与中心极限定理</strong></p>
+<ul>
+<li>收敛的几种含义</li>
+<li>大数定律</li>
+<li>中心极限定理与正态近似</li>
+<li>蒙特卡洛方法</li>
+</ul>
+<hr>
+<h2>自查清单</h2>
+<ul>
+<li>[ ] 能从联合分布求边缘和条件分布</li>
+<li>[ ] 会用独立性判断联合分布是否可分解</li>
+<li>[ ] 会算两个独立随机变量之和的分布</li>
+<li>[ ] 记得线性变换的均值和协方差公式</li>
+<li>[ ] 理解条件高斯与 Kalman 的关系</li>
+</ul>
+<nav class="lesson-nav"><span><a href="概率03-期望方差与矩.html">&larr; 上一课</a></span><span><a href="概率05-大数定律与中心极限定理.html">下一课 &rarr;</a></span></nav>
+<footer>概率论 · 数学公式使用 MathML 渲染，建议使用 Chrome / Edge / Firefox 打开</footer>
+</main>
+</body>
+</html>

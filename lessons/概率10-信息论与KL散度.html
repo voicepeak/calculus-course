@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>概率论 · 第 10 课：信息论与 KL 散度</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --quote-bg: #f6f8fa;
+  --code-bg: #eff2f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --border: #30363d;
+    --accent: #4493f8;
+    --quote-bg: #161b22;
+    --code-bg: #1f242c;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; font-weight: 650; }
+h1 { font-size: 2rem; margin: 0 0 .8em; padding-bottom: .35em; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 2.2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.2rem; margin: 1.8em 0 .55em; }
+p { margin: .85em 0; }
+a { color: var(--accent); }
+blockquote {
+  margin: 1em 0;
+  padding: .6em 1em;
+  border-left: 4px solid var(--accent);
+  background: var(--quote-bg);
+  color: var(--muted);
+  border-radius: 4px;
+}
+blockquote p { margin: .25em 0; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: .96em;
+  overflow: hidden;
+}
+th, td { border: 1px solid var(--border); padding: .45em .7em; text-align: left; vertical-align: top; }
+th { background: var(--quote-bg); font-weight: 600; }
+details {
+  margin: 1.2em 0;
+  padding: .8em 1em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--quote-bg);
+}
+summary { cursor: pointer; font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+ul, ol { padding-left: 1.7em; }
+li { margin: .3em 0; }
+.math-block {
+  margin: 1.15em 0;
+  padding: .7em .9em;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--quote-bg);
+  border-radius: 6px;
+}
+math { font-size: 1.14em; line-height: 1.2; }
+math[display="inline"] { font-size: 1.05em; vertical-align: baseline; }
+.math-block math { font-size: 1.24em; }
+.math-fallback, .math-fallback-block {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .08em .3em;
+  border-radius: 3px;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .12em .35em;
+  border-radius: 3px;
+  font-size: .92em;
+}
+pre code { display: block; padding: .8em 1em; overflow-x: auto; }
+.lesson-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .8em 1.4em;
+  justify-content: space-between;
+  margin: 2.4em 0 0;
+  padding-top: 1.1em;
+  border-top: 1px solid var(--border);
+  font-size: .95em;
+}
+footer { margin-top: 2.2em; color: var(--muted); font-size: .85em; text-align: center; }
+@media print {
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  .math-block { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>概率论 · 第 10 课：信息论与 KL 散度</h1>
+<blockquote>
+<p><strong>本课目标</strong>：理解熵、互信息、KL 散度和交叉熵，知道最大似然与最小 KL 的等价关系。</p>
+<p><strong>使用方法</strong>：先读讲解 → 做练习 → 对答案。错题 72 小时内重做。</p>
+</blockquote>
+<hr>
+<h2>目录</h2>
+<ol>
+<li>信息量与熵</li>
+<li>联合熵、条件熵与链式法则</li>
+<li>互信息</li>
+<li>KL 散度</li>
+<li>交叉熵</li>
+<li>最大似然与最小 KL</li>
+<li>最大熵原理</li>
+<li>工程视角：分类损失、强化学习与变分推断</li>
+<li>练习</li>
+<li>答案与简解</li>
+</ol>
+<hr>
+<h2>1. 信息量与熵</h2>
+<p>一个事件发生的概率越小，它带来的信息量越大。定义事件 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi></mrow></math> 的<strong>自信息</strong>为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>I</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo>&#x02212;</mo><mi>ln</mi><mi>p</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math>，信息量为 0；若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi><mo>&#x02192;</mo><mn>0</mn></mrow></math>，信息量趋于无穷。</p>
+<p><strong>熵</strong>是自信息的期望，衡量随机变量的平均不确定性：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo>&#x02212;</mo><munder><mo>&#x02211;</mo><mi>x</mi></munder><mi>p</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mi>ln</mi><mi>p</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>连续型用微分熵：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>h</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo>&#x02212;</mo><mo>&#x0222B;</mo><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mi>ln</mi><mi>f</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mspace width="0.167em" /><mi>&#x00064;</mi><mi>x</mi><mo>&#x0002E;</mo></mrow></math></div>
+<p>熵越大，分布越分散，越难预测。均匀分布的熵最大；确定性分布的熵为 0。</p>
+<p><strong>例 10.1</strong>　伯努利分布 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi><mi>&#x0007E;</mi><mrow><mi mathvariant="normal">B</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">n</mi></mrow><mo stretchy="false">&#x00028;</mo><mi>p</mi><mo stretchy="false">&#x00029;</mo></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo>&#x02212;</mo><mi>p</mi><mi>ln</mi><mi>p</mi><mo>&#x02212;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><mi>p</mi><mo stretchy="false">&#x00029;</mo><mi>ln</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><mi>p</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi><mo>&#x0003D;</mo><mn>0.5</mn></mrow></math> 时熵最大，为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>ln</mi><mn>2</mn></mrow></math>（约 0.693 纳特，即 1 比特）。当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math> 或 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn></mrow></math> 时熵为 0。</p>
+<hr>
+<h2>2. 联合熵、条件熵与链式法则</h2>
+<p><strong>联合熵</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo>&#x02212;</mo><munder><mo>&#x02211;</mo><mrow><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi></mrow></munder><mi>p</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mi>ln</mi><mi>p</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p><strong>条件熵</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>Y</mi><mo>&#x02223;</mo><mi>X</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo>&#x02212;</mo><munder><mo>&#x02211;</mo><mrow><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi></mrow></munder><mi>p</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo>&#x0002C;</mo><mi>y</mi><mo stretchy="false">&#x00029;</mo><mi>ln</mi><mi>p</mi><mo stretchy="false">&#x00028;</mo><mi>y</mi><mo>&#x02223;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>它表示知道 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi></mrow></math> 后，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>Y</mi></mrow></math> 还剩多少不确定性。</p>
+<p><strong>链式法则</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>Y</mi><mo>&#x02223;</mo><mi>X</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>Y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x02223;</mo><mi>Y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>直观上，描述一对变量所需的信息，等于先描述 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi></mrow></math>，再描述“已知 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi></mrow></math> 后的 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>Y</mi></mrow></math>”。</p>
+<p>若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi></mrow></math> 独立，则 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>Y</mi><mo>&#x02223;</mo><mi>X</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>Y</mi><mo stretchy="false">&#x00029;</mo></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>Y</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+<hr>
+<h2>3. 互信息</h2>
+<p><strong>互信息</strong>衡量两个变量共享的信息量：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>I</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mi>;</mi><mi>Y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x02223;</mo><mi>Y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>Y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>Y</mi><mo>&#x02223;</mo><mi>X</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>等价地，</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>I</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mi>;</mi><mi>Y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>Y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>性质：</p>
+<ul>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>I</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mi>;</mi><mi>Y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02265;</mo><mn>0</mn></mrow></math>；</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>I</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mi>;</mi><mi>Y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math> 当且仅当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi></mrow></math> 独立；</li>
+<li><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>I</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mi>;</mi><mi>Y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>I</mi><mo stretchy="false">&#x00028;</mo><mi>Y</mi><mi>;</mi><mi>X</mi><mo stretchy="false">&#x00029;</mo></mrow></math>，对称。</li>
+</ul>
+<p>互信息比相关系数更一般：相关系数只捕捉线性关系，互信息能捕捉任何统计依赖。</p>
+<hr>
+<h2>4. KL 散度</h2>
+<p><strong>KL 散度</strong>衡量两个分布 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi></mrow></math> 和 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>Q</mi></mrow></math> 的差异：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>D</mi><mrow><mrow><mi mathvariant="normal">K</mi><mi mathvariant="normal">L</mi></mrow></mrow></msub><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo>&#x02225;</mo><mi>Q</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><munder><mo>&#x02211;</mo><mi>x</mi></munder><mi>p</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mi>ln</mi><mfrac><mrow><mi>p</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow><mrow><mi>q</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></mfrac><mo>&#x0002E;</mo></mrow></math></div>
+<p>连续型把求和换成积分。</p>
+<p>性质：</p>
+<ol>
+<li><strong>非负性</strong>：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>D</mi><mrow><mrow><mi mathvariant="normal">K</mi><mi mathvariant="normal">L</mi></mrow></mrow></msub><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo>&#x02225;</mo><mi>Q</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02265;</mo><mn>0</mn></mrow></math>，当且仅当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo>&#x0003D;</mo><mi>Q</mi></mrow></math> 时为 0；</li>
+<li><strong>不对称性</strong>：一般 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>D</mi><mrow><mrow><mi mathvariant="normal">K</mi><mi mathvariant="normal">L</mi></mrow></mrow></msub><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo>&#x02225;</mo><mi>Q</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02260;</mo><msub><mi>D</mi><mrow><mrow><mi mathvariant="normal">K</mi><mi mathvariant="normal">L</mi></mrow></mrow></msub><mo stretchy="false">&#x00028;</mo><mi>Q</mi><mo>&#x02225;</mo><mi>P</mi><mo stretchy="false">&#x00029;</mo></mrow></math>，所以它不是距离；</li>
+<li>不满足三角不等式。</li>
+</ol>
+<p>不对称带来不同的行为：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>D</mi><mrow><mrow><mi mathvariant="normal">K</mi><mi mathvariant="normal">L</mi></mrow></mrow></msub><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo>&#x02225;</mo><mi>Q</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 会惩罚“<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi></mrow></math> 有而 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>Q</mi></mrow></math> 没有”的区域，倾向于让 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>Q</mi></mrow></math> 覆盖 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi></mrow></math> 的所有模式；反向 KL 则倾向于让 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>Q</mi></mrow></math> 集中在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi></mrow></math> 的某个模式上。变分推断常用反向 KL，因为更容易优化。</p>
+<p><strong>例 10.2</strong>　两个正态分布 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo>&#x0003D;</mo><mi>N</mi><mo stretchy="false">&#x00028;</mo><msub><mi>&#x003BC;</mi><mn>1</mn></msub><mo>&#x0002C;</mo><msubsup><mi>&#x003C3;</mi><mn>1</mn><mn>2</mn></msubsup><mo stretchy="false">&#x00029;</mo></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>Q</mi><mo>&#x0003D;</mo><mi>N</mi><mo stretchy="false">&#x00028;</mo><msub><mi>&#x003BC;</mi><mn>2</mn></msub><mo>&#x0002C;</mo><msubsup><mi>&#x003C3;</mi><mn>2</mn><mn>2</mn></msubsup><mo stretchy="false">&#x00029;</mo></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>D</mi><mrow><mrow><mi mathvariant="normal">K</mi><mi mathvariant="normal">L</mi></mrow></mrow></msub><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo>&#x02225;</mo><mi>Q</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>ln</mi><mfrac><mrow><msub><mi>&#x003C3;</mi><mn>2</mn></msub></mrow><mrow><msub><mi>&#x003C3;</mi><mn>1</mn></msub></mrow></mfrac><mo>&#x0002B;</mo><mfrac><mrow><msubsup><mi>&#x003C3;</mi><mn>1</mn><mn>2</mn></msubsup><mo>&#x0002B;</mo><mo stretchy="false">&#x00028;</mo><msub><mi>&#x003BC;</mi><mn>1</mn></msub><mo>&#x02212;</mo><msub><mi>&#x003BC;</mi><mn>2</mn></msub><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup></mrow><mrow><mn>2</mn><msubsup><mi>&#x003C3;</mi><mn>2</mn><mn>2</mn></msubsup></mrow></mfrac><mo>&#x02212;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>&#x0002E;</mo></mrow></math></div>
+<p>若两者方差相同 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x003C3;</mi><mn>1</mn></msub><mo>&#x0003D;</mo><msub><mi>&#x003C3;</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mi>&#x003C3;</mi></mrow></math>，则</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>D</mi><mrow><mrow><mi mathvariant="normal">K</mi><mi mathvariant="normal">L</mi></mrow></mrow></msub><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo>&#x02225;</mo><mi>Q</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mfrac><mrow><mo stretchy="false">&#x00028;</mo><msub><mi>&#x003BC;</mi><mn>1</mn></msub><mo>&#x02212;</mo><msub><mi>&#x003BC;</mi><mn>2</mn></msub><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup></mrow><mrow><mn>2</mn><msup><mi>&#x003C3;</mi><mn>2</mn></msup></mrow></mfrac><mo>&#x0002E;</mo></mrow></math></div>
+<p>均值差越大、方差越小，KL 越大。</p>
+<hr>
+<h2>5. 交叉熵</h2>
+<p><strong>交叉熵</strong>定义为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo>&#x0002C;</mo><mi>Q</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo>&#x02212;</mo><munder><mo>&#x02211;</mo><mi>x</mi></munder><mi>p</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mi>ln</mi><mi>q</mi><mo stretchy="false">&#x00028;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>它与 KL 的关系是</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo>&#x0002C;</mo><mi>Q</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><msub><mi>D</mi><mrow><mrow><mi mathvariant="normal">K</mi><mi mathvariant="normal">L</mi></mrow></mrow></msub><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo>&#x02225;</mo><mi>Q</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi></mrow></math> 固定时，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 是常数，所以最小化交叉熵等价于最小化 KL 散度。</p>
+<p>在分类任务中，真实标签是 one-hot 分布 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi></mrow></math>，模型输出是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>Q</mi></mrow></math>。交叉熵损失为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>L</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><munderover><mo>&#x02211;</mo><mrow><mi>k</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mi>K</mi></munderover><msub><mi>y</mi><mi>k</mi></msub><mi>ln</mi><msub><mover accent="true"><mi>y</mi><mo>&#x0005E;</mo></mover><mi>k</mi></msub><mo>&#x0002E;</mo></mrow></math></div>
+<p>由于只有一个 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>y</mi><mi>k</mi></msub><mo>&#x0003D;</mo><mn>1</mn></mrow></math>，它简化为</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>L</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mi>ln</mi><msub><mover accent="true"><mi>y</mi><mo>&#x0005E;</mo></mover><mrow><mtext>true</mtext></mrow></msub><mo>&#x0002E;</mo></mrow></math></div>
+<p>模型给正确类别的概率越低，损失越大。</p>
+<hr>
+<h2>6. 最大似然与最小 KL</h2>
+<p>设数据来自真实分布 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi></mrow></math>，模型分布为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>Q</mi><mi>&#x003B8;</mi></msub></mrow></math>。最大似然估计最大化</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mn>1</mn><mi>n</mi></mfrac><munderover><mo>&#x02211;</mo><mrow><mi>i</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mi>n</mi></munderover><mi>ln</mi><msub><mi>Q</mi><mi>&#x003B8;</mi></msub><mo stretchy="false">&#x00028;</mo><msub><mi>x</mi><mi>i</mi></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>由大数定律，它趋近于</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>&#x1D53C;</mi><mrow><mi>X</mi><mi>&#x0007E;</mi><mi>P</mi></mrow></msub><mo stretchy="false">[</mo><mi>ln</mi><msub><mi>Q</mi><mi>&#x003B8;</mi></msub><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="false">]</mo><mo>&#x0003D;</mo><mo>&#x02212;</mo><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><msub><mi>D</mi><mrow><mrow><mi mathvariant="normal">K</mi><mi mathvariant="normal">L</mi></mrow></mrow></msub><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo>&#x02225;</mo><msub><mi>Q</mi><mi>&#x003B8;</mi></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 与 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003B8;</mi></mrow></math> 无关，所以最大化似然等价于最小化</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>D</mi><mrow><mrow><mi mathvariant="normal">K</mi><mi mathvariant="normal">L</mi></mrow></mrow></msub><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo>&#x02225;</mo><msub><mi>Q</mi><mi>&#x003B8;</mi></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>这就是“最大似然 = 最小 KL”的来源。训练模型时最小化交叉熵，本质上是在让模型分布逼近数据分布。</p>
+<hr>
+<h2>7. 最大熵原理</h2>
+<p>在满足已知约束的分布中，选择熵最大的那个。最大熵原理的理由是：不要引入约束之外的额外假设。</p>
+<p>常见结论：</p>
+<ul>
+<li>在有限集合上无约束，最大熵分布是均匀分布；</li>
+<li>在均值和方差约束下，最大熵分布是正态分布；</li>
+<li>在非负支撑和均值约束下，最大熵分布是指数分布。</li>
+</ul>
+<p>这解释了为什么正态分布和指数分布如此常见：它们是在最少假设下最“不偏不倚”的选择。</p>
+<hr>
+<h2>8. 工程视角：分类损失、强化学习与变分推断</h2>
+<ul>
+<li><strong>分类</strong>：交叉熵损失是 softmax + 负对数似然的组合，训练目标等价于最小化模型分布与标签分布的 KL；</li>
+<li><strong>强化学习</strong>：策略熵正则鼓励探索；最大熵强化学习（SAC）把熵项写进目标；</li>
+<li><strong>表征学习</strong>：互信息用于自监督学习，例如对比学习最大化不同视图之间的互信息；</li>
+<li><strong>变分推断</strong>：用 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>q</mi><mo stretchy="false">&#x00028;</mo><mi>z</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 近似后验 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi><mo stretchy="false">&#x00028;</mo><mi>z</mi><mo>&#x02223;</mo><mi>x</mi><mo stretchy="false">&#x00029;</mo></mrow></math>，最小化 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>D</mi><mrow><mrow><mi mathvariant="normal">K</mi><mi mathvariant="normal">L</mi></mrow></mrow></msub><mo stretchy="false">&#x00028;</mo><mi>q</mi><mo>&#x02225;</mo><mi>p</mi><mo stretchy="false">&#x00029;</mo></mrow></math>；</li>
+<li><strong>生成模型</strong>：VAE 的损失 = 重建误差 + KL 正则，KL 项约束隐变量分布接近先验；</li>
+<li><strong>模型压缩</strong>：知识蒸馏用 KL 让 student 分布逼近 teacher 分布。</li>
+</ul>
+<blockquote>
+<p><strong>工程直觉</strong>：熵衡量“不确定”，KL 衡量“两个信念差多少”，交叉熵衡量“用错误信念描述真相的代价”。三者在机器学习里几乎是同一件事的不同侧面。</p>
+</blockquote>
+<hr>
+<h2>9. 练习</h2>
+<ol>
+<li>
+<p>求公平硬币 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi><mo>&#x0003D;</mo><mn>0.5</mn></mrow></math> 的伯努利熵（用自然对数）。</p>
+</li>
+<li>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi></mrow></math> 独立，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>2</mn></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>Y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>3</mn></mrow></math>。求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 和 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>I</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mi>;</mi><mi>Y</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+</li>
+<li>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>0.5</mn><mo>&#x0002C;</mo><mn>0.5</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>Q</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>0.9</mn><mo>&#x0002C;</mo><mn>0.1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>D</mi><mrow><mrow><mi mathvariant="normal">K</mi><mi mathvariant="normal">L</mi></mrow></mrow></msub><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo>&#x02225;</mo><mi>Q</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+</li>
+<li>
+<p>二分类中真实标签为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mn>1</mn></mrow></math>，模型预测 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover accent="true"><mi>y</mi><mo>&#x0005E;</mo></mover><mo>&#x0003D;</mo><mn>0.8</mn></mrow></math>。求交叉熵损失。</p>
+</li>
+<li>
+<p>解释为什么最小化交叉熵等价于最小化 KL 散度。</p>
+</li>
+</ol>
+<hr>
+<h2>10. 答案与简解</h2>
+<details>
+<summary>点击展开（做完再看）</summary>
+
+**1.**
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>H</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mn>0.5</mn><mi>ln</mi><mn>0.5</mn><mo>&#x02212;</mo><mn>0.5</mn><mi>ln</mi><mn>0.5</mn><mo>&#x0003D;</mo><mi>ln</mi><mn>2</mn><mo>&#x02248;</mo><mn>0.693</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+**2.** 独立时 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo>&#x0002C;</mo><mi>Y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>Y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>5</mn></mrow></math>，互信息 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>I</mi><mo stretchy="false">&#x00028;</mo><mi>X</mi><mi>;</mi><mi>Y</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>0</mn></mrow></math>。
+
+**3.**
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><msub><mi>D</mi><mrow><mrow><mi mathvariant="normal">K</mi><mi mathvariant="normal">L</mi></mrow></mrow></msub><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo>&#x02225;</mo><mi>Q</mi><mo stretchy="false">&#x00029;</mo><mi>&</mi><mo>&#x0003D;</mo><mn>0.5</mn><mi>ln</mi><mfrac><mrow><mn>0.5</mn></mrow><mrow><mn>0.9</mn></mrow></mfrac><mo>&#x0002B;</mo><mn>0.5</mn><mi>ln</mi><mfrac><mrow><mn>0.5</mn></mrow><mrow><mn>0.1</mn></mrow></mfrac><mspace linebreak="newline" /><mi>&</mi><mo>&#x0003D;</mo><mn>0.5</mn><mi>ln</mi><mfrac><mrow><mn>5</mn></mrow><mrow><mn>9</mn></mrow></mfrac><mo>&#x0002B;</mo><mn>0.5</mn><mi>ln</mi><mn>5</mn><mspace linebreak="newline" /><mi>&</mi><mo>&#x0003D;</mo><mn>0.5</mn><mi>ln</mi><mfrac><mrow><mn>25</mn></mrow><mrow><mn>9</mn></mrow></mfrac><mo>&#x0003D;</mo><mi>ln</mi><mfrac><mn>5</mn><mn>3</mn></mfrac><mo>&#x02248;</mo><mn>0.511</mn><mo>&#x0002E;</mo></mrow></mrow></math></div>
+
+
+
+**4.** <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>L</mi><mo>&#x0003D;</mo><mo>&#x02212;</mo><mi>ln</mi><mn>0.8</mn><mo>&#x02248;</mo><mn>0.223</mn></mrow></math>。
+
+**5.** 因为
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo>&#x0002C;</mo><mi>Q</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><msub><mi>D</mi><mrow><mrow><mi mathvariant="normal">K</mi><mi mathvariant="normal">L</mi></mrow></mrow></msub><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo>&#x02225;</mo><mi>Q</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo></mrow></math></div>
+
+
+
+当真实分布 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>P</mi></mrow></math> 固定时，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>H</mi><mo stretchy="false">&#x00028;</mo><mi>P</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 是常数，最小化交叉熵与最小化 KL 等价。
+
+</details>
+
+<hr>
+<h2>下节预告</h2>
+<p><strong>第 11 课：综合模拟卷</strong></p>
+<ul>
+<li>覆盖概率空间、随机变量、期望方差、多维分布、极限定理、估计、检验、贝叶斯、随机过程和信息论</li>
+<li>建议限时 90 分钟闭卷完成</li>
+</ul>
+<hr>
+<h2>自查清单</h2>
+<ul>
+<li>[ ] 会算离散分布的熵</li>
+<li>[ ] 记得链式法则和互信息公式</li>
+<li>[ ] 知道 KL 非负且不对称</li>
+<li>[ ] 能写出交叉熵与 KL 的关系</li>
+<li>[ ] 理解最大似然 = 最小 KL</li>
+</ul>
+<nav class="lesson-nav"><span><a href="概率09-随机过程初步.html">&larr; 上一课</a></span><span><a href="概率11-综合模拟卷.html">下一课 &rarr;</a></span></nav>
+<footer>概率论 · 数学公式使用 MathML 渲染，建议使用 Chrome / Edge / Firefox 打开</footer>
+</main>
+</body>
+</html>

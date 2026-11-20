@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>线性代数 · 第 01 课：向量与线性组合</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --quote-bg: #f6f8fa;
+  --code-bg: #eff2f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --border: #30363d;
+    --accent: #4493f8;
+    --quote-bg: #161b22;
+    --code-bg: #1f242c;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; font-weight: 650; }
+h1 { font-size: 2rem; margin: 0 0 .8em; padding-bottom: .35em; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 2.2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.2rem; margin: 1.8em 0 .55em; }
+p { margin: .85em 0; }
+a { color: var(--accent); }
+blockquote {
+  margin: 1em 0;
+  padding: .6em 1em;
+  border-left: 4px solid var(--accent);
+  background: var(--quote-bg);
+  color: var(--muted);
+  border-radius: 4px;
+}
+blockquote p { margin: .25em 0; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: .96em;
+  overflow: hidden;
+}
+th, td { border: 1px solid var(--border); padding: .45em .7em; text-align: left; vertical-align: top; }
+th { background: var(--quote-bg); font-weight: 600; }
+details {
+  margin: 1.2em 0;
+  padding: .8em 1em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--quote-bg);
+}
+summary { cursor: pointer; font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+ul, ol { padding-left: 1.7em; }
+li { margin: .3em 0; }
+.math-block {
+  margin: 1.15em 0;
+  padding: .7em .9em;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--quote-bg);
+  border-radius: 6px;
+}
+math { font-size: 1.14em; line-height: 1.2; }
+math[display="inline"] { font-size: 1.05em; vertical-align: baseline; }
+.math-block math { font-size: 1.24em; }
+.math-fallback, .math-fallback-block {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .08em .3em;
+  border-radius: 3px;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .12em .35em;
+  border-radius: 3px;
+  font-size: .92em;
+}
+pre code { display: block; padding: .8em 1em; overflow-x: auto; }
+.lesson-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .8em 1.4em;
+  justify-content: space-between;
+  margin: 2.4em 0 0;
+  padding-top: 1.1em;
+  border-top: 1px solid var(--border);
+  font-size: .95em;
+}
+footer { margin-top: 2.2em; color: var(--muted); font-size: .85em; text-align: center; }
+@media print {
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  .math-block { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>线性代数 · 第 01 课：向量与线性组合</h1>
+<blockquote>
+<p><strong>本课目标</strong>：建立向量的三种视角，理解线性组合、张成、线性相关与基，能判断一组向量是否线性无关。</p>
+<p><strong>使用方法</strong>：先读讲解 → 做练习 → 对答案。错题 72 小时内重做。</p>
+</blockquote>
+<hr>
+<h2>目录</h2>
+<ol>
+<li>向量是什么</li>
+<li>加法与数乘</li>
+<li>线性组合与张成</li>
+<li>线性相关与线性无关</li>
+<li>基与维数</li>
+<li>工程视角：状态、特征与传感器</li>
+<li>练习</li>
+<li>答案与简解</li>
+</ol>
+<hr>
+<h2>1. 向量是什么</h2>
+<p>同一个对象，有三种同样重要的看法。</p>
+<p><strong>几何视角</strong>：向量是有方向、有长度的箭头。二维平面里的 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41A;</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>3</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 表示从原点出发，向右 3、向上 2。</p>
+<p><strong>代数视角</strong>：向量是一列数：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D41A;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mn>3</mn></mtd></mtr><mtr><mtd><mn>2</mn></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mo>&#x02212;</mo><mn>1</mn></mtd></mtr><mtr><mtd><mn>4</mn></mtd></mtr><mtr><mtd><mn>0</mn></mtd></mtr></mtable><mo>&#x00029;</mo></mrow></math></div>
+<p>分量的个数叫维数。<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41A;</mi></mrow></math> 是二维向量，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41B;</mi></mrow></math> 是三维向量。</p>
+<p><strong>数据视角</strong>：向量是一个样本或一个状态。例如无人机的状态可以写成</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D431;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mi>x</mi></mtd></mtr><mtr><mtd><mi>y</mi></mtd></mtr><mtr><mtd><mi>z</mi></mtd></mtr><mtr><mtd><msub><mi>v</mi><mi>x</mi></msub></mtd></mtr><mtr><mtd><msub><mi>v</mi><mi>y</mi></msub></mtd></mtr><mtr><mtd><msub><mi>v</mi><mi>z</mi></msub></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002C;</mo></mrow></math></div>
+<p>前三个分量是位置，后三个是速度。传感器的一次读数、图像的一块特征、神经网络一层的激活值，也都可以看成一个向量。</p>
+<p>这三种视角说的是同一件事。几何帮助建立直觉，代数方便计算，数据视角连接工程。</p>
+<hr>
+<h2>2. 加法与数乘</h2>
+<p><strong>加法</strong>逐分量进行：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D41A;</mi><mo>&#x0002B;</mo><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><msub><mi>a</mi><mn>1</mn></msub></mtd></mtr><mtr><mtd><mo>&#x022EE;</mo></mtd></mtr><mtr><mtd><msub><mi>a</mi><mi>n</mi></msub></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0002B;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><msub><mi>b</mi><mn>1</mn></msub></mtd></mtr><mtr><mtd><mo>&#x022EE;</mo></mtd></mtr><mtr><mtd><msub><mi>b</mi><mi>n</mi></msub></mtd></mtr></mtable><mo>&#x00029;</mo><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><msub><mi>a</mi><mn>1</mn></msub><mo>&#x0002B;</mo><msub><mi>b</mi><mn>1</mn></msub></mtd></mtr><mtr><mtd><mo>&#x022EE;</mo></mtd></mtr><mtr><mtd><msub><mi>a</mi><mi>n</mi></msub><mo>&#x0002B;</mo><msub><mi>b</mi><mi>n</mi></msub></mtd></mtr></mtable><mo>&#x00029;</mo></mrow></math></div>
+<p>几何上，把 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41B;</mi></mrow></math> 的起点平移到 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41A;</mi></mrow></math> 的终点，从 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41A;</mi></mrow></math> 的起点指向 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41B;</mi></mrow></math> 的终点，就是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41A;</mi><mo>&#x0002B;</mo><mi>&#x1D41B;</mi></mrow></math>（三角形法则）。也可以把两个向量首尾相接补成平行四边形，取对角线。</p>
+<p><strong>数乘</strong>把每个分量乘以同一个数：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>c</mi><mi>&#x1D41A;</mi><mo>&#x0003D;</mo><mo>&#x00028;</mo><mtable><mtr><mtd><mi>c</mi><msub><mi>a</mi><mn>1</mn></msub></mtd></mtr><mtr><mtd><mo>&#x022EE;</mo></mtd></mtr><mtr><mtd><mi>c</mi><msub><mi>a</mi><mi>n</mi></msub></mtd></mtr></mtable><mo>&#x00029;</mo></mrow></math></div>
+<p><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>c</mi><mo>&#x0003E;</mo><mn>0</mn></mrow></math> 时方向不变，长度变为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x0007C;</mo><mi>c</mi><mo stretchy="false">&#x0007C;</mo></mrow></math> 倍；<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>c</mi><mo>&#x0003C;</mo><mn>0</mn></mrow></math> 时方向反过来；<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>c</mi><mo>&#x0003D;</mo><mn>0</mn></mrow></math> 得到零向量 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mn mathvariant="bold">0</mn></mrow></mrow></math>。</p>
+<p>加法满足交换律、结合律，数乘满足分配律。这些性质看起来显然，但后面所有线性运算都建立在它们之上。</p>
+<blockquote>
+<p><strong>注意</strong>：只有维数相同的向量才能相加。<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 和 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>3</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 相加没有定义。</p>
+</blockquote>
+<hr>
+<h2>3. 线性组合与张成</h2>
+<p>给定向量 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42F;</mi><mn>1</mn></msub><mo>&#x0002C;</mo><mo>&#x02026;</mo><mo>&#x0002C;</mo><msub><mi>&#x1D42F;</mi><mi>k</mi></msub></mrow></math> 和数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>c</mi><mn>1</mn></msub><mo>&#x0002C;</mo><mo>&#x02026;</mo><mo>&#x0002C;</mo><msub><mi>c</mi><mi>k</mi></msub></mrow></math>，称</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>c</mi><mn>1</mn></msub><msub><mi>&#x1D42F;</mi><mn>1</mn></msub><mo>&#x0002B;</mo><msub><mi>c</mi><mn>2</mn></msub><msub><mi>&#x1D42F;</mi><mn>2</mn></msub><mo>&#x0002B;</mo><mo>&#x022EF;</mo><mo>&#x0002B;</mo><msub><mi>c</mi><mi>k</mi></msub><msub><mi>&#x1D42F;</mi><mi>k</mi></msub></mrow></math></div>
+<p>为它们的一个<strong>线性组合</strong>。系数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>c</mi><mi>i</mi></msub></mrow></math> 可以取任意实数，也可以全为 0。</p>
+<p>所有可能的线性组合组成的集合，叫这组向量的<strong>张成空间</strong>（span），记作</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>span</mo><mo stretchy="false">&#x0007B;</mo><msub><mi>&#x1D42F;</mi><mn>1</mn></msub><mo>&#x0002C;</mo><mo>&#x02026;</mo><mo>&#x0002C;</mo><msub><mi>&#x1D42F;</mi><mi>k</mi></msub><mo stretchy="false">&#x0007D;</mo><mo>&#x0003D;</mo><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007B;</mo><msub><mi>c</mi><mn>1</mn></msub><msub><mi>&#x1D42F;</mi><mn>1</mn></msub><mo>&#x0002B;</mo><mo>&#x022EF;</mo><mo>&#x0002B;</mo><msub><mi>c</mi><mi>k</mi></msub><msub><mi>&#x1D42F;</mi><mi>k</mi></msub><mo>&#x02223;</mo><msub><mi>c</mi><mi>i</mi></msub><mo>&#x02208;</mo><mi>&#x0211D;</mi><mo stretchy="true" fence="true" form="postfix">&#x0007D;</mo></mrow><mo>&#x0002E;</mo></mrow></math></div>
+<p>直观上，张成就是“用这些向量能到达的所有地方”。</p>
+<ul>
+<li>一个非零向量的张成是一条过原点的直线。</li>
+<li>两个不共线向量的张成是整个平面。</li>
+<li>三个不共面向量的张成是整个三维空间。</li>
+<li>如果其中一个向量能被其他向量组合出来，它就不会扩大张成。</li>
+</ul>
+<p><strong>例 1.1</strong>　判断 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>3</mn><mo>&#x0002C;</mo><mn>5</mn><mo>&#x0002C;</mo><mn>7</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 是否在
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42F;</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42F;</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>3</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 的张成中。</p>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><msub><mi>c</mi><mn>1</mn></msub><msub><mi>&#x1D42F;</mi><mn>1</mn></msub><mo>&#x0002B;</mo><msub><mi>c</mi><mn>2</mn></msub><msub><mi>&#x1D42F;</mi><mn>2</mn></msub></mrow></math>，逐分量比较：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007B;</mo><mtable><mtr><mtd columnalign="left"><msub><mi>c</mi><mn>1</mn></msub><mo>&#x0002B;</mo><msub><mi>c</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mn>3</mn><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><msub><mi>c</mi><mn>1</mn></msub><mo>&#x0002B;</mo><mn>2</mn><msub><mi>c</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mn>5</mn><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><msub><mi>c</mi><mn>1</mn></msub><mo>&#x0002B;</mo><mn>3</mn><msub><mi>c</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mn>7</mn><mo>&#x0002E;</mo></mtd></mtr></mtable></mrow></mrow></math></div>
+<p>由前两式相减得 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>c</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mn>2</mn></mrow></math>，再得 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>c</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mn>1</mn></mrow></math>。代入第三式：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn><mo>&#x0002B;</mo><mn>3</mn><mo>&#x000B7;</mo><mn>2</mn><mo>&#x0003D;</mo><mn>7</mn></mrow></math>，成立。所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><msub><mi>&#x1D42F;</mi><mn>1</mn></msub><mo>&#x0002B;</mo><mn>2</mn><msub><mi>&#x1D42F;</mi><mn>2</mn></msub><mo>&#x0002C;</mo></mrow></math></div>
+<p>即 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41B;</mi></mrow></math> 在张成中。</p>
+<p>如果第三个方程不成立，例如 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>3</mn><mo>&#x0002C;</mo><mn>5</mn><mo>&#x0002C;</mo><mn>8</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，那么前两式仍给出 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>c</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002C;</mo><msub><mi>c</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mn>2</mn></mrow></math>，但第三式要求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn><mo>&#x0002B;</mo><mn>6</mn><mo>&#x0003D;</mo><mn>8</mn></mrow></math>，矛盾，此时 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41B;</mi></mrow></math> 不在张成中。</p>
+<hr>
+<h2>4. 线性相关与线性无关</h2>
+<p>一组向量 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42F;</mi><mn>1</mn></msub><mo>&#x0002C;</mo><mo>&#x02026;</mo><mo>&#x0002C;</mo><msub><mi>&#x1D42F;</mi><mi>k</mi></msub></mrow></math> 称为<strong>线性相关</strong>，如果存在不全为零的数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>c</mi><mn>1</mn></msub><mo>&#x0002C;</mo><mo>&#x02026;</mo><mo>&#x0002C;</mo><msub><mi>c</mi><mi>k</mi></msub></mrow></math>，使得</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>c</mi><mn>1</mn></msub><msub><mi>&#x1D42F;</mi><mn>1</mn></msub><mo>&#x0002B;</mo><mo>&#x022EF;</mo><mo>&#x0002B;</mo><msub><mi>c</mi><mi>k</mi></msub><msub><mi>&#x1D42F;</mi><mi>k</mi></msub><mo>&#x0003D;</mo><mrow><mn mathvariant="bold">0</mn></mrow><mo>&#x0002E;</mo></mrow></math></div>
+<p>如果只有全取零才成立，就称它们<strong>线性无关</strong>。</p>
+<p>这句话的含义是：相关，说明至少有一个向量是“多余”的，它能被其他向量线性组合出来；无关，说明每个向量都提供了新的方向，谁也替代不了谁。</p>
+<p><strong>例 1.2</strong>　<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42F;</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>3</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42F;</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>4</mn><mo>&#x0002C;</mo><mn>6</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+<p>显然 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42F;</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mn>2</mn><msub><mi>&#x1D42F;</mi><mn>1</mn></msub></mrow></math>，所以</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>2</mn><msub><mi>&#x1D42F;</mi><mn>1</mn></msub><mo>&#x02212;</mo><msub><mi>&#x1D42F;</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mrow><mn mathvariant="bold">0</mn></mrow><mo>&#x0002C;</mo></mrow></math></div>
+<p>系数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo>&#x0002C;</mo><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 不全为零，故线性相关。</p>
+<p><strong>例 1.3</strong>　<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42F;</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42F;</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>c</mi><mn>1</mn></msub><msub><mi>&#x1D42F;</mi><mn>1</mn></msub><mo>&#x0002B;</mo><msub><mi>c</mi><mn>2</mn></msub><msub><mi>&#x1D42F;</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mrow><mn mathvariant="bold">0</mn></mrow></mrow></math>，即 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><msub><mi>c</mi><mn>1</mn></msub><mo>&#x0002C;</mo><msub><mi>c</mi><mn>2</mn></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，所以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>c</mi><mn>1</mn></msub><mo>&#x0003D;</mo><msub><mi>c</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mn>0</mn></mrow></math>。故线性无关。</p>
+<p>几个常用结论：</p>
+<ol>
+<li>含零向量的向量组一定线性相关。</li>
+<li>两个向量线性相关，当且仅当其中一个是另一个的倍数（共线）。</li>
+<li>在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x0211D;</mi><mi>n</mi></msup></mrow></math> 中，任意 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mo>&#x0002B;</mo><mn>1</mn></mrow></math> 个向量一定线性相关。例如平面上任意 3 个向量必相关，空间中任意 4 个向量必相关。</li>
+<li>向量组线性无关，等价于其中任何一个向量都不能由其余向量线性表示。</li>
+</ol>
+<blockquote>
+<p><strong>易错点</strong>：判断相关性时，不能只看“看起来像不像”。必须解齐次方程，或者用秩、行列式等工具。第 03、04 课会给出系统方法。</p>
+</blockquote>
+<hr>
+<h2>5. 基与维数</h2>
+<p>如果一组向量既<strong>线性无关</strong>，又能<strong>张成整个空间</strong>，就称它为该空间的一组<strong>基</strong>。</p>
+<p>基的两个条件缺一不可：</p>
+<ul>
+<li>无关，保证没有多余向量；</li>
+<li>张成，保证没有遗漏方向。</li>
+</ul>
+<p><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x0211D;</mi><mi>n</mi></msup></mrow></math> 的标准基是</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>&#x1D41E;</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>0</mn><mo>&#x0002C;</mo><mo>&#x02026;</mo><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mspace width="1em" /><msub><mi>&#x1D41E;</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mo>&#x02026;</mo><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mspace width="1em" /><mo>&#x02026;</mo><mo>&#x0002C;</mo><mspace width="1em" /><msub><mi>&#x1D41E;</mi><mi>n</mi></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mo>&#x02026;</mo><mo>&#x0002C;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>任何向量 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><msub><mi>x</mi><mn>1</mn></msub><mo>&#x0002C;</mo><mo>&#x02026;</mo><mo>&#x0002C;</mo><msub><mi>x</mi><mi>n</mi></msub><mo stretchy="false">&#x00029;</mo></mrow></math> 都可以唯一地写成</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>x</mi><mn>1</mn></msub><msub><mi>&#x1D41E;</mi><mn>1</mn></msub><mo>&#x0002B;</mo><mo>&#x022EF;</mo><mo>&#x0002B;</mo><msub><mi>x</mi><mi>n</mi></msub><msub><mi>&#x1D41E;</mi><mi>n</mi></msub><mo>&#x0002E;</mo></mrow></math></div>
+<p>一组基中向量的个数叫空间的<strong>维数</strong>。<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x0211D;</mi><mn>2</mn></msup></mrow></math> 是二维，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x0211D;</mi><mn>3</mn></msup></mrow></math> 是三维，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x0211D;</mi><mi>n</mi></msup></mrow></math> 是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math> 维。</p>
+<p>同一个空间可以有很多组基。例如</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>&#x1D42E;</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><msub><mi>&#x1D42E;</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math></div>
+<p>也是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x0211D;</mi><mn>2</mn></msup></mrow></math> 的一组基：它们不共线，能张成平面。同一个向量在不同基下的坐标不同，但向量本身不变。坐标变换是后面矩阵部分的核心。</p>
+<hr>
+<h2>6. 工程视角：状态、特征与传感器</h2>
+<p>在无人机和具身智能里，向量几乎无处不在：</p>
+<ul>
+<li><strong>状态向量</strong>：位置、速度、姿态、角速度拼成一个向量，滤波器在每一步更新它。</li>
+<li><strong>观测向量</strong>：相机、IMU、激光雷达的一次测量是一个向量，噪声让它落在真值附近。</li>
+<li><strong>特征向量</strong>：机器学习把一张图、一段语音变成高维向量，再在其中做分类或检索。</li>
+<li><strong>控制输入</strong>：四个电机的推力可以看成一个向量，通过混控矩阵变成力和力矩。</li>
+</ul>
+<p>线性组合则描述了“叠加”：</p>
+<ul>
+<li>两个传感器对同一位置的估计，可以按权重组合成一个更可靠的估计；</li>
+<li>神经网络的一层，本质上是把输入向量做若干次线性组合，再套一个非线性函数；</li>
+<li>无人机的位置，可以写成“起点 + 速度 × 时间”的线性组合。</li>
+</ul>
+<p>线性代数的第一课不是要你会算多大的矩阵，而是让你习惯把工程问题写成向量和线性组合。后面所有内容——矩阵、秩、特征值、SVD——都在回答同一个问题：这些向量能张成什么？怎样用更少的基表示同样的信息？</p>
+<blockquote>
+<p><strong>小实验</strong>：用 NumPy 检查一组向量是否线性无关。若矩阵的秩等于向量个数，则它们线性无关：</p>
+</blockquote>
+<pre><code class="language-python">import numpy as np
+
+V = np.array([[1, 0, 2],
+              [0, 1, 1],
+              [1, 1, 3]])  # 每一列是一个向量
+print(np.linalg.matrix_rank(V))  # 2，小于 3，说明三列线性相关
+</code></pre>
+<hr>
+<h2>7. 练习</h2>
+<ol>
+<li>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41A;</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mo>&#x02212;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>3</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>4</mn><mo>&#x0002C;</mo><mn>0</mn><mo>&#x0002C;</mo><mo>&#x02212;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mi>&#x1D41A;</mi><mo>&#x02212;</mo><mn>3</mn><mi>&#x1D41B;</mi></mrow></math>。</p>
+</li>
+<li>
+<p>判断 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42F;</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42F;</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>4</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 是否线性无关。</p>
+</li>
+<li>
+<p>判断 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>2</mn><mo>&#x0002C;</mo><mn>3</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 是否在 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42F;</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42F;</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 的张成中。</p>
+</li>
+<li>
+<p>求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42F;</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo></mrow></math>、<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42F;</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math> 的张成空间，并写出它的方程。</p>
+</li>
+<li>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42F;</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42F;</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42F;</mi><mn>3</mn></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mi>c</mi><mo stretchy="false">&#x00029;</mo></mrow></math>。问 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>c</mi></mrow></math> 取何值时，这三个向量线性相关？</p>
+</li>
+</ol>
+<hr>
+<h2>8. 答案与简解</h2>
+<details>
+<summary>点击展开（做完再看）</summary>
+
+**1.** <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>2</mn><mi>&#x1D41A;</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>2</mn><mo>&#x0002C;</mo><mo>&#x02212;</mo><mn>4</mn><mo>&#x0002C;</mo><mn>6</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>3</mn><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mn>12</mn><mo>&#x0002C;</mo><mn>0</mn><mo>&#x0002C;</mo><mo>&#x02212;</mo><mn>3</mn><mo stretchy="false">&#x00029;</mo></mrow></math>，所以
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>2</mn><mi>&#x1D41A;</mi><mo>&#x02212;</mo><mn>3</mn><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mo>&#x02212;</mo><mn>10</mn><mo>&#x0002C;</mo><mo>&#x02212;</mo><mn>4</mn><mo>&#x0002C;</mo><mn>9</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+**2.** 因为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>&#x1D42F;</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mn>2</mn><msub><mi>&#x1D42F;</mi><mn>1</mn></msub></mrow></math>，所以线性相关。
+
+**3.** 设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41B;</mi><mo>&#x0003D;</mo><msub><mi>c</mi><mn>1</mn></msub><msub><mi>&#x1D42F;</mi><mn>1</mn></msub><mo>&#x0002B;</mo><msub><mi>c</mi><mn>2</mn></msub><msub><mi>&#x1D42F;</mi><mn>2</mn></msub></mrow></math>，得到
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007B;</mo><mtable><mtr><mtd columnalign="left"><msub><mi>c</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><msub><mi>c</mi><mn>1</mn></msub><mo>&#x0002B;</mo><msub><mi>c</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mn>2</mn><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><msub><mi>c</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mn>3</mn><mo>&#x0002E;</mo></mtd></mtr></mtable></mrow></mrow></math></div>
+
+
+
+由第一式 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>c</mi><mn>1</mn></msub><mo>&#x0003D;</mo><mn>1</mn></mrow></math>，第三式 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>c</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mn>3</mn></mrow></math>，但第二式要求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn><mo>&#x0002B;</mo><mn>3</mn><mo>&#x0003D;</mo><mn>2</mn></mrow></math>，矛盾。所以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D41B;</mi></mrow></math> 不在张成中。
+
+**4.** 张成中的向量形如
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mi>c</mi><mn>1</mn></msub><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>0</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><msub><mi>c</mi><mn>2</mn></msub><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><msub><mi>c</mi><mn>1</mn></msub><mo>&#x0002C;</mo><msub><mi>c</mi><mn>1</mn></msub><mo>&#x0002B;</mo><msub><mi>c</mi><mn>2</mn></msub><mo>&#x0002C;</mo><msub><mi>c</mi><mn>2</mn></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+令 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>x</mi><mo>&#x0003D;</mo><msub><mi>c</mi><mn>1</mn></msub></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><msub><mi>c</mi><mn>1</mn></msub><mo>&#x0002B;</mo><msub><mi>c</mi><mn>2</mn></msub></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>z</mi><mo>&#x0003D;</mo><msub><mi>c</mi><mn>2</mn></msub></mrow></math>，则 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>y</mi><mo>&#x0003D;</mo><mi>x</mi><mo>&#x0002B;</mo><mi>z</mi></mrow></math>，即
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>x</mi><mo>&#x02212;</mo><mi>y</mi><mo>&#x0002B;</mo><mi>z</mi><mo>&#x0003D;</mo><mn>0</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+这是一个过原点的平面。
+
+**5.** 设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>c</mi><mn>1</mn></msub><msub><mi>&#x1D42F;</mi><mn>1</mn></msub><mo>&#x0002B;</mo><msub><mi>c</mi><mn>2</mn></msub><msub><mi>&#x1D42F;</mi><mn>2</mn></msub><mo>&#x0002B;</mo><msub><mi>c</mi><mn>3</mn></msub><msub><mi>&#x1D42F;</mi><mn>3</mn></msub><mo>&#x0003D;</mo><mrow><mn mathvariant="bold">0</mn></mrow></mrow></math>，逐分量得到
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mrow><mo stretchy="true" fence="true" form="prefix">&#x0007B;</mo><mtable><mtr><mtd columnalign="left"><msub><mi>c</mi><mn>1</mn></msub><mo>&#x0002B;</mo><msub><mi>c</mi><mn>3</mn></msub><mo>&#x0003D;</mo><mn>0</mn><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><msub><mi>c</mi><mn>2</mn></msub><mo>&#x0002B;</mo><msub><mi>c</mi><mn>3</mn></msub><mo>&#x0003D;</mo><mn>0</mn><mo>&#x0002C;</mo></mtd></mtr><mtr><mtd columnalign="left"><msub><mi>c</mi><mn>1</mn></msub><mo>&#x0002B;</mo><msub><mi>c</mi><mn>2</mn></msub><mo>&#x0002B;</mo><mi>c</mi><msub><mi>c</mi><mn>3</mn></msub><mo>&#x0003D;</mo><mn>0</mn><mo>&#x0002E;</mo></mtd></mtr></mtable></mrow></mrow></math></div>
+
+
+
+由前两式 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>c</mi><mn>1</mn></msub><mo>&#x0003D;</mo><msub><mi>c</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mo>&#x02212;</mo><msub><mi>c</mi><mn>3</mn></msub></mrow></math>，代入第三式：
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>&#x02212;</mo><msub><mi>c</mi><mn>3</mn></msub><mo>&#x02212;</mo><msub><mi>c</mi><mn>3</mn></msub><mo>&#x0002B;</mo><mi>c</mi><msub><mi>c</mi><mn>3</mn></msub><mo>&#x0003D;</mo><mo stretchy="false">&#x00028;</mo><mi>c</mi><mo>&#x02212;</mo><mn>2</mn><mo stretchy="false">&#x00029;</mo><msub><mi>c</mi><mn>3</mn></msub><mo>&#x0003D;</mo><mn>0</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>c</mi><mo>&#x0003D;</mo><mn>2</mn></mrow></math>，取 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>c</mi><mn>3</mn></msub><mo>&#x0003D;</mo><mn>1</mn></mrow></math> 可得非零解，三向量线性相关；若 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>c</mi><mo>&#x02260;</mo><mn>2</mn></mrow></math>，则只能 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>c</mi><mn>3</mn></msub><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，进而 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>c</mi><mn>1</mn></msub><mo>&#x0003D;</mo><msub><mi>c</mi><mn>2</mn></msub><mo>&#x0003D;</mo><mn>0</mn></mrow></math>，三向量线性无关。
+
+</details>
+
+<hr>
+<h2>下节预告</h2>
+<p><strong>第 02 课：矩阵与线性映射</strong></p>
+<ul>
+<li>矩阵是线性映射的表格</li>
+<li>矩阵乘向量 = 列的线性组合</li>
+<li>矩阵乘法 = 复合映射</li>
+<li>转置、逆矩阵与特殊矩阵</li>
+</ul>
+<hr>
+<h2>自查清单</h2>
+<ul>
+<li>[ ] 能说出向量的三种视角</li>
+<li>[ ] 能判断一个向量是否在另一组向量的张成中</li>
+<li>[ ] 能说清线性相关与线性无关的区别</li>
+<li>[ ] 知道基的两个条件：无关 + 张成</li>
+<li>[ ] 能用 NumPy 求矩阵的秩</li>
+</ul>
+<nav class="lesson-nav"><span><a href="../index.html">课程主页</a></span><span><a href="线代02-矩阵与线性映射.html">下一课 &rarr;</a></span></nav>
+<footer>线性代数 · 数学公式使用 MathML 渲染，建议使用 Chrome / Edge / Firefox 打开</footer>
+</main>
+</body>
+</html>

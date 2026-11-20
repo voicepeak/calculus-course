@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>概率论 · 第 06 课：参数估计</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --fg: #1f2328;
+  --muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --quote-bg: #f6f8fa;
+  --code-bg: #eff2f5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #e6edf3;
+    --muted: #9198a1;
+    --border: #30363d;
+    --accent: #4493f8;
+    --quote-bg: #161b22;
+    --code-bg: #1f242c;
+  }
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: 880px; margin: 0 auto; padding: 48px 28px 80px; }
+h1, h2, h3, h4 { line-height: 1.3; font-weight: 650; }
+h1 { font-size: 2rem; margin: 0 0 .8em; padding-bottom: .35em; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.5rem; margin: 2.2em 0 .7em; padding-bottom: .25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.2rem; margin: 1.8em 0 .55em; }
+p { margin: .85em 0; }
+a { color: var(--accent); }
+blockquote {
+  margin: 1em 0;
+  padding: .6em 1em;
+  border-left: 4px solid var(--accent);
+  background: var(--quote-bg);
+  color: var(--muted);
+  border-radius: 4px;
+}
+blockquote p { margin: .25em 0; }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: .96em;
+  overflow: hidden;
+}
+th, td { border: 1px solid var(--border); padding: .45em .7em; text-align: left; vertical-align: top; }
+th { background: var(--quote-bg); font-weight: 600; }
+details {
+  margin: 1.2em 0;
+  padding: .8em 1em;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--quote-bg);
+}
+summary { cursor: pointer; font-weight: 600; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+ul, ol { padding-left: 1.7em; }
+li { margin: .3em 0; }
+.math-block {
+  margin: 1.15em 0;
+  padding: .7em .9em;
+  overflow-x: auto;
+  text-align: center;
+  background: var(--quote-bg);
+  border-radius: 6px;
+}
+math { font-size: 1.14em; line-height: 1.2; }
+math[display="inline"] { font-size: 1.05em; vertical-align: baseline; }
+.math-block math { font-size: 1.24em; }
+.math-fallback, .math-fallback-block {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .08em .3em;
+  border-radius: 3px;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  background: var(--code-bg);
+  padding: .12em .35em;
+  border-radius: 3px;
+  font-size: .92em;
+}
+pre code { display: block; padding: .8em 1em; overflow-x: auto; }
+.lesson-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .8em 1.4em;
+  justify-content: space-between;
+  margin: 2.4em 0 0;
+  padding-top: 1.1em;
+  border-top: 1px solid var(--border);
+  font-size: .95em;
+}
+footer { margin-top: 2.2em; color: var(--muted); font-size: .85em; text-align: center; }
+@media print {
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  .math-block { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>概率论 · 第 06 课：参数估计</h1>
+<blockquote>
+<p><strong>本课目标</strong>：理解估计量的评价标准，掌握矩估计、最大似然估计和置信区间的基本方法。</p>
+<p><strong>使用方法</strong>：先读讲解 → 做练习 → 对答案。错题 72 小时内重做。</p>
+</blockquote>
+<hr>
+<h2>目录</h2>
+<ol>
+<li>统计模型与样本</li>
+<li>估计量的评价</li>
+<li>矩估计</li>
+<li>最大似然估计</li>
+<li>MAP 与正则化</li>
+<li>Fisher 信息与 Cramér–Rao 下界</li>
+<li>置信区间</li>
+<li>工程视角：标定与参数辨识</li>
+<li>练习</li>
+<li>答案与简解</li>
+</ol>
+<hr>
+<h2>1. 统计模型与样本</h2>
+<p>参数估计解决的问题是：<strong>总体分布的形式已知，但参数未知，如何用样本推断参数？</strong></p>
+<p>例如：</p>
+<ul>
+<li>抛硬币，正面概率 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi></mrow></math> 未知；</li>
+<li>传感器噪声服从 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>N</mi><mo stretchy="false">&#x00028;</mo><mi>&#x003BC;</mi><mo>&#x0002C;</mo><msup><mi>&#x003C3;</mi><mn>2</mn></msup><mo stretchy="false">&#x00029;</mo></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BC;</mi><mo>&#x0002C;</mo><msup><mi>&#x003C3;</mi><mn>2</mn></msup></mrow></math> 未知；</li>
+<li>单位时间到达数服从 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mi mathvariant="normal">P</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">s</mi></mrow><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x00029;</mo></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BB;</mi></mrow></math> 未知。</li>
+</ul>
+<p>样本 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>X</mi><mn>1</mn></msub><mo>&#x0002C;</mo><mo>&#x02026;</mo><mo>&#x0002C;</mo><msub><mi>X</mi><mi>n</mi></msub></mrow></math> 独立同分布，来自总体 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>F</mi><mi>&#x003B8;</mi></msub></mrow></math>，其中 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003B8;</mi></mrow></math> 是未知参数。样本的函数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>T</mi><mo stretchy="false">&#x00028;</mo><msub><mi>X</mi><mn>1</mn></msub><mo>&#x0002C;</mo><mo>&#x02026;</mo><mo>&#x0002C;</mo><msub><mi>X</mi><mi>n</mi></msub><mo stretchy="false">&#x00029;</mo></mrow></math> 叫<strong>统计量</strong>，用来估计 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003B8;</mi></mrow></math> 的统计量叫<strong>估计量</strong>。</p>
+<p>注意：估计量是随机变量，因为样本是随机的；一次观测代入后得到的数值叫<strong>估计值</strong>。</p>
+<hr>
+<h2>2. 估计量的评价</h2>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover accent="true"><mi>&#x003B8;</mi><mo>&#x0005E;</mo></mover></mrow></math> 是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003B8;</mi></mrow></math> 的估计量。</p>
+<p><strong>偏差</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>Bias</mo><mo stretchy="false">&#x00028;</mo><mover accent="true"><mi>&#x003B8;</mi><mo>&#x0005E;</mo></mover><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><mover accent="true"><mi>&#x003B8;</mi><mo>&#x0005E;</mo></mover><mo stretchy="false">]</mo><mo>&#x02212;</mo><mi>&#x003B8;</mi><mo>&#x0002E;</mo></mrow></math></div>
+<p>若偏差为 0，称<strong>无偏</strong>。无偏不代表每次都很准，只代表长期平均不偏。</p>
+<p><strong>方差</strong>：<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo>Var</mo><mo stretchy="false">&#x00028;</mo><mover accent="true"><mi>&#x003B8;</mi><mo>&#x0005E;</mo></mover><mo stretchy="false">&#x00029;</mo></mrow></math>，衡量估计的波动。</p>
+<p><strong>均方误差</strong>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>MSE</mo><mo stretchy="false">&#x00028;</mo><mover accent="true"><mi>&#x003B8;</mi><mo>&#x0005E;</mo></mover><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><mo stretchy="false">&#x00028;</mo><mover accent="true"><mi>&#x003B8;</mi><mo>&#x0005E;</mo></mover><mo>&#x02212;</mo><mi>&#x003B8;</mi><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup><mo stretchy="false">]</mo><mo>&#x0003D;</mo><msup><mo>Bias</mo><mn>2</mn></msup><mo>&#x0002B;</mo><mo>Var</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>MSE 同时惩罚偏差和方差。有时一个有偏但方差很小的估计量，MSE 反而更小。</p>
+<p><strong>相合性</strong>：当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mo>&#x02192;</mo><mo>&#x0221E;</mo></mrow></math> 时，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover accent="true"><mi>&#x003B8;</mi><mo>&#x0005E;</mo></mover><mover><mstyle scriptlevel="0"><mo>&#x2192;</mo></mstyle><mpadded width="+0.833em" lspace="0.556em" voffset="-.2em" height="-.2em"><mrow><mi>P</mi></mrow><mspace depth=".25em" /></mpadded></mover><mi>&#x003B8;</mi></mrow></math>。样本量越大，估计越接近真值。</p>
+<hr>
+<h2>3. 矩估计</h2>
+<p>用样本矩替换总体矩，解出参数。</p>
+<p>一阶样本矩：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mover><mi>X</mi><mo stretchy="true">&#x000AF;</mo></mover><mo>&#x0003D;</mo><mfrac><mn>1</mn><mi>n</mi></mfrac><munderover><mo>&#x02211;</mo><mrow><mi>i</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mi>n</mi></munderover><msub><mi>X</mi><mi>i</mi></msub><mo>&#x0002E;</mo></mrow></math></div>
+<p>二阶样本矩：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mn>1</mn><mi>n</mi></mfrac><munderover><mo>&#x02211;</mo><mrow><mi>i</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mi>n</mi></munderover><msubsup><mi>X</mi><mi>i</mi><mn>2</mn></msubsup><mo>&#x0002E;</mo></mrow></math></div>
+<p>例如总体服从 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mrow><mi mathvariant="normal">E</mi><mi mathvariant="normal">x</mi><mi mathvariant="normal">p</mi></mrow><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x00029;</mo></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><mi>X</mi><mo stretchy="false">]</mo><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002F;</mo><mi>&#x003BB;</mi></mrow></math>。令 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover><mi>X</mi><mo stretchy="true">&#x000AF;</mo></mover><mo>&#x0003D;</mo><mn>1</mn><mo>&#x0002F;</mo><mi>&#x003BB;</mi></mrow></math>，得</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mover accent="true"><mi>&#x003BB;</mi><mo>&#x0005E;</mo></mover><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mover><mi>X</mi><mo stretchy="true">&#x000AF;</mo></mover></mrow></mfrac><mo>&#x0002E;</mo></mrow></math></div>
+<p>矩估计简单直观，但有时效率不高，也不一定唯一。</p>
+<hr>
+<h2>4. 最大似然估计</h2>
+<p><strong>似然函数</strong>是样本联合密度（或 PMF）看成参数 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003B8;</mi></mrow></math> 的函数：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>L</mi><mo stretchy="false">&#x00028;</mo><mi>&#x003B8;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><munderover><mo>&#x0220F;</mo><mrow><mi>i</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mi>n</mi></munderover><msub><mi>f</mi><mi>&#x003B8;</mi></msub><mo stretchy="false">&#x00028;</mo><msub><mi>X</mi><mi>i</mi></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>最大似然估计（MLE）选使 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>L</mi><mo stretchy="false">&#x00028;</mo><mi>&#x003B8;</mi><mo stretchy="false">&#x00029;</mo></mrow></math> 最大的 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003B8;</mi></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mover accent="true"><mi>&#x003B8;</mi><mo>&#x0005E;</mo></mover><mrow><mtext>MLE</mtext></mrow></msub><mo>&#x0003D;</mo><mi>\arg</mi><msub><mo>max</mo><mi>&#x003B8;</mi></msub><mi>L</mi><mo stretchy="false">&#x00028;</mo><mi>&#x003B8;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p>通常最大化对数似然：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x02113;</mi><mo stretchy="false">&#x00028;</mo><mi>&#x003B8;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>ln</mi><mi>L</mi><mo stretchy="false">&#x00028;</mo><mi>&#x003B8;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><munderover><mo>&#x02211;</mo><mrow><mi>i</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mi>n</mi></munderover><mi>ln</mi><msub><mi>f</mi><mi>&#x003B8;</mi></msub><mo stretchy="false">&#x00028;</mo><msub><mi>X</mi><mi>i</mi></msub><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+<p><strong>例 6.1</strong>　伯努利分布。设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>X</mi><mi>i</mi></msub><mi>&#x0007E;</mi><mrow><mi mathvariant="normal">B</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">n</mi></mrow><mo stretchy="false">&#x00028;</mo><mi>p</mi><mo stretchy="false">&#x00029;</mo></mrow></math>，<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>X</mi><mi>i</mi></msub><mo>&#x02208;</mo><mo stretchy="false">&#x0007B;</mo><mn>0</mn><mo>&#x0002C;</mo><mn>1</mn><mo stretchy="false">&#x0007D;</mo></mrow></math>。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>L</mi><mo stretchy="false">&#x00028;</mo><mi>p</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><munderover><mo>&#x0220F;</mo><mrow><mi>i</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mi>n</mi></munderover><msup><mi>p</mi><mrow><msub><mi>X</mi><mi>i</mi></msub></mrow></msup><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><mi>p</mi><msup><mo stretchy="false">&#x00029;</mo><mrow><mn>1</mn><mo>&#x02212;</mo><msub><mi>X</mi><mi>i</mi></msub></mrow></msup><mo>&#x0003D;</mo><msup><mi>p</mi><mrow><mo>&#x02211;</mo><msub><mi>X</mi><mi>i</mi></msub></mrow></msup><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><mi>p</mi><msup><mo stretchy="false">&#x00029;</mo><mrow><mi>n</mi><mo>&#x02212;</mo><mo>&#x02211;</mo><msub><mi>X</mi><mi>i</mi></msub></mrow></msup><mo>&#x0002E;</mo></mrow></math></div>
+<p>对数似然：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x02113;</mi><mo stretchy="false">&#x00028;</mo><mi>p</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>k</mi><mi>ln</mi><mi>p</mi><mo>&#x0002B;</mo><mo stretchy="false">&#x00028;</mo><mi>n</mi><mo>&#x02212;</mo><mi>k</mi><mo stretchy="false">&#x00029;</mo><mi>ln</mi><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><mi>p</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002C;</mo><mspace width="2em" /><mi>k</mi><mo>&#x0003D;</mo><mo>&#x02211;</mo><msub><mi>X</mi><mi>i</mi></msub><mo>&#x0002E;</mo></mrow></math></div>
+<p>求导并令为零：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mi>k</mi></mrow><mrow><mi>p</mi></mrow></mfrac><mo>&#x02212;</mo><mfrac><mrow><mi>n</mi><mo>&#x02212;</mo><mi>k</mi></mrow><mrow><mn>1</mn><mo>&#x02212;</mo><mi>p</mi></mrow></mfrac><mo>&#x0003D;</mo><mn>0</mn><mspace width="1em" /><mi>&#x027F9;</mi><mspace width="1em" /><mover accent="true"><mi>p</mi><mo>&#x0005E;</mo></mover><mo>&#x0003D;</mo><mfrac><mrow><mi>k</mi></mrow><mrow><mi>n</mi></mrow></mfrac><mo>&#x0003D;</mo><mover><mi>X</mi><mo stretchy="true">&#x000AF;</mo></mover><mo>&#x0002E;</mo></mrow></math></div>
+<p><strong>例 6.2</strong>　正态分布。设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>X</mi><mi>i</mi></msub><mi>&#x0007E;</mi><mi>N</mi><mo stretchy="false">&#x00028;</mo><mi>&#x003BC;</mi><mo>&#x0002C;</mo><msup><mi>&#x003C3;</mi><mn>2</mn></msup><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>&#x02113;</mi><mo stretchy="false">&#x00028;</mo><mi>&#x003BC;</mi><mo>&#x0002C;</mo><msup><mi>&#x003C3;</mi><mn>2</mn></msup><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mo>&#x02212;</mo><mfrac><mi>n</mi><mn>2</mn></mfrac><mi>ln</mi><mo stretchy="false">&#x00028;</mo><mn>2</mn><mi>&#x003C0;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x02212;</mo><mfrac><mi>n</mi><mn>2</mn></mfrac><mi>ln</mi><msup><mi>&#x003C3;</mi><mn>2</mn></msup><mo>&#x02212;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn><msup><mi>&#x003C3;</mi><mn>2</mn></msup></mrow></mfrac><munderover><mo>&#x02211;</mo><mrow><mi>i</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mi>n</mi></munderover><mo stretchy="false">&#x00028;</mo><msub><mi>X</mi><mi>i</mi></msub><mo>&#x02212;</mo><mi>&#x003BC;</mi><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup><mo>&#x0002E;</mo></mrow></math></div>
+<p>对 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BC;</mi></mrow></math> 求导得</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mover accent="true"><mi>&#x003BC;</mi><mo>&#x0005E;</mo></mover><mo>&#x0003D;</mo><mover><mi>X</mi><mo stretchy="true">&#x000AF;</mo></mover><mo>&#x0002E;</mo></mrow></math></div>
+<p>对 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msup><mi>&#x003C3;</mi><mn>2</mn></msup></mrow></math> 求导并令为零，得</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mover accent="true"><mi>&#x003C3;</mi><mo>&#x0005E;</mo></mover><mn>2</mn></msup><mo>&#x0003D;</mo><mfrac><mn>1</mn><mi>n</mi></mfrac><munderover><mo>&#x02211;</mo><mrow><mi>i</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mi>n</mi></munderover><mo stretchy="false">&#x00028;</mo><msub><mi>X</mi><mi>i</mi></msub><mo>&#x02212;</mo><mover><mi>X</mi><mo stretchy="true">&#x000AF;</mo></mover><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup><mo>&#x0002E;</mo></mrow></math></div>
+<p>注意这个方差估计是有偏的，分母是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math> 而不是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mo>&#x02212;</mo><mn>1</mn></mrow></math>。无偏版本是</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msup><mi>s</mi><mn>2</mn></msup><mo>&#x0003D;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>n</mi><mo>&#x02212;</mo><mn>1</mn></mrow></mfrac><munderover><mo>&#x02211;</mo><mrow><mi>i</mi><mo>&#x0003D;</mo><mn>1</mn></mrow><mi>n</mi></munderover><mo stretchy="false">&#x00028;</mo><msub><mi>X</mi><mi>i</mi></msub><mo>&#x02212;</mo><mover><mi>X</mi><mo stretchy="true">&#x000AF;</mo></mover><msup><mo stretchy="false">&#x00029;</mo><mn>2</mn></msup><mo>&#x0002E;</mo></mrow></math></div>
+<hr>
+<h2>5. MAP 与正则化</h2>
+<p>最大后验估计（MAP）把先验放进目标：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mover accent="true"><mi>&#x003B8;</mi><mo>&#x0005E;</mo></mover><mrow><mtext>MAP</mtext></mrow></msub><mo>&#x0003D;</mo><mi>\arg</mi><msub><mo>max</mo><mi>&#x003B8;</mi></msub><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>&#x003B8;</mi><mo>&#x02223;</mo><mi>X</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>\arg</mi><msub><mo>max</mo><mi>&#x003B8;</mi></msub><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><mi>ln</mi><mi>L</mi><mo stretchy="false">&#x00028;</mo><mi>&#x003B8;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0002B;</mo><mi>ln</mi><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>&#x003B8;</mi><mo stretchy="false">&#x00029;</mo><mo stretchy="true" fence="true" form="postfix">]</mo></mrow><mo>&#x0002E;</mo></mrow></math></div>
+<p>先验相当于在似然上加一个惩罚项。例如高斯先验对应 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>L</mi><mn>2</mn></msub></mrow></math> 正则化，拉普拉斯先验对应 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>L</mi><mn>1</mn></msub></mrow></math> 正则化。这解释了机器学习中“正则化 = 贝叶斯先验”的说法。</p>
+<p>当先验是均匀分布时，MAP 退化为 MLE。</p>
+<hr>
+<h2>6. Fisher 信息与 Cramér–Rao 下界</h2>
+<p><strong>Fisher 信息</strong>衡量样本对参数的信息量：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>I</mi><mo stretchy="false">&#x00028;</mo><mi>&#x003B8;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mi>&#x1D53C;</mi><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><msup><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mfrac><mrow><mo>&#x02202;</mo><mi>&#x02113;</mi><mo stretchy="false">&#x00028;</mo><mi>&#x003B8;</mi><mo stretchy="false">&#x00029;</mo></mrow><mrow><mo>&#x02202;</mo><mi>&#x003B8;</mi></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mn>2</mn></msup><mo stretchy="true" fence="true" form="postfix">]</mo></mrow><mo>&#x0003D;</mo><mo>&#x02212;</mo><mi>&#x1D53C;</mi><mrow><mo stretchy="true" fence="true" form="prefix">[</mo><mfrac><mrow><msup><mo>&#x02202;</mo><mn>2</mn></msup><mi>&#x02113;</mi><mo stretchy="false">&#x00028;</mo><mi>&#x003B8;</mi><mo stretchy="false">&#x00029;</mo></mrow><mrow><mo>&#x02202;</mo><msup><mi>&#x003B8;</mi><mn>2</mn></msup></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">]</mo></mrow><mo>&#x0002E;</mo></mrow></math></div>
+<p>对无偏估计量 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover accent="true"><mi>&#x003B8;</mi><mo>&#x0005E;</mo></mover></mrow></math>，<strong>Cramér–Rao 下界</strong>给出</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mo>Var</mo><mo stretchy="false">&#x00028;</mo><mover accent="true"><mi>&#x003B8;</mi><mo>&#x0005E;</mo></mover><mo stretchy="false">&#x00029;</mo><mo>&#x02265;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>I</mi><mo stretchy="false">&#x00028;</mo><mi>&#x003B8;</mi><mo stretchy="false">&#x00029;</mo></mrow></mfrac><mo>&#x0002E;</mo></mrow></math></div>
+<p>达到下界的估计量叫<strong>有效估计量</strong>。MLE 在大样本下通常渐近有效，且近似服从</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msub><mover accent="true"><mi>&#x003B8;</mi><mo>&#x0005E;</mo></mover><mrow><mtext>MLE</mtext></mrow></msub><mo>&#x02248;</mo><mi>N</mi><mrow><mo stretchy="true" fence="true" form="prefix">&#x00028;</mo><mi>&#x003B8;</mi><mo>&#x0002C;</mo><mfrac><mrow><mn>1</mn></mrow><mrow><mi>I</mi><mo stretchy="false">&#x00028;</mo><mi>&#x003B8;</mi><mo stretchy="false">&#x00029;</mo></mrow></mfrac><mo stretchy="true" fence="true" form="postfix">&#x00029;</mo></mrow><mo>&#x0002E;</mo></mrow></math></div>
+<p>这为构造置信区间提供了依据。</p>
+<hr>
+<h2>7. 置信区间</h2>
+<p><strong>置信区间</strong>给出参数的区间估计。若</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>P</mi><mo stretchy="false">&#x00028;</mo><mi>&#x003B8;</mi><mo>&#x02208;</mo><mo stretchy="false">[</mo><msub><mover accent="true"><mi>&#x003B8;</mi><mo>&#x0005E;</mo></mover><mi>L</mi></msub><mo>&#x0002C;</mo><msub><mover accent="true"><mi>&#x003B8;</mi><mo>&#x0005E;</mo></mover><mi>U</mi></msub><mo stretchy="false">]</mo><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><mn>1</mn><mo>&#x02212;</mo><mi>&#x003B1;</mi><mo>&#x0002C;</mo></mrow></math></div>
+<p>称该区间为置信水平 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>1</mn><mo>&#x02212;</mo><mi>&#x003B1;</mi></mrow></math> 的置信区间。</p>
+<p>正态均值、方差已知时：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mover><mi>X</mi><mo stretchy="true">&#x000AF;</mo></mover><mi>&#x000B1;</mi><msub><mi>z</mi><mrow><mi>&#x003B1;</mi><mo>&#x0002F;</mo><mn>2</mn></mrow></msub><mfrac><mrow><mi>&#x003C3;</mi></mrow><mrow><msqrt><mi>n</mi></msqrt></mrow></mfrac><mo>&#x0002E;</mo></mrow></math></div>
+<p>方差未知时，用样本标准差 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>s</mi></mrow></math> 代替 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003C3;</mi></mrow></math>，并把 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>z</mi></mrow></math> 换成 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>t</mi></mrow></math> 分布分位数：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mover><mi>X</mi><mo stretchy="true">&#x000AF;</mo></mover><mi>&#x000B1;</mi><msub><mi>t</mi><mrow><mi>&#x003B1;</mi><mo>&#x0002F;</mo><mn>2</mn><mo>&#x0002C;</mo><mi>n</mi><mo>&#x02212;</mo><mn>1</mn></mrow></msub><mfrac><mrow><mi>s</mi></mrow><mrow><msqrt><mi>n</mi></msqrt></mrow></mfrac><mo>&#x0002E;</mo></mrow></math></div>
+<p>比例的 Wald 区间：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mover accent="true"><mi>p</mi><mo>&#x0005E;</mo></mover><mi>&#x000B1;</mi><msub><mi>z</mi><mrow><mi>&#x003B1;</mi><mo>&#x0002F;</mo><mn>2</mn></mrow></msub><msqrt><mrow><mfrac><mrow><mover accent="true"><mi>p</mi><mo>&#x0005E;</mo></mover><mo stretchy="false">&#x00028;</mo><mn>1</mn><mo>&#x02212;</mo><mover accent="true"><mi>p</mi><mo>&#x0005E;</mo></mover><mo stretchy="false">&#x00029;</mo></mrow><mrow><mi>n</mi></mrow></mfrac></mrow></msqrt><mo>&#x0002E;</mo></mrow></math></div>
+<p><strong>例 6.3</strong>　抛 100 次硬币，60 次正面。求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi></mrow></math> 的 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>95</mn><mi>&#x00025;</mi></mrow></math> 置信区间。</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mover accent="true"><mi>p</mi><mo>&#x0005E;</mo></mover><mo>&#x0003D;</mo><mn>0.6</mn><mo>&#x0002C;</mo><mspace width="2em" /><msqrt><mrow><mfrac><mrow><mn>0.6</mn><mo>&#x000D7;</mo><mn>0.4</mn></mrow><mrow><mn>100</mn></mrow></mfrac></mrow></msqrt><mo>&#x0003D;</mo><mn>0.049</mn><mo>&#x0002E;</mo></mrow></math></div>
+<p>取 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>z</mi><mrow><mn>0.025</mn></mrow></msub><mo>&#x02248;</mo><mn>1.96</mn></mrow></math>：</p>
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>0.6</mn><mi>&#x000B1;</mi><mn>1.96</mn><mo>&#x000D7;</mo><mn>0.049</mn><mo>&#x02248;</mo><mn>0.6</mn><mi>&#x000B1;</mi><mn>0.096</mn><mo>&#x0002C;</mo></mrow></math></div>
+<p>即约 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mo stretchy="false">&#x00028;</mo><mn>0.504</mn><mo>&#x0002C;</mo><mtext>&#x000A0;</mtext><mn>0.696</mn><mo stretchy="false">&#x00029;</mo></mrow></math>。</p>
+<blockquote>
+<p><strong>正确解释</strong>：置信水平不是“参数有 95% 的概率落在这个区间”。参数是固定的，区间是随机的；95% 指的是重复抽样时，约 95% 的区间会覆盖真值。</p>
+</blockquote>
+<hr>
+<h2>8. 工程视角：标定与参数辨识</h2>
+<ul>
+<li><strong>传感器标定</strong>：用已知输入和观测输出估计零偏、尺度因子、噪声方差；</li>
+<li><strong>系统辨识</strong>：从飞行数据估计无人机的质量、惯量、阻尼；</li>
+<li><strong>在线估计</strong>：递推最小二乘、Kalman 滤波随新数据不断更新参数；</li>
+<li><strong>机器学习</strong>：训练就是 MLE/MAP，损失函数对应负对数似然加正则；</li>
+<li><strong>可靠性</strong>：用失效数据估计寿命分布的参数。</li>
+</ul>
+<blockquote>
+<p><strong>工程直觉</strong>：估计不是“猜一个数”，而是“给一个数并说明有多不确定”。置信区间和协方差矩阵就是不确定性的说明书。</p>
+</blockquote>
+<hr>
+<h2>9. 练习</h2>
+<ol>
+<li>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>X</mi><mn>1</mn></msub><mo>&#x0002C;</mo><mo>&#x02026;</mo><mo>&#x0002C;</mo><msub><mi>X</mi><mi>n</mi></msub><mi>&#x0007E;</mi><mrow><mi mathvariant="normal">P</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">s</mi></mrow><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x00029;</mo></mrow></math>，求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BB;</mi></mrow></math> 的矩估计和 MLE。</p>
+</li>
+<li>
+<p>设 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>X</mi><mn>1</mn></msub><mo>&#x0002C;</mo><mo>&#x02026;</mo><mo>&#x0002C;</mo><msub><mi>X</mi><mi>n</mi></msub><mi>&#x0007E;</mi><mi>U</mi><mo stretchy="false">&#x00028;</mo><mn>0</mn><mo>&#x0002C;</mo><mi>&#x003B8;</mi><mo stretchy="false">&#x00029;</mo></mrow></math>，求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003B8;</mi></mrow></math> 的 MLE。</p>
+</li>
+<li>
+<p>抛 200 次硬币，80 次正面。求 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi></mrow></math> 的 MLE 和近似 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>95</mn><mi>&#x00025;</mi></mrow></math> 置信区间。</p>
+</li>
+<li>
+<p>解释为什么正态方差的 MLE 分母是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math>，而无偏估计分母是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mo>&#x02212;</mo><mn>1</mn></mrow></math>。</p>
+</li>
+<li>
+<p>高斯先验对应哪种正则化？简述理由。</p>
+</li>
+</ol>
+<hr>
+<h2>10. 答案与简解</h2>
+<details>
+<summary>点击展开（做完再看）</summary>
+
+**1.** 泊松分布 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><mi>X</mi><mo stretchy="false">]</mo><mo>&#x0003D;</mo><mi>&#x003BB;</mi></mrow></math>，矩估计为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover accent="true"><mi>&#x003BB;</mi><mo>&#x0005E;</mo></mover><mo>&#x0003D;</mo><mover><mi>X</mi><mo stretchy="true">&#x000AF;</mo></mover></mrow></math>。似然为
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mi>L</mi><mo stretchy="false">&#x00028;</mo><mi>&#x003BB;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><munder><mo>&#x0220F;</mo><mi>i</mi></munder><mfrac><mrow><msup><mi>&#x003BB;</mi><mrow><msub><mi>X</mi><mi>i</mi></msub></mrow></msup><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mi>&#x003BB;</mi></mrow></msup></mrow><mrow><msub><mi>X</mi><mi>i</mi></msub><mo>&#x00021;</mo></mrow></mfrac><mo>&#x0003D;</mo><mfrac><mrow><msup><mi>&#x003BB;</mi><mrow><mo>&#x02211;</mo><msub><mi>X</mi><mi>i</mi></msub></mrow></msup><msup><mi>e</mi><mrow><mo>&#x02212;</mo><mi>n</mi><mi>&#x003BB;</mi></mrow></msup></mrow><mrow><msub><mo>&#x0220F;</mo><mi>i</mi></msub><msub><mi>X</mi><mi>i</mi></msub><mo>&#x00021;</mo></mrow></mfrac><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+对数似然对 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003BB;</mi></mrow></math> 求导：
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mfrac><mrow><mo>&#x02211;</mo><msub><mi>X</mi><mi>i</mi></msub></mrow><mrow><mi>&#x003BB;</mi></mrow></mfrac><mo>&#x02212;</mo><mi>n</mi><mo>&#x0003D;</mo><mn>0</mn><mspace width="1em" /><mi>&#x027F9;</mi><mspace width="1em" /><mover accent="true"><mi>&#x003BB;</mi><mo>&#x0005E;</mo></mover><mo>&#x0003D;</mo><mover><mi>X</mi><mo stretchy="true">&#x000AF;</mo></mover><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+两者相同。
+
+**2.** 似然为 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>L</mi><mo stretchy="false">&#x00028;</mo><mi>&#x003B8;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0003D;</mo><msup><mi>&#x003B8;</mi><mrow><mo>&#x02212;</mo><mi>n</mi></mrow></msup></mrow></math>，当 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>0</mn><mo>&#x02264;</mo><msub><mi>X</mi><mi>i</mi></msub><mo>&#x02264;</mo><mi>&#x003B8;</mi></mrow></math> 时成立。<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>L</mi></mrow></math> 随 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003B8;</mi></mrow></math> 增大而减小，所以取最小的可行 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x003B8;</mi></mrow></math>，即
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mover accent="true"><mi>&#x003B8;</mi><mo>&#x0005E;</mo></mover><mo>&#x0003D;</mo><msub><mo>max</mo><mi>i</mi></msub><msub><mi>X</mi><mi>i</mi></msub><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+**3.** <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mover accent="true"><mi>p</mi><mo>&#x0005E;</mo></mover><mo>&#x0003D;</mo><mn>80</mn><mo>&#x0002F;</mo><mn>200</mn><mo>&#x0003D;</mo><mn>0.4</mn></mrow></math>。标准误
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><msqrt><mrow><mfrac><mrow><mn>0.4</mn><mo>&#x000D7;</mo><mn>0.6</mn></mrow><mrow><mn>200</mn></mrow></mfrac></mrow></msqrt><mo>&#x0003D;</mo><msqrt><mrow><mn>0.0012</mn></mrow></msqrt><mo>&#x02248;</mo><mn>0.0346</mn><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mn>95</mn><mi>&#x00025;</mi></mrow></math> 区间约为
+
+
+
+<div class="math-block"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow><mn>0.4</mn><mi>&#x000B1;</mi><mn>1.96</mn><mo>&#x000D7;</mo><mn>0.0346</mn><mo>&#x02248;</mo><mo stretchy="false">&#x00028;</mo><mn>0.332</mn><mo>&#x0002C;</mo><mtext>&#x000A0;</mtext><mn>0.468</mn><mo stretchy="false">&#x00029;</mo><mo>&#x0002E;</mo></mrow></math></div>
+
+
+
+**4.** MLE 把分母当成 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math>，因为似然最大化时除以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi></mrow></math>。但 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>&#x1D53C;</mi><mo stretchy="false">[</mo><msup><mover accent="true"><mi>&#x003C3;</mi><mo>&#x0005E;</mo></mover><mn>2</mn></msup><mo stretchy="false">]</mo><mo>&#x0003D;</mo><mfrac><mrow><mi>n</mi><mo>&#x02212;</mo><mn>1</mn></mrow><mrow><mi>n</mi></mrow></mfrac><msup><mi>&#x003C3;</mi><mn>2</mn></msup></mrow></math>，有偏。乘以 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><mi>n</mi></mrow><mrow><mi>n</mi><mo>&#x02212;</mo><mn>1</mn></mrow></mfrac></mrow></math> 后得到无偏估计，所以无偏版本分母是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>n</mi><mo>&#x02212;</mo><mn>1</mn></mrow></math>。
+
+**5.** 高斯先验 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mi>p</mi><mo stretchy="false">&#x00028;</mo><mi>&#x003B8;</mi><mo stretchy="false">&#x00029;</mo><mo>&#x0221D;</mo><msup><mi>e</mi><mrow><mo>&#x02212;</mo><msup><mi>&#x003B8;</mi><mn>2</mn></msup><mo>&#x0002F;</mo><mo stretchy="false">&#x00028;</mo><mn>2</mn><msup><mi>&#x003C4;</mi><mn>2</mn></msup><mo stretchy="false">&#x00029;</mo></mrow></msup></mrow></math>，取负对数得到 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><mfrac><mrow><msup><mi>&#x003B8;</mi><mn>2</mn></msup></mrow><mrow><mn>2</mn><msup><mi>&#x003C4;</mi><mn>2</mn></msup></mrow></mfrac></mrow></math>，正是 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>L</mi><mn>2</mn></msub></mrow></math> 正则项。所以高斯先验对应 <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mrow><msub><mi>L</mi><mn>2</mn></msub></mrow></math> 正则化。
+
+</details>
+
+<hr>
+<h2>下节预告</h2>
+<p><strong>第 07 课：假设检验</strong></p>
+<ul>
+<li>原假设与备择假设</li>
+<li>两类错误、显著性水平与功效</li>
+<li>p 值与常见检验</li>
+<li>多重检验</li>
+</ul>
+<hr>
+<h2>自查清单</h2>
+<ul>
+<li>[ ] 能写出偏差、方差、MSE 的关系</li>
+<li>[ ] 会用矩估计和 MLE</li>
+<li>[ ] 知道 MLE 的不变性</li>
+<li>[ ] 能构造均值和比例的置信区间</li>
+<li>[ ] 理解正则化与先验的对应</li>
+</ul>
+<nav class="lesson-nav"><span><a href="概率05-大数定律与中心极限定理.html">&larr; 上一课</a></span><span><a href="概率07-假设检验.html">下一课 &rarr;</a></span></nav>
+<footer>概率论 · 数学公式使用 MathML 渲染，建议使用 Chrome / Edge / Firefox 打开</footer>
+</main>
+</body>
+</html>
